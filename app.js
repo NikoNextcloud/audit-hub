@@ -4,9 +4,10 @@ const oldStoreKey = "audit-hub-state-v1";
 const seedData = {
   session: null,
   users: [
-    { id: "u-1", name: "Администратор", role: "admin", online: true, lastSeen: nowIso() },
-    { id: "u-2", name: "Николай", role: "auditor", online: true, lastSeen: nowIso() },
-    { id: "u-3", name: "Анна", role: "auditor", online: false, lastSeen: "2026-07-30T08:40:00.000Z" }
+    { id: "u-1", name: "Георги", password: "Geo2026", role: "auditor", online: false, lastSeen: nowIso() },
+    { id: "u-2", name: "Никол", password: "Niko26", role: "auditor", online: false, lastSeen: nowIso() },
+    { id: "u-3", name: "Админ", password: "Admin26", role: "admin", online: false, lastSeen: nowIso() },
+    { id: "u-4", name: "Катя", password: "Katy26", role: "accounting", online: false, lastSeen: nowIso() }
   ],
   companies: [
     {
@@ -196,7 +197,14 @@ function loadState() {
 }
 
 function normalizeState(data) {
-  data.users ||= structuredClone(seedData.users);
+  const savedUsers = data.users || [];
+  data.users = seedData.users.map((user) => {
+    const saved = savedUsers.find((item) => item.name === user.name);
+    return { ...user, ...saved, password: saved?.password || user.password };
+  });
+  if (data.session && !data.users.some((user) => user.name === data.session.name)) {
+    data.session = null;
+  }
   data.activityLog ||= structuredClone(seedData.activityLog);
   for (const list of [data.companies, data.audits, data.payments, data.documents]) {
     list.forEach((item) => {
@@ -376,7 +384,7 @@ function render() {
           ${navButton("payments", "card", "Плащания")}
           ${navButton("documents", "file", "Документи")}
           ${navButton("notifications", "activity", "Известия")}
-          ${navButton("activity", "activity", "Активност")}
+          ${navButton("activity", "activity", "История")}
         </nav>
         <div class="online-box">
           <strong>На линия</strong>
@@ -392,6 +400,7 @@ function render() {
         </div>
         <div class="sidebar-footer">
           <span>${escapeHtml(state.session.name)}</span>
+          <button class="btn ghost account-btn" data-action="open-modal" data-modal="changePassword">${icon("edit")} Смени парола</button>
           <button class="btn logout-btn" data-action="logout">${icon("logout")} Изход</button>
         </div>
       </aside>
@@ -432,8 +441,9 @@ function renderLogin() {
           </div>
           <div class="form-row">
             <label for="password">Парола</label>
-            <input id="password" name="password" type="password" value="demo1234" required />
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
           </div>
+          <p class="login-error hidden" id="login-error">Грешна парола за избрания потребител.</p>
           <button class="btn primary" type="submit">Влез в системата</button>
         </form>
       </section>
@@ -443,14 +453,19 @@ function renderLogin() {
   document.querySelector("#login-form").addEventListener("submit", (event) => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(event.currentTarget).entries());
-    state.session = { name: data.userName, role: state.users.find((user) => user.name === data.userName)?.role || "member" };
+    const selectedUser = state.users.find((user) => user.name === data.userName);
+    if (!selectedUser || selectedUser.password !== data.password) {
+      document.querySelector("#login-error").classList.remove("hidden");
+      return;
+    }
+    state.session = { name: selectedUser.name, role: selectedUser.role || "member" };
     state.users.forEach((user) => {
-      if (user.name === data.userName) {
+      if (user.name === selectedUser.name) {
         user.online = true;
         user.lastSeen = nowIso();
       }
     });
-    addLog("Влезе в системата", "Потребител", data.userName);
+    addLog("Влезе в системата", "Потребител", selectedUser.name);
     saveState();
     render();
   });
@@ -505,7 +520,7 @@ function renderDashboard() {
     <div class="page-head">
       <div>
         <h2>Работно табло</h2>
-        <p>Най-важното за одити, плащания, документи, Mega папки и активност.</p>
+        <p>Най-важното за одити, плащания, документи, Mega папки и история.</p>
       </div>
       <div class="card-actions">
         <button class="btn primary" data-action="open-modal" data-modal="audit">${icon("calendar")} Нов одит</button>
@@ -544,7 +559,7 @@ function renderDashboard() {
     <section class="panel activity-panel">
       <div class="panel-head">
         <h3>Последни промени</h3>
-        <button class="btn ghost" data-view="activity">${icon("activity")} Журнал</button>
+        <button class="btn ghost" data-view="activity">${icon("activity")} История</button>
       </div>
       ${renderActivityList(state.activityLog.slice(0, 6))}
     </section>
@@ -696,8 +711,6 @@ function renderAuditTools() {
   return `
     <div class="panel-head"><h3>Инструменти за одити</h3></div>
     <div class="tool-grid">
-      <button class="btn ghost" data-action="bulk-status" data-status="waiting_docs">${icon("file")} Маркирай филтрираните: чака документи</button>
-      <button class="btn ghost" data-action="bulk-status" data-status="done">${icon("check")} Маркирай филтрираните: готово</button>
       <button class="btn ghost" data-action="export-csv" data-kind="audits">${icon("file")} Експорт CSV (${count})</button>
       <button class="btn ghost" data-action="open-modal" data-modal="audit">${icon("plus")} Бързо добавяне</button>
     </div>
@@ -1038,8 +1051,8 @@ function renderActivity() {
   return `
     <div class="page-head">
       <div>
-        <h2>Журнал на активност</h2>
-        <p>Тук се записва кой потребител е направил промяна. Този журнал няма бутон за изтриване.</p>
+        <h2>История</h2>
+        <p>Тук се записва кой потребител е направил промяна. Историята няма бутон за изтриване.</p>
       </div>
     </div>
     <section class="panel">${renderActivityList(state.activityLog)}</section>
@@ -1417,10 +1430,6 @@ function bindEvents() {
     button.addEventListener("click", () => duplicateAudit(button.dataset.id));
   });
 
-  document.querySelectorAll("[data-action='bulk-status']").forEach((button) => {
-    button.addEventListener("click", () => bulkAuditStatus(button.dataset.status));
-  });
-
   document.querySelectorAll("[data-action='export-csv']").forEach((button) => {
     button.addEventListener("click", () => exportCsv(button.dataset.kind));
   });
@@ -1440,7 +1449,8 @@ function openModal(type, companyId = "", itemId = "", defaultDate = "") {
     audit: auditForm,
     payment: paymentForm,
     document: documentForm,
-    mega: megaForm
+    mega: megaForm,
+    changePassword: changePasswordForm
   };
   const item = findItem(type, itemId);
   document.querySelector("#modal-root").innerHTML = `
@@ -1488,7 +1498,8 @@ function modalTitle(type, item) {
     audit: item ? "Редакция на одит" : "Нов одит",
     payment: item ? "Редакция на плащане" : "Ново плащане",
     document: item ? "Редакция на документ" : "Качване на документ",
-    mega: "Mega папка"
+    mega: "Mega папка",
+    changePassword: "Смяна на парола"
   };
   return titles[type];
 }
@@ -1636,6 +1647,27 @@ function megaForm(companyId) {
   `;
 }
 
+function changePasswordForm() {
+  return `
+    <form data-form="changePassword">
+      <div class="form-row">
+        <label for="currentPassword">Стара парола</label>
+        <input id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" required />
+      </div>
+      <div class="form-row">
+        <label for="newPassword">Нова парола</label>
+        <input id="newPassword" name="newPassword" type="password" minlength="4" autocomplete="new-password" required />
+      </div>
+      <div class="form-row">
+        <label for="confirmPassword">Повтори новата парола</label>
+        <input id="confirmPassword" name="confirmPassword" type="password" minlength="4" autocomplete="new-password" required />
+      </div>
+      <p class="form-note">Паролата се сменя за текущия потребител: ${escapeHtml(currentUser())}</p>
+      ${formActions("Смени парола")}
+    </form>
+  `;
+}
+
 function option(value, label, selected) {
   return `<option value="${value}" ${selected === value ? "selected" : ""}>${label}</option>`;
 }
@@ -1736,6 +1768,21 @@ function handleForm(event) {
     }
   }
 
+  if (kind === "changePassword") {
+    const user = state.users.find((item) => item.name === currentUser());
+    if (!user || user.password !== data.currentPassword) {
+      alert("Старата парола не е вярна.");
+      return;
+    }
+    if (data.newPassword !== data.confirmPassword) {
+      alert("Новата парола и повторението не съвпадат.");
+      return;
+    }
+    user.password = data.newPassword;
+    user.lastSeen = nowIso();
+    addLog("Смени своята парола", "Потребител", user.id);
+  }
+
   saveState();
   closeModal();
   render();
@@ -1754,7 +1801,7 @@ function updateStatus(kind, itemId, status) {
 
 function deleteItem(kind, itemId) {
   const labels = { company: "фирмата", audit: "одита", payment: "плащането", document: "документа" };
-  if (!confirm(`Сигурни ли сте, че искате да изтриете ${labels[kind]}? Журналът на промяната ще остане.`)) return;
+  if (!confirm(`Сигурни ли сте, че искате да изтриете ${labels[kind]}? Историята на промяната ще остане.`)) return;
   const lists = { company: state.companies, audit: state.audits, payment: state.payments, document: state.documents };
   const item = findItem(kind, itemId);
   const index = lists[kind].findIndex((entry) => entry.id === itemId);
@@ -1775,19 +1822,6 @@ function duplicateAudit(itemId) {
   const copy = stamp({ ...audit, id: id("a"), date: audit.date, status: "upcoming", notes: `${audit.notes || ""} (копие)` }, true);
   state.audits.push(copy);
   addLog(`Дублира одит: ${companyName(copy.companyId)}`, "Одит", copy.id);
-  saveState();
-  render();
-}
-
-function bulkAuditStatus(status) {
-  const audits = filteredAudits();
-  if (!audits.length) return;
-  if (!confirm(`Промяна на статус за ${audits.length} филтрирани одита?`)) return;
-  audits.forEach((audit) => {
-    audit.status = status;
-    stamp(audit);
-  });
-  addLog(`Масова промяна на ${audits.length} одита към статус: ${status}`, "Одит", "bulk");
   saveState();
   render();
 }

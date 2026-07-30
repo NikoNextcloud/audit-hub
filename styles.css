@@ -193,6 +193,29 @@ textarea:focus {
   background: rgba(255, 255, 255, 0.2);
 }
 
+.btn.account-btn {
+  width: 100%;
+  color: rgba(255, 255, 255, 0.92);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.btn.account-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.login-error,
+.form-note {
+  margin: 10px 0 16px;
+  color: var(--danger);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.form-note {
+  color: var(--muted);
+}
+
 .app-shell {
   min-height: 100vh;
   display: grid;
