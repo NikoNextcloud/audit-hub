@@ -25,6 +25,8 @@
 
 Файлът `database.sql` съдържа начална Supabase/Postgres схема. Следваща стъпка е да се свърже UI-то със Supabase Auth и таблиците вместо `localStorage`.
 
+JavaScript кодът за Supabase client не се поставя в Supabase SQL Editor. SQL Editor приема само SQL. В това приложение публичните Supabase настройки се четат от Vercel Environment Variables чрез `api/supabase-config.js`.
+
 ## Mega.nz
 
 MVP версията пази Mega линкове към фирми и документи. Следваща стъпка може да бъде backend интеграция с Mega SDK за автоматично създаване на папки, качване и синхронизация.

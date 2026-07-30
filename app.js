@@ -185,6 +185,12 @@ let selectedStatus = "all";
 let auditMode = "calendar";
 let calendarDate = new Date("2026-08-01T12:00:00");
 let activeCompanyId = "";
+let supabaseClient = null;
+let supabaseStatus = {
+  state: "unknown",
+  label: "Supabase",
+  detail: "Не е проверено"
+};
 
 function loadState() {
   const saved = localStorage.getItem(storeKey) || localStorage.getItem(oldStoreKey);
@@ -258,6 +264,10 @@ function nowIso() {
 
 function currentUser() {
   return state.session?.name || "Администратор";
+}
+
+function canDelete() {
+  return state.session?.role === "admin" || currentUser() === "Админ";
 }
 
 function id(prefix) {
@@ -408,6 +418,7 @@ function render() {
         <header class="topbar">
           <button class="btn ghost mobile-menu" data-action="toggle-menu">${icon("menu")}</button>
           <input class="search" value="${escapeAttr(query)}" data-action="search" placeholder="Търсене по фирма, контакт, фактура или документ" />
+          ${renderSupabaseStatusButton()}
           <button class="btn primary top-action" data-action="open-modal" data-modal="company">${icon("plus")} Нова фирма</button>
         </header>
         <section class="content">${renderView()}</section>
@@ -473,6 +484,58 @@ function renderLogin() {
 
 function navButton(view, iconName, label) {
   return `<button class="btn ${activeView === view ? "active" : ""}" data-view="${view}">${icon(iconName)} ${label}</button>`;
+}
+
+function renderSupabaseStatusButton() {
+  return `
+    <button class="supabase-status ${supabaseStatus.state}" data-action="check-supabase" title="${escapeAttr(supabaseStatus.detail)}">
+      <span></span>
+      <strong>${escapeHtml(supabaseStatus.label)}</strong>
+    </button>
+  `;
+}
+
+async function checkSupabaseConnection() {
+  supabaseStatus = { state: "checking", label: "Проверка...", detail: "Проверявам Supabase връзката." };
+  render();
+
+  try {
+    const configResponse = await fetch("/api/supabase-config", { cache: "no-store" });
+    if (!configResponse.ok) {
+      throw new Error(`Липсва /api/supabase-config (${configResponse.status}). Ако отваряш index.html локално, този endpoint работи само във Vercel.`);
+    }
+
+    const config = await configResponse.json();
+    if (!config.url || !config.anonKey) {
+      throw new Error("Липсват VITE_SUPABASE_URL или VITE_SUPABASE_ANON_KEY във Vercel Environment Variables.");
+    }
+
+    const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+    supabaseClient = createClient(config.url, config.anonKey);
+
+    const { error } = await supabaseClient.from("profiles").select("id", { count: "exact", head: true });
+    if (error) {
+      supabaseStatus = {
+        state: "warning",
+        label: "Supabase частично",
+        detail: `Връзката работи, но заявката към profiles върна: ${error.message}`
+      };
+    } else {
+      supabaseStatus = {
+        state: "ok",
+        label: "Supabase OK",
+        detail: "Приложението вижда Supabase URL, anon key и таблицата profiles."
+      };
+    }
+  } catch (error) {
+    supabaseStatus = {
+      state: "error",
+      label: "Supabase грешка",
+      detail: error.message
+    };
+  }
+
+  render();
 }
 
 function renderView() {
@@ -591,7 +654,7 @@ function renderCompanies() {
                       </div>
                       <div class="mini-actions">
                         <button class="icon-btn" title="Редактирай" data-action="open-modal" data-modal="company" data-id="${company.id}">${icon("edit")}</button>
-                        <button class="icon-btn danger" title="Изтрий" data-action="delete" data-kind="company" data-id="${company.id}">${icon("trash")}</button>
+                        ${canDelete() ? `<button class="icon-btn danger" title="Изтрий" data-action="delete" data-kind="company" data-id="${company.id}">${icon("trash")}</button>` : ""}
                       </div>
                     </div>
                     <div class="meta">
@@ -844,7 +907,7 @@ function renderPayments() {
                       <div class="mini-actions">
                         <button class="icon-btn" title="Платено" data-action="quick-status" data-kind="payment" data-id="${payment.id}" data-status="paid">${icon("check")}</button>
                         <button class="icon-btn" title="Редактирай" data-action="open-modal" data-modal="payment" data-id="${payment.id}">${icon("edit")}</button>
-                        <button class="icon-btn danger" title="Изтрий" data-action="delete" data-kind="payment" data-id="${payment.id}">${icon("trash")}</button>
+                        ${canDelete() ? `<button class="icon-btn danger" title="Изтрий" data-action="delete" data-kind="payment" data-id="${payment.id}">${icon("trash")}</button>` : ""}
                       </div>
                     </td>
                   </tr>
@@ -907,7 +970,7 @@ function renderDocuments() {
                             : ""
                         }
                         <button class="icon-btn" title="Редактирай" data-action="open-modal" data-modal="document" data-id="${doc.id}">${icon("edit")}</button>
-                        <button class="icon-btn danger" title="Изтрий" data-action="delete" data-kind="document" data-id="${doc.id}">${icon("trash")}</button>
+                        ${canDelete() ? `<button class="icon-btn danger" title="Изтрий" data-action="delete" data-kind="document" data-id="${doc.id}">${icon("trash")}</button>` : ""}
                       </div>
                     </div>
                   `
@@ -1245,7 +1308,7 @@ function renderAuditList(audits, compact = false) {
                       </select>
                       <button class="icon-btn" title="Дублирай" data-action="duplicate-audit" data-id="${audit.id}">${icon("copy")}</button>
                       <button class="icon-btn" title="Редактирай" data-action="open-modal" data-modal="audit" data-id="${audit.id}">${icon("edit")}</button>
-                      <button class="icon-btn danger" title="Изтрий" data-action="delete" data-kind="audit" data-id="${audit.id}">${icon("trash")}</button>
+                      ${canDelete() ? `<button class="icon-btn danger" title="Изтрий" data-action="delete" data-kind="audit" data-id="${audit.id}">${icon("trash")}</button>` : ""}
                     `
                 }
               </div>
@@ -1357,6 +1420,10 @@ function bindEvents() {
 
   document.querySelectorAll("[data-action='open-modal']").forEach((button) => {
     button.addEventListener("click", () => openModal(button.dataset.modal, button.dataset.company || "", button.dataset.id || "", button.dataset.date || ""));
+  });
+
+  document.querySelector("[data-action='check-supabase']")?.addEventListener("click", () => {
+    checkSupabaseConnection();
   });
 
   document.querySelectorAll("[data-action='company-profile']").forEach((button) => {
@@ -1800,6 +1867,10 @@ function updateStatus(kind, itemId, status) {
 }
 
 function deleteItem(kind, itemId) {
+  if (!canDelete()) {
+    alert("Само Админ може да трие записи.");
+    return;
+  }
   const labels = { company: "фирмата", audit: "одита", payment: "плащането", document: "документа" };
   if (!confirm(`Сигурни ли сте, че искате да изтриете ${labels[kind]}? Историята на промяната ще остане.`)) return;
   const lists = { company: state.companies, audit: state.audits, payment: state.payments, document: state.documents };
