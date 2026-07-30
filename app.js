@@ -4,10 +4,10 @@ const oldStoreKey = "audit-hub-state-v1";
 const seedData = {
   session: null,
   users: [
-    { id: "u-1", name: "Георги", password: "Geo2026", role: "auditor", online: false, lastSeen: nowIso() },
-    { id: "u-2", name: "Никол", password: "Niko26", role: "auditor", online: false, lastSeen: nowIso() },
-    { id: "u-3", name: "Админ", password: "Admin26", role: "admin", online: false, lastSeen: nowIso() },
-    { id: "u-4", name: "Катя", password: "Katy26", role: "accounting", online: false, lastSeen: nowIso() }
+    { id: "u-1", name: "Георги", email: "georgi@audit.local", password: "Geo2026", role: "auditor", online: false, lastSeen: nowIso() },
+    { id: "u-2", name: "Никол", email: "nikol@audit.local", password: "Niko26", role: "auditor", online: false, lastSeen: nowIso() },
+    { id: "u-3", name: "Админ", email: "admin@audit.local", password: "Admin26", role: "admin", online: false, lastSeen: nowIso() },
+    { id: "u-4", name: "Катя", email: "katya@audit.local", password: "Katy26", role: "accounting", online: false, lastSeen: nowIso() }
   ],
   companies: [
     {
@@ -186,6 +186,9 @@ let auditMode = "calendar";
 let calendarDate = new Date("2026-08-01T12:00:00");
 let activeCompanyId = "";
 let supabaseClient = null;
+let supabaseAuthUser = null;
+let profileById = {};
+let supabaseSessionBootstrapped = false;
 let supabaseStatus = {
   state: "unknown",
   label: "Supabase",
@@ -270,6 +273,175 @@ function canDelete() {
   return state.session?.role === "admin" || currentUser() === "Админ";
 }
 
+function userByName(name) {
+  return state.users.find((user) => user.name === name);
+}
+
+function nameFromProfile(id, fallback = "Система") {
+  return profileById[id]?.full_name || fallback;
+}
+
+function mapCompany(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    bulstat: row.bulstat || "",
+    contact: row.contact || "",
+    phone: row.phone || "",
+    email: row.email || "",
+    megaUrl: row.mega_url || "",
+    status: row.status || "active",
+    notes: row.notes || "",
+    createdBy: nameFromProfile(row.created_by, "Система"),
+    updatedBy: nameFromProfile(row.updated_by, "Система"),
+    updatedAt: row.updated_at || row.created_at || nowIso()
+  };
+}
+
+function companyPayload(item) {
+  return {
+    name: item.name,
+    bulstat: item.bulstat || null,
+    contact: item.contact || null,
+    phone: item.phone || null,
+    email: item.email || null,
+    mega_url: item.megaUrl || null,
+    status: item.status || "active",
+    notes: item.notes || null,
+    updated_by: supabaseAuthUser?.id || null,
+    updated_at: nowIso()
+  };
+}
+
+function mapAudit(row, tasks = []) {
+  return {
+    id: row.id,
+    companyId: row.company_id,
+    date: row.audit_date,
+    time: row.audit_time || "",
+    type: row.audit_type,
+    auditor: row.auditor || "",
+    status: row.status || "upcoming",
+    priority: row.priority || "normal",
+    checklist: tasks.length ? tasks.map(mapTask) : row.checklist || [],
+    reminderDays: row.reminder_days || 7,
+    reminderSent: Boolean(row.reminder_sent),
+    notes: row.notes || "",
+    createdBy: nameFromProfile(row.created_by, "Система"),
+    updatedBy: nameFromProfile(row.updated_by, "Система"),
+    updatedAt: row.updated_at || row.created_at || nowIso()
+  };
+}
+
+function auditPayload(item) {
+  return {
+    company_id: item.companyId,
+    audit_date: item.date,
+    audit_time: item.time || null,
+    audit_type: item.type,
+    auditor: item.auditor || null,
+    status: item.status || "upcoming",
+    priority: item.priority || "normal",
+    checklist: item.checklist || [],
+    reminder_days: Number(item.reminderDays || 7),
+    reminder_sent: Boolean(item.reminderSent),
+    notes: item.notes || null,
+    updated_by: supabaseAuthUser?.id || null,
+    updated_at: nowIso()
+  };
+}
+
+function mapPayment(row) {
+  return {
+    id: row.id,
+    companyId: row.company_id,
+    invoice: row.invoice || "",
+    amount: Number(row.amount || 0),
+    dueDate: row.due_date,
+    paidDate: row.paid_date || "",
+    status: row.status || "pending",
+    createdBy: nameFromProfile(row.created_by, "Система"),
+    updatedBy: nameFromProfile(row.updated_by, "Система"),
+    updatedAt: row.updated_at || row.created_at || nowIso()
+  };
+}
+
+function paymentPayload(item) {
+  return {
+    company_id: item.companyId,
+    invoice: item.invoice || null,
+    amount: Number(item.amount || 0),
+    due_date: item.dueDate,
+    paid_date: item.paidDate || null,
+    status: item.status || "pending",
+    updated_by: supabaseAuthUser?.id || null,
+    updated_at: nowIso()
+  };
+}
+
+function mapDocument(row) {
+  return {
+    id: row.id,
+    companyId: row.company_id,
+    name: row.name,
+    kind: row.kind || "",
+    source: row.source || "Mega",
+    megaUrl: row.mega_url || "",
+    uploadStatus: row.upload_status || "local",
+    createdAt: (row.created_at || nowIso()).slice(0, 10),
+    createdBy: nameFromProfile(row.created_by, "Система"),
+    updatedBy: nameFromProfile(row.updated_by, "Система"),
+    updatedAt: row.updated_at || row.created_at || nowIso()
+  };
+}
+
+function documentPayload(item) {
+  return {
+    company_id: item.companyId,
+    name: item.name,
+    kind: item.kind || null,
+    source: item.source || "Mega",
+    mega_url: item.megaUrl || null,
+    upload_status: item.uploadStatus || "local",
+    updated_by: supabaseAuthUser?.id || null,
+    updated_at: nowIso()
+  };
+}
+
+function mapLog(row) {
+  return {
+    id: row.id,
+    at: row.created_at,
+    user: row.actor_name || nameFromProfile(row.actor_id, "Система"),
+    action: row.action,
+    entity: row.entity,
+    entityId: row.entity_id
+  };
+}
+
+function mapTask(row) {
+  return {
+    id: row.id,
+    text: row.title,
+    assignee: row.assignee_name || nameFromProfile(row.assignee_id, ""),
+    dueDate: row.due_date || "",
+    status: row.status || "pending",
+    done: row.status === "done"
+  };
+}
+
+function taskPayload(task, auditId) {
+  return {
+    audit_id: auditId,
+    title: task.text,
+    assignee_name: task.assignee || null,
+    due_date: task.dueDate || null,
+    status: task.status || (task.done ? "done" : "pending"),
+    updated_by: supabaseAuthUser?.id || null,
+    updated_at: nowIso()
+  };
+}
+
 function id(prefix) {
   return `${prefix}-${crypto.randomUUID()}`;
 }
@@ -282,15 +454,30 @@ function stamp(item, isNew = false) {
 }
 
 function addLog(action, entity, entityId) {
-  state.activityLog.unshift({
+  const log = {
     id: id("log"),
     at: nowIso(),
     user: currentUser(),
     action,
     entity,
     entityId
-  });
+  };
+  state.activityLog.unshift(log);
   state.activityLog = state.activityLog.slice(0, 200);
+  if (supabaseClient && supabaseAuthUser) {
+    supabaseClient
+      .from("activity_log")
+      .insert({
+        actor_id: supabaseAuthUser.id,
+        actor_name: currentUser(),
+        action,
+        entity,
+        entity_id: String(entityId)
+      })
+      .then(({ error }) => {
+        if (error) console.warn("Activity log insert failed", error);
+      });
+  }
 }
 
 function companyName(companyId) {
@@ -428,6 +615,7 @@ function render() {
   `;
 
   bindEvents();
+  bootstrapSupabaseSession();
 }
 
 function renderLogin() {
@@ -461,15 +649,38 @@ function renderLogin() {
     </div>
   `;
 
-  document.querySelector("#login-form").addEventListener("submit", (event) => {
+  document.querySelector("#login-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(event.currentTarget).entries());
     const selectedUser = state.users.find((user) => user.name === data.userName);
-    if (!selectedUser || selectedUser.password !== data.password) {
+    const errorNode = document.querySelector("#login-error");
+    errorNode.classList.add("hidden");
+
+    try {
+      await signInWithSupabase(selectedUser, data.password);
+    } catch (error) {
+      if (location.protocol !== "file:" && !String(error.message || "").includes("/api/supabase-config")) {
+        errorNode.textContent = `Supabase login грешка: ${error.message}`;
+        errorNode.classList.remove("hidden");
+        return;
+      }
+      if (!selectedUser || selectedUser.password !== data.password) {
+        errorNode.textContent = "Грешна парола за избрания потребител.";
+        errorNode.classList.remove("hidden");
+        return;
+      }
+    }
+
+    if (!selectedUser) {
       document.querySelector("#login-error").classList.remove("hidden");
       return;
     }
-    state.session = { name: selectedUser.name, role: selectedUser.role || "member" };
+    state.session = {
+      name: selectedUser.name,
+      role: selectedUser.role || "member",
+      email: selectedUser.email,
+      supabaseId: supabaseAuthUser?.id || null
+    };
     state.users.forEach((user) => {
       if (user.name === selectedUser.name) {
         user.online = true;
@@ -500,19 +711,7 @@ async function checkSupabaseConnection() {
   render();
 
   try {
-    const configResponse = await fetch("/api/supabase-config", { cache: "no-store" });
-    if (!configResponse.ok) {
-      throw new Error(`Липсва /api/supabase-config (${configResponse.status}). Ако отваряш index.html локално, този endpoint работи само във Vercel.`);
-    }
-
-    const config = await configResponse.json();
-    if (!config.url || !config.anonKey) {
-      throw new Error("Липсват VITE_SUPABASE_URL или VITE_SUPABASE_ANON_KEY във Vercel Environment Variables.");
-    }
-
-    const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-    supabaseClient = createClient(config.url, config.anonKey);
-
+    await ensureSupabaseClient();
     const { error } = await supabaseClient.from("profiles").select("id", { count: "exact", head: true });
     if (error) {
       supabaseStatus = {
@@ -536,6 +735,134 @@ async function checkSupabaseConnection() {
   }
 
   render();
+}
+
+async function ensureSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+
+  const configResponse = await fetch("/api/supabase-config", { cache: "no-store" });
+  if (!configResponse.ok) {
+    throw new Error(`Липсва /api/supabase-config (${configResponse.status}). Ако отваряш index.html локално, този endpoint работи само във Vercel.`);
+  }
+
+  const config = await configResponse.json();
+  if (!config.url || !config.anonKey) {
+    throw new Error("Липсват VITE_SUPABASE_URL или VITE_SUPABASE_ANON_KEY във Vercel Environment Variables.");
+  }
+
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  supabaseClient = createClient(config.url, config.anonKey);
+  return supabaseClient;
+}
+
+async function signInWithSupabase(appUser, password) {
+  if (!appUser?.email) throw new Error("Няма имейл за избрания потребител.");
+  const client = await ensureSupabaseClient();
+  const { data, error } = await client.auth.signInWithPassword({
+    email: appUser.email,
+    password
+  });
+  if (error) throw error;
+  supabaseAuthUser = data.user;
+  await ensureRemoteProfile(appUser);
+  await loadRemoteData();
+}
+
+async function ensureRemoteProfile(appUser) {
+  if (!supabaseClient || !supabaseAuthUser) return;
+  const { error } = await supabaseClient.from("profiles").upsert({
+    id: supabaseAuthUser.id,
+    full_name: appUser.name,
+    role: appUser.role || "member"
+  });
+  if (error) {
+    console.warn("Profile upsert failed", error);
+  }
+}
+
+async function loadRemoteData() {
+  if (!supabaseClient) return;
+  const [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes] = await Promise.all([
+    supabaseClient.from("profiles").select("*"),
+    supabaseClient.from("companies").select("*").order("created_at", { ascending: false }),
+    supabaseClient.from("audits").select("*").order("audit_date", { ascending: true }),
+    supabaseClient.from("payments").select("*").order("due_date", { ascending: false }),
+    supabaseClient.from("documents").select("*").order("created_at", { ascending: false }),
+    supabaseClient.from("activity_log").select("*").order("created_at", { ascending: false }).limit(200),
+    supabaseClient.from("audit_tasks").select("*")
+  ]);
+
+  const firstError = [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes].find((result) => result.error)?.error;
+  if (firstError) throw firstError;
+
+  profileById = Object.fromEntries((profilesRes.data || []).map((profile) => [profile.id, profile]));
+  const tasksByAudit = {};
+  (tasksRes.data || []).forEach((task) => {
+    tasksByAudit[task.audit_id] ||= [];
+    tasksByAudit[task.audit_id].push(task);
+  });
+
+  state.companies = (companiesRes.data || []).map(mapCompany);
+  state.audits = (auditsRes.data || []).map((audit) => mapAudit(audit, tasksByAudit[audit.id] || []));
+  state.payments = (paymentsRes.data || []).map(mapPayment);
+  state.documents = (docsRes.data || []).map(mapDocument);
+  state.activityLog = (logsRes.data || []).map(mapLog);
+  applyAutomaticOverdue();
+  saveState();
+  supabaseStatus = {
+    state: "ok",
+    label: "Supabase OK",
+    detail: "Данните се зареждат от Supabase."
+  };
+}
+
+async function bootstrapSupabaseSession() {
+  if (supabaseSessionBootstrapped || !state.session) return;
+  supabaseSessionBootstrapped = true;
+  try {
+    await ensureSupabaseClient();
+    const { data, error } = await supabaseClient.auth.getUser();
+    if (error || !data?.user) return;
+    supabaseAuthUser = data.user;
+    await loadRemoteData();
+    render();
+  } catch (error) {
+    supabaseStatus = {
+      state: "warning",
+      label: "Supabase offline",
+      detail: error.message
+    };
+  }
+}
+
+async function remoteInsert(table, payload) {
+  if (!supabaseClient) return null;
+  const { data, error } = await supabaseClient.from(table).insert(payload).select().single();
+  if (error) throw error;
+  return data;
+}
+
+async function remoteUpdate(table, idValue, payload) {
+  if (!supabaseClient) return null;
+  const { data, error } = await supabaseClient.from(table).update(payload).eq("id", idValue).select().single();
+  if (error) throw error;
+  return data;
+}
+
+async function remoteDelete(table, idValue) {
+  if (!supabaseClient) return;
+  const { error } = await supabaseClient.from(table).delete().eq("id", idValue);
+  if (error) throw error;
+}
+
+async function syncAuditTasks(auditId, checklist) {
+  if (!supabaseClient) return;
+  const deleteResult = await supabaseClient.from("audit_tasks").delete().eq("audit_id", auditId);
+  if (deleteResult.error) throw deleteResult.error;
+  if (!checklist?.length) return;
+  const rows = checklist.map((task) => taskPayload(task, auditId));
+  const insertResult = await supabaseClient.from("audit_tasks").insert(rows);
+  if (insertResult.error) throw insertResult.error;
 }
 
 function renderView() {
@@ -1438,13 +1765,17 @@ function bindEvents() {
     document.querySelector("#sidebar").classList.toggle("open");
   });
 
-  document.querySelector("[data-action='logout']")?.addEventListener("click", () => {
+  document.querySelector("[data-action='logout']")?.addEventListener("click", async () => {
     const user = state.users.find((item) => item.name === currentUser());
     if (user) {
       user.online = false;
       user.lastSeen = nowIso();
     }
     addLog("Излезе от системата", "Потребител", currentUser());
+    if (supabaseClient) {
+      await supabaseClient.auth.signOut();
+    }
+    supabaseAuthUser = null;
     state.session = null;
     saveState();
     render();
@@ -1757,116 +2088,175 @@ function formActions(label = "Запази") {
   `;
 }
 
-function handleForm(event) {
+async function handleForm(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const data = Object.fromEntries(new FormData(form).entries());
   const kind = form.dataset.form;
   const isEdit = Boolean(data.id);
 
-  if (kind === "company") {
-    const item = isEdit ? findItem("company", data.id) : { id: id("c") };
-    Object.assign(item, stamp({ ...item, name: data.name, bulstat: data.bulstat, contact: data.contact, phone: data.phone, email: data.email, megaUrl: data.megaUrl, status: data.status, notes: data.notes }, !isEdit));
-    if (!isEdit) state.companies.push(item);
-    addLog(`${isEdit ? "Редактира" : "Добави"} фирма: ${data.name}`, "Фирма", item.id);
-  }
-
-  if (kind === "audit") {
-    const item = isEdit ? findItem("audit", data.id) : { id: id("a") };
-    Object.assign(
-      item,
-      stamp(
-        {
-          ...item,
-          companyId: data.companyId,
-          date: data.date,
-          time: data.time,
-          type: data.type,
-          auditor: data.auditor,
-          status: data.status,
-          priority: data.priority,
-          reminderDays: Number(data.reminderDays || 7),
-          reminderSent: false,
-          notes: data.notes,
-          checklist: parseChecklist(data.checklist)
-        },
-        !isEdit
-      )
-    );
-    if (!isEdit) state.audits.push(item);
-    addLog(`${isEdit ? "Редактира" : "Добави"} одит: ${companyName(data.companyId)}`, "Одит", item.id);
-  }
-
-  if (kind === "payment") {
-    const item = isEdit ? findItem("payment", data.id) : { id: id("p") };
-    Object.assign(item, stamp({ ...item, companyId: data.companyId, invoice: data.invoice, amount: Number(data.amount), dueDate: data.dueDate, paidDate: data.paidDate, status: data.status }, !isEdit));
-    if (!isEdit) state.payments.push(item);
-    addLog(`${isEdit ? "Редактира" : "Добави"} плащане: ${data.invoice}`, "Плащане", item.id);
-  }
-
-  if (kind === "document") {
-    const item = isEdit ? findItem("document", data.id) : { id: id("d") };
-    Object.assign(
-      item,
-      stamp(
-        {
-          ...item,
-          companyId: data.companyId,
-          name: data.name,
-          kind: data.kind,
-          source: data.megaUrl ? "Mega" : "Локален запис",
-          megaUrl: data.megaUrl,
-          uploadStatus: data.queueMegaUpload === "yes" && !data.megaUrl ? "queued" : data.megaUrl ? "uploaded" : "local",
-          createdAt: data.createdAt
-        },
-        !isEdit
-      )
-    );
-    if (!isEdit) state.documents.push(item);
-    addLog(`${isEdit ? "Редактира" : "Добави"} документ: ${data.name}`, "Документ", item.id);
-  }
-
-  if (kind === "mega") {
-    const company = state.companies.find((item) => item.id === data.companyId);
-    if (company) {
-      company.megaUrl = data.megaUrl;
-      stamp(company);
-      addLog(`Промени Mega папка: ${company.name}`, "Фирма", company.id);
+  try {
+    if (kind === "company") {
+      const item = isEdit ? findItem("company", data.id) : { id: id("c") };
+      Object.assign(item, stamp({ ...item, name: data.name, bulstat: data.bulstat, contact: data.contact, phone: data.phone, email: data.email, megaUrl: data.megaUrl, status: data.status, notes: data.notes }, !isEdit));
+      if (supabaseClient && supabaseAuthUser) {
+        const payload = companyPayload(item);
+        const saved = isEdit
+          ? await remoteUpdate("companies", item.id, payload)
+          : await remoteInsert("companies", { ...payload, created_by: supabaseAuthUser.id });
+        Object.assign(item, mapCompany(saved));
+      }
+      if (!isEdit) state.companies.push(item);
+      addLog(`${isEdit ? "Редактира" : "Добави"} фирма: ${data.name}`, "Фирма", item.id);
     }
-  }
 
-  if (kind === "changePassword") {
-    const user = state.users.find((item) => item.name === currentUser());
-    if (!user || user.password !== data.currentPassword) {
-      alert("Старата парола не е вярна.");
-      return;
+    if (kind === "audit") {
+      const item = isEdit ? findItem("audit", data.id) : { id: id("a") };
+      Object.assign(
+        item,
+        stamp(
+          {
+            ...item,
+            companyId: data.companyId,
+            date: data.date,
+            time: data.time,
+            type: data.type,
+            auditor: data.auditor,
+            status: data.status,
+            priority: data.priority,
+            reminderDays: Number(data.reminderDays || 7),
+            reminderSent: false,
+            notes: data.notes,
+            checklist: parseChecklist(data.checklist)
+          },
+          !isEdit
+        )
+      );
+      if (supabaseClient && supabaseAuthUser) {
+        const payload = auditPayload(item);
+        const saved = isEdit
+          ? await remoteUpdate("audits", item.id, payload)
+          : await remoteInsert("audits", { ...payload, created_by: supabaseAuthUser.id });
+        await syncAuditTasks(saved.id, item.checklist);
+        Object.assign(item, mapAudit(saved, item.checklist.map((task) => ({ ...taskPayload(task, saved.id), id: task.id }))));
+      }
+      if (!isEdit) state.audits.push(item);
+      addLog(`${isEdit ? "Редактира" : "Добави"} одит: ${companyName(data.companyId)}`, "Одит", item.id);
     }
-    if (data.newPassword !== data.confirmPassword) {
-      alert("Новата парола и повторението не съвпадат.");
-      return;
-    }
-    user.password = data.newPassword;
-    user.lastSeen = nowIso();
-    addLog("Смени своята парола", "Потребител", user.id);
-  }
 
-  saveState();
-  closeModal();
-  render();
+    if (kind === "payment") {
+      const item = isEdit ? findItem("payment", data.id) : { id: id("p") };
+      Object.assign(item, stamp({ ...item, companyId: data.companyId, invoice: data.invoice, amount: Number(data.amount), dueDate: data.dueDate, paidDate: data.paidDate, status: data.status }, !isEdit));
+      if (supabaseClient && supabaseAuthUser) {
+        const payload = paymentPayload(item);
+        const saved = isEdit
+          ? await remoteUpdate("payments", item.id, payload)
+          : await remoteInsert("payments", { ...payload, created_by: supabaseAuthUser.id });
+        Object.assign(item, mapPayment(saved));
+      }
+      if (!isEdit) state.payments.push(item);
+      addLog(`${isEdit ? "Редактира" : "Добави"} плащане: ${data.invoice}`, "Плащане", item.id);
+    }
+
+    if (kind === "document") {
+      const item = isEdit ? findItem("document", data.id) : { id: id("d") };
+      Object.assign(
+        item,
+        stamp(
+          {
+            ...item,
+            companyId: data.companyId,
+            name: data.name,
+            kind: data.kind,
+            source: data.megaUrl ? "Mega" : "Локален запис",
+            megaUrl: data.megaUrl,
+            uploadStatus: data.queueMegaUpload === "yes" && !data.megaUrl ? "queued" : data.megaUrl ? "uploaded" : "local",
+            createdAt: data.createdAt
+          },
+          !isEdit
+        )
+      );
+      if (supabaseClient && supabaseAuthUser) {
+        const payload = documentPayload(item);
+        const saved = isEdit
+          ? await remoteUpdate("documents", item.id, payload)
+          : await remoteInsert("documents", { ...payload, created_by: supabaseAuthUser.id });
+        Object.assign(item, mapDocument(saved));
+      }
+      if (!isEdit) state.documents.push(item);
+      addLog(`${isEdit ? "Редактира" : "Добави"} документ: ${data.name}`, "Документ", item.id);
+    }
+
+    if (kind === "mega") {
+      const company = state.companies.find((item) => item.id === data.companyId);
+      if (company) {
+        company.megaUrl = data.megaUrl;
+        stamp(company);
+        if (supabaseClient && supabaseAuthUser) {
+          const saved = await remoteUpdate("companies", company.id, companyPayload(company));
+          Object.assign(company, mapCompany(saved));
+        }
+        addLog(`Промени Mega папка: ${company.name}`, "Фирма", company.id);
+      }
+    }
+
+    if (kind === "changePassword") {
+      const user = state.users.find((item) => item.name === currentUser());
+      if (data.newPassword !== data.confirmPassword) {
+        alert("Новата парола и повторението не съвпадат.");
+        return;
+      }
+      if (supabaseClient && supabaseAuthUser) {
+        const current = userByName(currentUser());
+        const verify = await supabaseClient.auth.signInWithPassword({
+          email: current.email,
+          password: data.currentPassword
+        });
+        if (verify.error) {
+          alert("Старата парола не е вярна.");
+          return;
+        }
+        const { error } = await supabaseClient.auth.updateUser({ password: data.newPassword });
+        if (error) throw error;
+      } else {
+        if (!user || user.password !== data.currentPassword) {
+          alert("Старата парола не е вярна.");
+          return;
+        }
+      }
+      user.password = data.newPassword;
+      user.lastSeen = nowIso();
+      addLog("Смени своята парола", "Потребител", user.id);
+    }
+
+    saveState();
+    closeModal();
+    render();
+  } catch (error) {
+    alert(`Supabase записът не мина: ${error.message}`);
+  }
 }
 
-function updateStatus(kind, itemId, status) {
+async function updateStatus(kind, itemId, status) {
   const item = findItem(kind === "audit" ? "audit" : "payment", itemId);
   if (!item) return;
   item.status = status;
   if (kind === "payment" && status === "paid" && !item.paidDate) item.paidDate = new Date().toISOString().slice(0, 10);
   stamp(item);
-  addLog(`Промени статус на ${kind === "audit" ? "одит" : "плащане"}: ${status}`, kind === "audit" ? "Одит" : "Плащане", item.id);
-  saveState();
-  render();
+  try {
+    if (supabaseClient && supabaseAuthUser) {
+      if (kind === "audit") await remoteUpdate("audits", item.id, auditPayload(item));
+      if (kind === "payment") await remoteUpdate("payments", item.id, paymentPayload(item));
+    }
+    addLog(`Промени статус на ${kind === "audit" ? "одит" : "плащане"}: ${status}`, kind === "audit" ? "Одит" : "Плащане", item.id);
+    saveState();
+    render();
+  } catch (error) {
+    alert(`Supabase статусът не се записа: ${error.message}`);
+  }
 }
 
-function deleteItem(kind, itemId) {
+async function deleteItem(kind, itemId) {
   if (!canDelete()) {
     alert("Само Админ може да трие записи.");
     return;
@@ -1875,47 +2265,74 @@ function deleteItem(kind, itemId) {
   if (!confirm(`Сигурни ли сте, че искате да изтриете ${labels[kind]}? Историята на промяната ще остане.`)) return;
   const lists = { company: state.companies, audit: state.audits, payment: state.payments, document: state.documents };
   const item = findItem(kind, itemId);
-  const index = lists[kind].findIndex((entry) => entry.id === itemId);
-  if (index >= 0) lists[kind].splice(index, 1);
-  if (kind === "company") {
-    state.audits = state.audits.filter((audit) => audit.companyId !== itemId);
-    state.payments = state.payments.filter((payment) => payment.companyId !== itemId);
-    state.documents = state.documents.filter((doc) => doc.companyId !== itemId);
+  try {
+    if (supabaseClient && supabaseAuthUser) {
+      const table = { company: "companies", audit: "audits", payment: "payments", document: "documents" }[kind];
+      await remoteDelete(table, itemId);
+    }
+    const index = lists[kind].findIndex((entry) => entry.id === itemId);
+    if (index >= 0) lists[kind].splice(index, 1);
+    if (kind === "company") {
+      state.audits = state.audits.filter((audit) => audit.companyId !== itemId);
+      state.payments = state.payments.filter((payment) => payment.companyId !== itemId);
+      state.documents = state.documents.filter((doc) => doc.companyId !== itemId);
+    }
+    addLog(`Изтри ${labels[kind]}: ${item?.name || item?.invoice || item?.type || itemId}`, labels[kind], itemId);
+    saveState();
+    render();
+  } catch (error) {
+    alert(`Supabase изтриването не мина: ${error.message}`);
   }
-  addLog(`Изтри ${labels[kind]}: ${item?.name || item?.invoice || item?.type || itemId}`, labels[kind], itemId);
-  saveState();
-  render();
 }
 
-function duplicateAudit(itemId) {
+async function duplicateAudit(itemId) {
   const audit = findItem("audit", itemId);
   if (!audit) return;
   const copy = stamp({ ...audit, id: id("a"), date: audit.date, status: "upcoming", notes: `${audit.notes || ""} (копие)` }, true);
-  state.audits.push(copy);
-  addLog(`Дублира одит: ${companyName(copy.companyId)}`, "Одит", copy.id);
-  saveState();
-  render();
+  try {
+    if (supabaseClient && supabaseAuthUser) {
+      const saved = await remoteInsert("audits", { ...auditPayload(copy), created_by: supabaseAuthUser.id });
+      await syncAuditTasks(saved.id, copy.checklist);
+      Object.assign(copy, mapAudit(saved, copy.checklist.map((task) => ({ ...taskPayload(task, saved.id), id: task.id }))));
+    }
+    state.audits.push(copy);
+    addLog(`Дублира одит: ${companyName(copy.companyId)}`, "Одит", copy.id);
+    saveState();
+    render();
+  } catch (error) {
+    alert(`Supabase дублирането не мина: ${error.message}`);
+  }
 }
 
-function markReminderSent(itemId) {
+async function markReminderSent(itemId) {
   const audit = findItem("audit", itemId);
   if (!audit) return;
   audit.reminderSent = true;
   stamp(audit);
-  addLog(`Маркира напомняне като изпратено: ${companyName(audit.companyId)}`, "Одит", audit.id);
-  saveState();
-  render();
+  try {
+    if (supabaseClient && supabaseAuthUser) await remoteUpdate("audits", audit.id, auditPayload(audit));
+    addLog(`Маркира напомняне като изпратено: ${companyName(audit.companyId)}`, "Одит", audit.id);
+    saveState();
+    render();
+  } catch (error) {
+    alert(`Supabase напомнянето не се записа: ${error.message}`);
+  }
 }
 
-function markMegaUploaded(itemId) {
+async function markMegaUploaded(itemId) {
   const doc = findItem("document", itemId);
   if (!doc) return;
   doc.uploadStatus = "uploaded";
   doc.source = "Mega";
   stamp(doc);
-  addLog(`Маркира документ като качен към Mega: ${doc.name}`, "Документ", doc.id);
-  saveState();
-  render();
+  try {
+    if (supabaseClient && supabaseAuthUser) await remoteUpdate("documents", doc.id, documentPayload(doc));
+    addLog(`Маркира документ като качен към Mega: ${doc.name}`, "Документ", doc.id);
+    saveState();
+    render();
+  } catch (error) {
+    alert(`Supabase Mega статусът не се записа: ${error.message}`);
+  }
 }
 
 function exportCsv(kind) {
