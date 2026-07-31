@@ -76,6 +76,21 @@ function sourceCell(rowIndex, colIndex) {
   return `${rowIndex + 1}:${colIndex + 1}`;
 }
 
+function columnName(columnNumber) {
+  let result = "";
+  let current = columnNumber;
+  while (current > 0) {
+    current -= 1;
+    result = String.fromCharCode(65 + (current % 26)) + result;
+    current = Math.floor(current / 26);
+  }
+  return result;
+}
+
+function a1Cell(rowIndex, colIndex) {
+  return `${columnName(colIndex + 1)}${rowIndex + 1}`;
+}
+
 function isCalendarText(text) {
   const normalized = normalizedText(text);
   return Boolean(
@@ -102,6 +117,29 @@ function auditorColor(auditor) {
   if (auditor.startsWith("Георги Георгиев")) return "green";
   if (auditor.startsWith("Екатерина Георгиева")) return "red";
   return "neutral";
+}
+
+function colorValue(value) {
+  return String(value || "").toUpperCase();
+}
+
+function plannedVisual(style) {
+  const fill = colorValue(style?.fill?.color?.value);
+  const font = colorValue(style?.font?.fill?.color?.value);
+
+  if (fill === "FF0000" || font === "FF0000") {
+    return { category: "occupational_medicine", color: "red" };
+  }
+  if (fill === "92D050" || fill === "00B050" || fill === "THEME:9") {
+    return { category: "consulting", color: "green" };
+  }
+  if (fill === "00B0F0") {
+    return { category: "certification", color: "blue" };
+  }
+  if (fill === "FFFF00") {
+    return { category: "", color: "yellow" };
+  }
+  return { category: "", color: "neutral" };
 }
 
 function eventKey(record) {
@@ -141,6 +179,21 @@ async function extractSource(source) {
     const usedRange = sheet.getUsedRange();
     const values = usedRange.values;
     const formulas = usedRange.formulas;
+    const styleByCell = new Map();
+    if (source.key === "planned") {
+      const styles = await workbook.inspect({
+        kind: "computedStyle",
+        sheetId: sheetName,
+        range: usedRange.address,
+        maxChars: 120000,
+        options: { maxResults: 1000 }
+      });
+      styles.ndjson
+        .split("\n")
+        .filter(Boolean)
+        .map((line) => JSON.parse(line))
+        .forEach((item) => styleByCell.set(item.for, item.style));
+    }
     const formulaDateRows = formulas
       .map((row, rowIndex) => ({ rowIndex, formula: String(row?.[firstDayColumnIndex] || "") }))
       .filter(({ formula }) => formula.includes("ДниИСемици") && formula.includes("DATE(КалендарнаГодина"))
@@ -185,6 +238,10 @@ async function extractSource(source) {
           if (dateObject.getUTCFullYear() !== calendarYear) continue;
           const date = toIsoDate(dateObject);
           const auditor = source.key === "auditors" ? auditorForOffset(offset) : "";
+          const visual =
+            source.key === "planned"
+              ? plannedVisual(styleByCell.get(a1Cell(rowIndex, colIndex)))
+              : { category: "", color: auditorColor(auditor) };
 
           rawRecords.push({
             id: `${source.key}-${date}-${rowIndex}-${colIndex}`,
@@ -193,7 +250,8 @@ async function extractSource(source) {
             date,
             title,
             auditor,
-            color: source.key === "auditors" ? auditorColor(auditor) : "default",
+            category: visual.category,
+            color: visual.color,
             status: "upcoming",
             priority: "normal",
             sourceSheet: sheetName,
@@ -233,6 +291,12 @@ async function extractSource(source) {
         monthNames.map((month, monthIndex) => [
           month,
           records.filter((record) => new Date(`${record.date}T00:00:00Z`).getUTCMonth() === monthIndex).length
+        ])
+      ),
+      byCategory: Object.fromEntries(
+        ["certification", "consulting", "occupational_medicine", "uncategorized"].map((category) => [
+          category,
+          records.filter((record) => (record.category || "uncategorized") === category).length
         ])
       )
     }

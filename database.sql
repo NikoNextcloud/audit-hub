@@ -100,6 +100,8 @@ create table calendar_events (
   event_time time,
   title text not null,
   auditor text,
+  category text,
+  color text,
   status text not null default 'upcoming',
   priority text not null default 'normal',
   source_sheet text,

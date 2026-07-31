@@ -286,6 +286,8 @@ function normalizeState(data) {
   data.calendarEvents.forEach((event) => {
     event.calendarType ||= "planned";
     event.calendarName ||= event.calendarType === "planned" ? "Планирани дейности" : "Одитори";
+    event.category ||= "";
+    event.color ||= calendarEventColor(event.calendarType, event.category, event.auditor);
     event.status ||= "upcoming";
     event.priority ||= "normal";
     event.time ||= "";
@@ -373,6 +375,30 @@ function normalizedImportedAuditor(auditor) {
   return value;
 }
 
+function calendarCategoryLabel(category) {
+  return {
+    certification: "Сертификация",
+    consulting: "Консултации",
+    occupational_medicine: "Служба Трудова Медицина"
+  }[category] || "Без категория";
+}
+
+function plannedCategoryColor(category) {
+  return {
+    certification: "blue",
+    consulting: "green",
+    occupational_medicine: "red"
+  }[category] || "yellow";
+}
+
+function calendarEventColor(calendarType, category, auditor) {
+  if (calendarType === "planned") return plannedCategoryColor(category);
+  const normalizedAuditor = normalizedImportedAuditor(auditor).toLocaleLowerCase("bg-BG");
+  if (normalizedAuditor.includes("георги георгиев")) return "green";
+  if (normalizedAuditor.includes("екатерина георгиева")) return "red";
+  return "neutral";
+}
+
 function importedCalendarEventToAppEvent(event) {
   return {
     ...event,
@@ -404,17 +430,21 @@ function buildCalendarImportPlan(existingEvents) {
     if (exact) {
       usedExistingIds.add(exact.id);
       const upgradedAuditor = normalizedImportedAuditor(exact.auditor);
+      const importedColor = imported.color || calendarEventColor(imported.calendarType, imported.category, imported.auditor);
       const merged = {
         ...exact,
-        calendarType: imported.calendarType,
-        calendarName: imported.calendarName,
-        sourceSheet: imported.sourceSheet,
-        sourceCell: imported.sourceCell,
         auditor: upgradedAuditor,
-        color: imported.color
+        category: exact.category || imported.category || "",
+        color: exact.color && exact.color !== "default" ? exact.color : importedColor
       };
       importedResults.push(merged);
-      if (upgradedAuditor !== exact.auditor) upserts.push(merged);
+      if (
+        upgradedAuditor !== exact.auditor ||
+        merged.category !== (exact.category || "") ||
+        merged.color !== exact.color
+      ) {
+        upserts.push(merged);
+      }
       return;
     }
 
@@ -427,6 +457,8 @@ function buildCalendarImportPlan(existingEvents) {
         time: previous.time || "",
         status: previous.status || imported.status,
         priority: previous.priority || imported.priority,
+        category: previous.category || imported.category || "",
+        color: previous.color || imported.color,
         notes: previous.notes || imported.notes,
         checklist: previous.checklist || [],
         reminderDays: previous.reminderDays || 7,
@@ -674,6 +706,8 @@ function mapCalendarEvent(row) {
     time: row.event_time || "",
     title: row.title,
     auditor: row.auditor || "",
+    category: row.category || "",
+    color: row.color || calendarEventColor(row.calendar_type, row.category, row.auditor),
     status: row.status || "upcoming",
     priority: row.priority || "normal",
     sourceSheet: row.source_sheet || "",
@@ -696,6 +730,8 @@ function calendarEventPayload(item) {
     event_time: item.time || null,
     title: item.title,
     auditor: item.auditor || null,
+    category: item.category || null,
+    color: item.color || calendarEventColor(item.calendarType, item.category, item.auditor),
     status: item.status || "upcoming",
     priority: item.priority || "normal",
     source_sheet: item.sourceSheet || null,
@@ -1616,12 +1652,16 @@ function renderAudits() {
       <button class="${selectedCalendarType === "auditors" ? "active" : ""}" data-action="calendar-type" data-type="auditors">Одитори</button>
     </div>
     ${
-      selectedCalendarType === "auditors"
-        ? `<div class="auditor-legend">
+      selectedCalendarType === "planned"
+        ? `<div class="calendar-legend">
+            <span><i class="calendar-dot certification"></i> Сертификация</span>
+            <span><i class="calendar-dot consulting"></i> Консултации</span>
+            <span><i class="calendar-dot occupational"></i> Служба Трудова Медицина</span>
+          </div>`
+        : `<div class="calendar-legend">
             <span><i class="auditor-dot georgi"></i> Георги Георгиев - одитор</span>
             <span><i class="auditor-dot ekaterina"></i> Екатерина Георгиева - одитор</span>
           </div>`
-        : ""
     }
     <div class="toolbar">
       <div class="filters">
@@ -1713,6 +1753,13 @@ function calendarAuditorClass(event) {
   return "auditor-neutral";
 }
 
+function calendarEventVisualClass(event) {
+  if (event.calendarType === "planned") {
+    return `planned-${event.color || plannedCategoryColor(event.category)}`;
+  }
+  return calendarAuditorClass(event);
+}
+
 function renderCalendarEvents(events) {
   const year = calendarDate.getFullYear();
   const month = calendarDate.getMonth();
@@ -1729,7 +1776,16 @@ function renderCalendarEvents(events) {
         <strong>${date.getDate()}</strong>
         ${dayEvents
           .slice(0, 4)
-          .map((event) => `<span class="calendar-chip ${event.status} ${calendarAuditorClass(event)}" title="${escapeAttr(event.auditor ? `${normalizedImportedAuditor(event.auditor)}: ${event.title}` : event.title)}">${escapeHtml(event.title)}</span>`)
+          .map(
+            (event) =>
+              `<span class="calendar-chip ${event.status} ${calendarEventVisualClass(event)}" data-action="edit-calendar-event" data-id="${event.id}" title="${escapeAttr(
+                event.calendarType === "planned"
+                  ? `${calendarCategoryLabel(event.category)}: ${event.title}`
+                  : event.auditor
+                    ? `${normalizedImportedAuditor(event.auditor)}: ${event.title}`
+                    : event.title
+              )}">${escapeHtml(event.title)}</span>`
+          )
           .join("")}
         ${dayEvents.length > 4 ? `<em>+${dayEvents.length - 4}</em>` : ""}
       </button>
@@ -1758,7 +1814,7 @@ function renderCalendarEventList(events) {
           const days = daysUntil(event.date);
           const dayText = days < 0 ? "минал" : days === 0 ? "днес" : `${days} дни`;
           return `
-            <div class="calendar-item audit-row ${calendarAuditorClass(event)}">
+            <div class="calendar-item audit-row ${calendarEventVisualClass(event)}">
               <div class="date-badge audit-date">
                 <strong>${formatShortDate(event.date)}</strong>
                 <small>${event.time || ""}</small>
@@ -1767,6 +1823,7 @@ function renderCalendarEventList(events) {
                 <strong>${escapeHtml(event.title)}</strong>
                 <div class="meta">
                   <span>${escapeHtml(event.calendarName)}${event.auditor ? ` · ${escapeHtml(event.auditor)}` : ""}</span>
+                  ${event.calendarType === "planned" ? `<span>Категория: ${escapeHtml(calendarCategoryLabel(event.category))}</span>` : ""}
                   <span>${escapeHtml(event.notes || "")}</span>
                   <span>Източник: ${escapeHtml(event.sourceSheet || "ръчно")} ${escapeHtml(event.sourceCell || "")}</span>
                   <span>Последно: ${escapeHtml(event.updatedBy)} · ${formatTime(event.updatedAt)}</span>
@@ -2442,6 +2499,13 @@ function bindEvents() {
     button.addEventListener("click", () => openModal(button.dataset.modal, button.dataset.company || "", button.dataset.id || "", button.dataset.date || ""));
   });
 
+  document.querySelectorAll("[data-action='edit-calendar-event']").forEach((item) => {
+    item.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openModal("calendarEvent", "", item.dataset.id || "");
+    });
+  });
+
   document.querySelector("[data-action='check-supabase']")?.addEventListener("click", () => {
     checkSupabaseConnection(true);
   });
@@ -2706,6 +2770,15 @@ function calendarEventForm(companyId, item, defaultDate) {
         ${field("time", "Час", "time", item?.time || "")}
         ${field("title", "Запис", "text", item?.title || "", true)}
         ${field("auditor", "Одитор/отговорник", "text", item?.auditor || "")}
+        <div class="form-row full">
+          <span class="form-label">Категория / цвят</span>
+          <div class="category-choice-grid">
+            ${categoryChoice("", "Без категория", "yellow", item?.category || "")}
+            ${categoryChoice("certification", "Сертификация", "blue", item?.category)}
+            ${categoryChoice("consulting", "Консултации", "green", item?.category)}
+            ${categoryChoice("occupational_medicine", "Служба Трудова Медицина", "red", item?.category)}
+          </div>
+        </div>
         <div class="form-row">
           <label for="status">Статус</label>
           <select id="status" name="status">
@@ -2724,6 +2797,10 @@ function calendarEventForm(companyId, item, defaultDate) {
         <div class="form-row full">
           <label for="notes">Бележки</label>
           <textarea id="notes" name="notes" rows="3">${escapeHtml(item?.notes || "")}</textarea>
+        </div>
+        <div class="form-row full">
+          <label for="checklist">Checklist задачи</label>
+          <textarea id="checklist" name="checklist" rows="5" placeholder="pending | Проверка на документи | Георги | 2026-08-02&#10;in_progress | Потвърждение на час | Екатерина | 2026-08-03&#10;done | Изпратен протокол | Админ | 2026-08-04">${escapeHtml(formatChecklistForForm(item?.checklist || []))}</textarea>
         </div>
       </div>
       ${formActions()}
@@ -2824,6 +2901,16 @@ function option(value, label, selected) {
   return `<option value="${value}" ${selected === value ? "selected" : ""}>${label}</option>`;
 }
 
+function categoryChoice(value, label, color, selected) {
+  return `
+    <label class="category-choice ${color}">
+      <input type="radio" name="category" value="${escapeAttr(value)}" ${selected === value ? "checked" : ""} />
+      <i aria-hidden="true"></i>
+      <span>${escapeHtml(label)}</span>
+    </label>
+  `;
+}
+
 function field(name, label, type, value = "", required = false, elementId = name) {
   return `
     <div class="form-row">
@@ -2911,6 +2998,8 @@ async function handleForm(event) {
             time: data.time,
             title: data.title,
             auditor: data.auditor,
+            category: data.category || "",
+            color: calendarEventColor(data.calendarType, data.category, data.auditor),
             status: data.status,
             priority: data.priority,
             reminderDays: Number(data.reminderDays || 7),
@@ -2918,7 +3007,7 @@ async function handleForm(event) {
             sourceSheet: item.sourceSheet || "",
             sourceCell: item.sourceCell || "",
             notes: data.notes,
-            checklist: item.checklist || []
+            checklist: parseChecklist(data.checklist)
           },
           !isEdit
         )
