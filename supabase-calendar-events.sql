@@ -5,6 +5,8 @@ create table if not exists calendar_events (
   event_time time,
   title text not null,
   auditor text,
+  category text,
+  color text,
   status text not null default 'upcoming',
   priority text not null default 'normal',
   source_sheet text,
@@ -20,6 +22,10 @@ create table if not exists calendar_events (
 );
 
 alter table calendar_events enable row level security;
+
+alter table public.calendar_events
+  add column if not exists category text,
+  add column if not exists color text;
 
 create or replace function public.is_admin()
 returns boolean

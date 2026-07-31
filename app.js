@@ -1,14 +1,29 @@
 const storeKey = "audit-hub-state-v2";
 const oldStoreKey = "audit-hub-state-v1";
 const importedMegaCompanies = typeof window !== "undefined" ? window.AUDIT_HUB_MEGA_COMPANIES || [] : [];
+const importedCalendarEvents = typeof window !== "undefined" ? window.AUDIT_HUB_IMPORTED_CALENDARS || [] : [];
+const importedCalendarSheets = new Set([
+  "Януари",
+  "Февруари",
+  "Март",
+  "Април",
+  "Май",
+  "Юни",
+  "Юли",
+  "Август",
+  "Септември",
+  "Октомври",
+  "Ноември",
+  "Декември"
+]);
 
 const seedData = {
   session: null,
   users: [
-    { id: "u-1", name: "Георги", email: "georgi@audit.local", password: "Geo2026", role: "auditor", online: false, lastSeen: nowIso() },
-    { id: "u-2", name: "Никол", email: "nikol@audit.local", password: "Niko26", role: "auditor", online: false, lastSeen: nowIso() },
-    { id: "u-3", name: "Админ", email: "admin@audit.local", password: "Admin26", role: "admin", online: false, lastSeen: nowIso() },
-    { id: "u-4", name: "Катя", email: "katya@audit.local", password: "Katy26", role: "accounting", online: false, lastSeen: nowIso() }
+    { id: "u-1", name: "Георги", email: "georgi@audit.local", role: "auditor", online: false, lastSeen: nowIso() },
+    { id: "u-2", name: "Никол", email: "nikol@audit.local", role: "auditor", online: false, lastSeen: nowIso() },
+    { id: "u-3", name: "Админ", email: "admin@audit.local", role: "admin", online: false, lastSeen: nowIso() },
+    { id: "u-4", name: "Катя", email: "katya@audit.local", role: "accounting", online: false, lastSeen: nowIso() }
   ],
   companies: [
     {
@@ -166,7 +181,7 @@ const seedData = {
       updatedAt: nowIso()
     }
   ],
-  calendarEvents: (typeof window !== "undefined" ? window.AUDIT_HUB_IMPORTED_CALENDARS || [] : []).map((event) => ({
+  calendarEvents: importedCalendarEvents.map((event) => ({
     ...event,
     time: "",
     checklist: [],
@@ -206,6 +221,19 @@ let supabaseStatus = {
   label: "Supabase",
   detail: "Не е проверено"
 };
+const SUPABASE_USAGE_LIMITS = {
+  freeDatabaseBytes: 500_000_000,
+  freeFileStorageBytes: 1_000_000_000,
+  proDatabaseBytes: 8_000_000_000,
+  proFileStorageBytes: 100_000_000_000
+};
+let supabaseUsage = {
+  state: "idle",
+  databaseBytes: 0,
+  fileStorageBytes: 0,
+  measuredAt: "",
+  error: ""
+};
 
 function loadState() {
   const saved = localStorage.getItem(storeKey) || localStorage.getItem(oldStoreKey);
@@ -221,13 +249,16 @@ function normalizeState(data) {
   const savedUsers = data.users || [];
   data.users = seedData.users.map((user) => {
     const saved = savedUsers.find((item) => item.name === user.name);
-    return { ...user, ...saved, password: saved?.password || user.password };
+    if (!saved) return { ...user };
+    const { password: legacyPassword, ...safeSaved } = saved;
+    return { ...user, ...safeSaved };
   });
   if (data.session && !data.users.some((user) => user.name === data.session.name)) {
     data.session = null;
   }
   data.activityLog ||= structuredClone(seedData.activityLog);
   data.calendarEvents ||= structuredClone(seedData.calendarEvents);
+  mergeImportedCalendarEvents(data);
   data.companies ||= [];
   mergeImportedMegaCompanies(data);
   for (const list of [data.companies, data.audits, data.payments, data.documents, data.calendarEvents]) {
@@ -255,6 +286,8 @@ function normalizeState(data) {
   data.calendarEvents.forEach((event) => {
     event.calendarType ||= "planned";
     event.calendarName ||= event.calendarType === "planned" ? "Планирани дейности" : "Одитори";
+    event.category ||= "";
+    event.color ||= calendarEventColor(event.calendarType, event.category, event.auditor);
     event.status ||= "upcoming";
     event.priority ||= "normal";
     event.time ||= "";
@@ -292,18 +325,175 @@ function megaCompanyToAppCompany(item) {
 
 function mergeImportedMegaCompanies(targetState) {
   if (!importedMegaCompanies.length) return 0;
-  const seen = new Set((targetState.companies || []).map((company) => normalizedCompanyKey(company.name)).filter(Boolean));
+  const existingByKey = new Map(
+    (targetState.companies || [])
+      .map((company) => [normalizedCompanyKey(company.name), company])
+      .filter(([key]) => Boolean(key))
+  );
   const additions = [];
   importedMegaCompanies.forEach((item) => {
     const key = normalizedCompanyKey(item.name);
-    if (!key || seen.has(key)) return;
-    seen.add(key);
+    if (!key) return;
+    const existing = existingByKey.get(key);
+    if (existing) {
+      if (item.megaUrl && shouldFillImportedMegaUrl(existing.megaUrl)) {
+        existing.megaUrl = item.megaUrl;
+        existing.updatedBy = "Mega импорт";
+        existing.updatedAt = nowIso();
+      }
+      return;
+    }
+    existingByKey.set(key, item);
     additions.push(megaCompanyToAppCompany(item));
   });
   if (additions.length) {
     targetState.companies.push(...additions);
   }
   return additions.length;
+}
+
+function shouldFillImportedMegaUrl(currentUrl) {
+  if (!currentUrl) return true;
+  return /^https:\/\/mega\.nz\/folder\/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q\/?$/i.test(currentUrl.trim());
+}
+
+function calendarSourceKey(event) {
+  return [event.calendarType, event.sourceSheet, event.sourceCell].join("|");
+}
+
+function isExcelImportedCalendarEvent(event) {
+  return (
+    importedCalendarSheets.has(event.sourceSheet) &&
+    /^\d+:\d+$/.test(String(event.sourceCell || ""))
+  );
+}
+
+function normalizedImportedAuditor(auditor) {
+  const value = String(auditor || "").trim();
+  if (value === "Георги") return "Георги Георгиев - одитор";
+  if (value === "Катя") return "Екатерина Георгиева - одитор";
+  return value;
+}
+
+function calendarCategoryLabel(category) {
+  return {
+    certification: "Сертификация",
+    consulting: "Консултации",
+    occupational_medicine: "Служба Трудова Медицина"
+  }[category] || "Без категория";
+}
+
+function plannedCategoryColor(category) {
+  return {
+    certification: "blue",
+    consulting: "green",
+    occupational_medicine: "red"
+  }[category] || "yellow";
+}
+
+function calendarEventColor(calendarType, category, auditor) {
+  if (calendarType === "planned") return plannedCategoryColor(category);
+  const normalizedAuditor = normalizedImportedAuditor(auditor).toLocaleLowerCase("bg-BG");
+  if (normalizedAuditor.includes("георги георгиев")) return "green";
+  if (normalizedAuditor.includes("екатерина георгиева")) return "red";
+  return "neutral";
+}
+
+function importedCalendarEventToAppEvent(event) {
+  return {
+    ...event,
+    time: event.time || "",
+    checklist: event.checklist || [],
+    reminderDays: event.reminderDays || 7,
+    reminderSent: Boolean(event.reminderSent),
+    createdBy: event.createdBy || "Импорт Excel",
+    updatedBy: event.updatedBy || "Импорт Excel",
+    updatedAt: event.updatedAt || nowIso()
+  };
+}
+
+function buildCalendarImportPlan(existingEvents) {
+  const existingById = new Map(existingEvents.map((event) => [event.id, event]));
+  const existingBySource = new Map(
+    existingEvents
+      .filter(isExcelImportedCalendarEvent)
+      .map((event) => [calendarSourceKey(event), event])
+  );
+  const usedExistingIds = new Set();
+  const importedResults = [];
+  const upserts = [];
+  const staleIds = new Set();
+
+  importedCalendarEvents.forEach((sourceEvent) => {
+    const imported = importedCalendarEventToAppEvent(sourceEvent);
+    const exact = existingById.get(imported.id);
+    if (exact) {
+      usedExistingIds.add(exact.id);
+      const upgradedAuditor = normalizedImportedAuditor(exact.auditor);
+      const importedColor = imported.color || calendarEventColor(imported.calendarType, imported.category, imported.auditor);
+      const merged = {
+        ...exact,
+        auditor: upgradedAuditor,
+        category: exact.category || imported.category || "",
+        color: exact.color && exact.color !== "default" ? exact.color : importedColor
+      };
+      importedResults.push(merged);
+      if (
+        upgradedAuditor !== exact.auditor ||
+        merged.category !== (exact.category || "") ||
+        merged.color !== exact.color
+      ) {
+        upserts.push(merged);
+      }
+      return;
+    }
+
+    const previous = existingBySource.get(calendarSourceKey(imported));
+    if (previous) {
+      usedExistingIds.add(previous.id);
+      staleIds.add(previous.id);
+      const corrected = {
+        ...imported,
+        time: previous.time || "",
+        status: previous.status || imported.status,
+        priority: previous.priority || imported.priority,
+        category: previous.category || imported.category || "",
+        color: previous.color || imported.color,
+        notes: previous.notes || imported.notes,
+        checklist: previous.checklist || [],
+        reminderDays: previous.reminderDays || 7,
+        reminderSent: Boolean(previous.reminderSent),
+        createdBy: previous.createdBy || imported.createdBy,
+        updatedBy: previous.updatedBy || imported.updatedBy,
+        updatedAt: nowIso()
+      };
+      importedResults.push(corrected);
+      upserts.push(corrected);
+      return;
+    }
+
+    importedResults.push(imported);
+    upserts.push(imported);
+  });
+
+  existingEvents.forEach((event) => {
+    if (isExcelImportedCalendarEvent(event) && !usedExistingIds.has(event.id)) {
+      staleIds.add(event.id);
+    }
+  });
+
+  const manualEvents = existingEvents.filter((event) => !isExcelImportedCalendarEvent(event));
+  return {
+    events: [...manualEvents, ...importedResults],
+    upserts,
+    staleIds: [...staleIds]
+  };
+}
+
+function mergeImportedCalendarEvents(targetState) {
+  if (!importedCalendarEvents.length) return;
+  const plan = buildCalendarImportPlan(targetState.calendarEvents || []);
+  targetState.calendarEvents = plan.events;
 }
 
 function applyAutomaticOverdue(targetState = state) {
@@ -516,6 +706,8 @@ function mapCalendarEvent(row) {
     time: row.event_time || "",
     title: row.title,
     auditor: row.auditor || "",
+    category: row.category || "",
+    color: row.color || calendarEventColor(row.calendar_type, row.category, row.auditor),
     status: row.status || "upcoming",
     priority: row.priority || "normal",
     sourceSheet: row.source_sheet || "",
@@ -538,6 +730,8 @@ function calendarEventPayload(item) {
     event_time: item.time || null,
     title: item.title,
     auditor: item.auditor || null,
+    category: item.category || null,
+    color: item.color || calendarEventColor(item.calendarType, item.category, item.auditor),
     status: item.status || "upcoming",
     priority: item.priority || "normal",
     source_sheet: item.sourceSheet || null,
@@ -715,7 +909,7 @@ function render() {
           <button class="btn ghost mobile-menu" data-action="toggle-menu">${icon("menu")}</button>
           <input class="search" value="${escapeAttr(query)}" data-action="search" placeholder="Търсене по фирма, контакт, фактура или документ" />
           ${renderSupabaseStatusButton()}
-          <button class="btn primary top-action" data-action="open-modal" data-modal="company">${icon("plus")} Нова фирма</button>
+          <button class="btn primary top-action" title="Нова фирма" aria-label="Нова фирма" data-action="open-modal" data-modal="company">${icon("plus")} Нова фирма</button>
         </header>
         <section class="content">${renderView()}</section>
       </main>
@@ -768,16 +962,9 @@ function renderLogin() {
     try {
       await signInWithSupabase(selectedUser, data.password);
     } catch (error) {
-      if (location.protocol !== "file:" && !String(error.message || "").includes("/api/supabase-config")) {
-        errorNode.textContent = `Supabase login грешка: ${error.message}`;
-        errorNode.classList.remove("hidden");
-        return;
-      }
-      if (!selectedUser || selectedUser.password !== data.password) {
-        errorNode.textContent = "Грешна парола за избрания потребител.";
-        errorNode.classList.remove("hidden");
-        return;
-      }
+      errorNode.textContent = `Supabase login грешка: ${error.message}`;
+      errorNode.classList.remove("hidden");
+      return;
     }
 
     if (!selectedUser) {
@@ -807,15 +994,20 @@ function navButton(view, iconName, label) {
 }
 
 function renderSupabaseStatusButton() {
+  const usageLabel =
+    supabaseUsage.state === "ready"
+      ? `<small>DB ${Math.round(usagePercent(supabaseUsage.databaseBytes, SUPABASE_USAGE_LIMITS.freeDatabaseBytes))}%</small>`
+      : "";
   return `
     <button class="supabase-status ${supabaseStatus.state}" data-action="check-supabase" title="${escapeAttr(supabaseStatus.detail)}">
       <span></span>
       <strong>${escapeHtml(supabaseStatus.label)}</strong>
+      ${usageLabel}
     </button>
   `;
 }
 
-async function checkSupabaseConnection() {
+async function checkSupabaseConnection(showUsage = false) {
   supabaseStatus = { state: "checking", label: "Проверка...", detail: "Проверявам Supabase връзката." };
   render();
 
@@ -835,15 +1027,199 @@ async function checkSupabaseConnection() {
         detail: "Приложението вижда Supabase URL, anon key и таблицата profiles."
       };
     }
+    await refreshSupabaseUsage();
   } catch (error) {
     supabaseStatus = {
       state: "error",
       label: "Supabase грешка",
       detail: error.message
     };
+    supabaseUsage = {
+      state: "error",
+      databaseBytes: 0,
+      fileStorageBytes: 0,
+      measuredAt: "",
+      error: error.message
+    };
   }
 
   render();
+  if (showUsage) openSupabaseUsageModal();
+}
+
+async function refreshSupabaseUsage() {
+  supabaseUsage = {
+    ...supabaseUsage,
+    state: "loading",
+    error: ""
+  };
+
+  try {
+    const client = await ensureSupabaseClient();
+    const { data, error } = await client.rpc("get_supabase_usage");
+    if (error) {
+      const missingFunction =
+        error.code === "PGRST202" ||
+        String(error.message || "").includes("get_supabase_usage");
+      throw new Error(
+        missingFunction
+          ? "Липсва SQL функцията get_supabase_usage. Пусни файла supabase-usage-stats.sql в Supabase SQL Editor."
+          : error.message
+      );
+    }
+
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) throw new Error("Supabase не върна данни за използваното място.");
+
+    supabaseUsage = {
+      state: "ready",
+      databaseBytes: Number(row.database_bytes) || 0,
+      fileStorageBytes: Number(row.file_storage_bytes) || 0,
+      measuredAt: row.measured_at || new Date().toISOString(),
+      error: ""
+    };
+  } catch (error) {
+    supabaseUsage = {
+      state: "error",
+      databaseBytes: 0,
+      fileStorageBytes: 0,
+      measuredAt: "",
+      error: error.message
+    };
+  }
+
+  return supabaseUsage;
+}
+
+function usagePercent(usedBytes, limitBytes) {
+  if (!limitBytes) return 0;
+  return Math.max(0, (Number(usedBytes) / Number(limitBytes)) * 100);
+}
+
+function usageTone(percent) {
+  if (percent >= 90) return "danger";
+  if (percent >= 70) return "warning";
+  return "ok";
+}
+
+function formatBytes(bytes) {
+  const value = Math.max(0, Number(bytes) || 0);
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  if (!value) return "0 B";
+  const unitIndex = Math.min(Math.floor(Math.log(value) / Math.log(1000)), units.length - 1);
+  const amount = value / 1000 ** unitIndex;
+  return `${new Intl.NumberFormat("bg-BG", {
+    maximumFractionDigits: unitIndex > 1 ? 2 : 1
+  }).format(amount)} ${units[unitIndex]}`;
+}
+
+function usageMeter(label, usedBytes, limitBytes, note) {
+  const percent = usagePercent(usedBytes, limitBytes);
+  const remaining = Math.max(0, limitBytes - usedBytes);
+  const tone = usageTone(percent);
+  return `
+    <section class="usage-meter">
+      <div class="usage-meter-head">
+        <div>
+          <h4>${escapeHtml(label)}</h4>
+          <p>${escapeHtml(note)}</p>
+        </div>
+        <strong>${formatBytes(usedBytes)} / ${formatBytes(limitBytes)}</strong>
+      </div>
+      <div class="usage-track" aria-label="${escapeAttr(`${label}: ${percent.toFixed(1)}%`)}">
+        <span class="${tone}" style="width: ${Math.min(percent, 100).toFixed(2)}%"></span>
+      </div>
+      <div class="usage-meter-foot">
+        <span>Използвани ${percent.toFixed(1)}%</span>
+        <span>Остават ${formatBytes(remaining)}</span>
+      </div>
+    </section>
+  `;
+}
+
+function supabaseUsageModalBody() {
+  if (supabaseUsage.state === "error") {
+    return `
+      <div class="usage-error">
+        <strong>Използването не може да бъде заредено</strong>
+        <p>${escapeHtml(supabaseUsage.error)}</p>
+      </div>
+      ${supabasePricingSummary()}
+    `;
+  }
+
+  if (supabaseUsage.state !== "ready") {
+    return `<div class="usage-loading">Зареждане на използваното място...</div>`;
+  }
+
+  return `
+    <div class="usage-summary">
+      ${usageMeter(
+        "База данни",
+        supabaseUsage.databaseBytes,
+        SUPABASE_USAGE_LIMITS.freeDatabaseBytes,
+        "Таблици, индекси и системни данни"
+      )}
+      ${usageMeter(
+        "Файлово хранилище",
+        supabaseUsage.fileStorageBytes,
+        SUPABASE_USAGE_LIMITS.freeFileStorageBytes,
+        "Само файловете в Supabase Storage; Mega файловете не се броят"
+      )}
+    </div>
+    <p class="usage-measured">Измерено: ${escapeHtml(new Date(supabaseUsage.measuredAt).toLocaleString("bg-BG"))}</p>
+    ${supabasePricingSummary()}
+  `;
+}
+
+function supabasePricingSummary() {
+  return `
+    <section class="usage-pricing">
+      <div class="usage-pricing-head">
+        <div>
+          <span class="eyebrow">След безплатния план</span>
+          <h4>Pro от $25 на месец</h4>
+        </div>
+        <span class="price-note">цени към 31.07.2026</span>
+      </div>
+      <div class="usage-price-grid">
+        <div>
+          <strong>${formatBytes(SUPABASE_USAGE_LIMITS.proDatabaseBytes)}</strong>
+          <span>диск за база включен</span>
+          <small>след това $0.125 / GB</small>
+        </div>
+        <div>
+          <strong>${formatBytes(SUPABASE_USAGE_LIMITS.proFileStorageBytes)}</strong>
+          <span>файлово място включено</span>
+          <small>след това $0.0213 / GB</small>
+        </div>
+      </div>
+      <p>Free не начислява автоматично. Над 500 MB базата може да премине в режим само за четене, докато не освободиш място или не надградиш плана.</p>
+    </section>
+  `;
+}
+
+function openSupabaseUsageModal() {
+  const root = document.querySelector("#modal-root");
+  root.innerHTML = `
+    <div class="modal" data-action="close-modal">
+      <div class="modal-card usage-modal" role="dialog" aria-modal="true" aria-labelledby="supabase-usage-title">
+        <div class="modal-head">
+          <div>
+            <span class="eyebrow">Състояние и лимити</span>
+            <h3 id="supabase-usage-title">Използване на Supabase</h3>
+          </div>
+          <button class="btn ghost" title="Затвори" aria-label="Затвори" data-action="close-modal-button">${icon("close")}</button>
+        </div>
+        <div class="modal-body">${supabaseUsageModalBody()}</div>
+      </div>
+    </div>
+  `;
+
+  root.querySelector(".modal")?.addEventListener("click", (event) => {
+    if (event.target.classList.contains("modal")) closeModal();
+  });
+  root.querySelector("[data-action='close-modal-button']")?.addEventListener("click", closeModal);
 }
 
 async function ensureSupabaseClient() {
@@ -913,27 +1289,27 @@ async function loadRemoteData() {
   });
 
   state.companies = (companiesRes.data || []).map(mapCompany);
-  const importedCompaniesCount = await seedMegaCompaniesToSupabase();
+  const megaSync = await seedMegaCompaniesToSupabase();
   state.audits = (auditsRes.data || []).map((audit) => mapAudit(audit, tasksByAudit[audit.id] || []));
   state.payments = (paymentsRes.data || []).map(mapPayment);
   state.documents = (docsRes.data || []).map(mapDocument);
   state.activityLog = (logsRes.data || []).map(mapLog);
-  if ((calendarEventsRes.data || []).length) {
-    state.calendarEvents = calendarEventsRes.data.map(mapCalendarEvent);
-  } else if (seedData.calendarEvents.length) {
-    const rows = seedData.calendarEvents.map((event) => ({
-      ...calendarEventPayload(event),
-      created_by: supabaseAuthUser?.id || null
-    }));
-    const seedResult = await supabaseClient.from("calendar_events").upsert(rows, { onConflict: "id" });
-    if (seedResult.error) throw seedResult.error;
-    state.calendarEvents = structuredClone(seedData.calendarEvents);
-    addLog(`Импортира ${state.calendarEvents.length} Excel календарни записа`, "Календар", "calendar_events");
+  const calendarSync = await syncImportedCalendarEventsToSupabase(calendarEventsRes.data || []);
+  state.calendarEvents = calendarSync.events;
+  if (calendarSync.upserted) {
+    addLog(`Синхронизира ${calendarSync.upserted} Excel календарни записа`, "Календар", "calendar_events");
   }
-  if (importedCompaniesCount) {
-    addLog(`Импортира ${importedCompaniesCount} фирми от Mega`, "Фирми", "mega-companies");
+  if (calendarSync.removed) {
+    addLog(`Премахна ${calendarSync.removed} остарели календарни записа`, "Календар", "calendar_events-stale");
+  }
+  if (megaSync.imported) {
+    addLog(`Импортира ${megaSync.imported} фирми от Mega`, "Фирми", "mega-companies");
+  }
+  if (megaSync.linked) {
+    addLog(`Свърза ${megaSync.linked} фирми с техните Mega папки`, "Фирми", "mega-company-folders");
   }
   applyAutomaticOverdue();
+  await refreshSupabaseUsage();
   saveState();
   supabaseStatus = {
     state: "ok",
@@ -969,8 +1345,37 @@ async function remoteInsert(table, payload) {
 }
 
 async function seedMegaCompaniesToSupabase() {
-  if (!supabaseClient || !importedMegaCompanies.length) return 0;
-  const seen = new Set(state.companies.map((company) => normalizedCompanyKey(company.name)).filter(Boolean));
+  if (!supabaseClient || !importedMegaCompanies.length) return { imported: 0, linked: 0 };
+  const existingByKey = new Map(
+    state.companies
+      .map((company) => [normalizedCompanyKey(company.name), company])
+      .filter(([key]) => Boolean(key))
+  );
+  const linkUpdates = importedMegaCompanies
+    .map((item) => ({ item, company: existingByKey.get(normalizedCompanyKey(item.name)) }))
+    .filter(({ item, company }) => company && item.megaUrl && shouldFillImportedMegaUrl(company.megaUrl));
+
+  let linked = 0;
+  for (let index = 0; index < linkUpdates.length; index += 100) {
+    const chunk = linkUpdates.slice(index, index + 100);
+    const rows = chunk.map(({ item, company }) => ({
+      id: company.id,
+      ...companyPayload({ ...company, megaUrl: item.megaUrl })
+    }));
+    const { data, error } = await supabaseClient
+      .from("companies")
+      .upsert(rows, { onConflict: "id" })
+      .select();
+    if (error) throw error;
+    const savedById = new Map((data || []).map((row) => [row.id, mapCompany(row)]));
+    chunk.forEach(({ company }) => {
+      const saved = savedById.get(company.id);
+      if (saved) Object.assign(company, saved);
+    });
+    linked += data?.length || 0;
+  }
+
+  const seen = new Set(existingByKey.keys());
   const missing = importedMegaCompanies
     .filter((item) => {
       const key = normalizedCompanyKey(item.name);
@@ -995,7 +1400,6 @@ async function seedMegaCompaniesToSupabase() {
       };
     });
 
-  if (!missing.length) return 0;
   let imported = 0;
   for (let index = 0; index < missing.length; index += 100) {
     const chunk = missing.slice(index, index + 100);
@@ -1005,7 +1409,48 @@ async function seedMegaCompaniesToSupabase() {
     state.companies.unshift(...savedCompanies);
     imported += savedCompanies.length;
   }
-  return imported;
+  return { imported, linked };
+}
+
+async function syncImportedCalendarEventsToSupabase(remoteRows) {
+  const existingEvents = remoteRows.map(mapCalendarEvent);
+  if (!importedCalendarEvents.length) {
+    return { events: existingEvents, upserted: 0, removed: 0 };
+  }
+
+  const plan = buildCalendarImportPlan(existingEvents);
+  const existingIds = new Set(existingEvents.map((event) => event.id));
+  let upserted = 0;
+
+  for (let index = 0; index < plan.upserts.length; index += 100) {
+    const chunk = plan.upserts.slice(index, index + 100);
+    const rows = chunk.map((event) => ({
+      ...calendarEventPayload(event),
+      ...(!existingIds.has(event.id) ? { created_by: supabaseAuthUser?.id || null } : {})
+    }));
+    const { data, error } = await supabaseClient
+      .from("calendar_events")
+      .upsert(rows, { onConflict: "id" })
+      .select();
+    if (error) throw error;
+    upserted += data?.length || 0;
+  }
+
+  let removed = 0;
+  if (canDelete()) {
+    for (let index = 0; index < plan.staleIds.length; index += 100) {
+      const chunk = plan.staleIds.slice(index, index + 100);
+      const { data, error } = await supabaseClient
+        .from("calendar_events")
+        .delete()
+        .in("id", chunk)
+        .select("id");
+      if (error) throw error;
+      removed += data?.length || 0;
+    }
+  }
+
+  return { events: plan.events, upserted, removed };
 }
 
 async function remoteUpdate(table, idValue, payload) {
@@ -1206,6 +1651,18 @@ function renderAudits() {
       <button class="${selectedCalendarType === "planned" ? "active" : ""}" data-action="calendar-type" data-type="planned">Планирани дейности</button>
       <button class="${selectedCalendarType === "auditors" ? "active" : ""}" data-action="calendar-type" data-type="auditors">Одитори</button>
     </div>
+    ${
+      selectedCalendarType === "planned"
+        ? `<div class="calendar-legend">
+            <span><i class="calendar-dot certification"></i> Сертификация</span>
+            <span><i class="calendar-dot consulting"></i> Консултации</span>
+            <span><i class="calendar-dot occupational"></i> Служба Трудова Медицина</span>
+          </div>`
+        : `<div class="calendar-legend">
+            <span><i class="auditor-dot georgi"></i> Георги Георгиев - одитор</span>
+            <span><i class="auditor-dot ekaterina"></i> Екатерина Георгиева - одитор</span>
+          </div>`
+    }
     <div class="toolbar">
       <div class="filters">
         ${statusFilter([
@@ -1289,6 +1746,20 @@ function filteredCalendarEvents() {
     .sort((a, b) => `${a.date} ${a.time || ""}`.localeCompare(`${b.date} ${b.time || ""}`));
 }
 
+function calendarAuditorClass(event) {
+  const auditor = normalizedImportedAuditor(event.auditor).toLocaleLowerCase("bg-BG");
+  if (auditor.includes("георги георгиев")) return "auditor-georgi";
+  if (auditor.includes("екатерина георгиева")) return "auditor-ekaterina";
+  return "auditor-neutral";
+}
+
+function calendarEventVisualClass(event) {
+  if (event.calendarType === "planned") {
+    return `planned-${event.color || plannedCategoryColor(event.category)}`;
+  }
+  return calendarAuditorClass(event);
+}
+
 function renderCalendarEvents(events) {
   const year = calendarDate.getFullYear();
   const month = calendarDate.getMonth();
@@ -1305,7 +1776,16 @@ function renderCalendarEvents(events) {
         <strong>${date.getDate()}</strong>
         ${dayEvents
           .slice(0, 4)
-          .map((event) => `<span class="calendar-chip ${event.status}">${escapeHtml(event.auditor ? `${event.auditor}: ${event.title}` : event.title)}</span>`)
+          .map(
+            (event) =>
+              `<span class="calendar-chip ${event.status} ${calendarEventVisualClass(event)}" data-action="edit-calendar-event" data-id="${event.id}" title="${escapeAttr(
+                event.calendarType === "planned"
+                  ? `${calendarCategoryLabel(event.category)}: ${event.title}`
+                  : event.auditor
+                    ? `${normalizedImportedAuditor(event.auditor)}: ${event.title}`
+                    : event.title
+              )}">${escapeHtml(event.title)}</span>`
+          )
           .join("")}
         ${dayEvents.length > 4 ? `<em>+${dayEvents.length - 4}</em>` : ""}
       </button>
@@ -1334,7 +1814,7 @@ function renderCalendarEventList(events) {
           const days = daysUntil(event.date);
           const dayText = days < 0 ? "минал" : days === 0 ? "днес" : `${days} дни`;
           return `
-            <div class="calendar-item audit-row">
+            <div class="calendar-item audit-row ${calendarEventVisualClass(event)}">
               <div class="date-badge audit-date">
                 <strong>${formatShortDate(event.date)}</strong>
                 <small>${event.time || ""}</small>
@@ -1343,6 +1823,7 @@ function renderCalendarEventList(events) {
                 <strong>${escapeHtml(event.title)}</strong>
                 <div class="meta">
                   <span>${escapeHtml(event.calendarName)}${event.auditor ? ` · ${escapeHtml(event.auditor)}` : ""}</span>
+                  ${event.calendarType === "planned" ? `<span>Категория: ${escapeHtml(calendarCategoryLabel(event.category))}</span>` : ""}
                   <span>${escapeHtml(event.notes || "")}</span>
                   <span>Източник: ${escapeHtml(event.sourceSheet || "ръчно")} ${escapeHtml(event.sourceCell || "")}</span>
                   <span>Последно: ${escapeHtml(event.updatedBy)} · ${formatTime(event.updatedAt)}</span>
@@ -2018,8 +2499,15 @@ function bindEvents() {
     button.addEventListener("click", () => openModal(button.dataset.modal, button.dataset.company || "", button.dataset.id || "", button.dataset.date || ""));
   });
 
+  document.querySelectorAll("[data-action='edit-calendar-event']").forEach((item) => {
+    item.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openModal("calendarEvent", "", item.dataset.id || "");
+    });
+  });
+
   document.querySelector("[data-action='check-supabase']")?.addEventListener("click", () => {
-    checkSupabaseConnection();
+    checkSupabaseConnection(true);
   });
 
   document.querySelectorAll("[data-action='company-profile']").forEach((button) => {
@@ -2282,6 +2770,15 @@ function calendarEventForm(companyId, item, defaultDate) {
         ${field("time", "Час", "time", item?.time || "")}
         ${field("title", "Запис", "text", item?.title || "", true)}
         ${field("auditor", "Одитор/отговорник", "text", item?.auditor || "")}
+        <div class="form-row full">
+          <span class="form-label">Категория / цвят</span>
+          <div class="category-choice-grid">
+            ${categoryChoice("", "Без категория", "yellow", item?.category || "")}
+            ${categoryChoice("certification", "Сертификация", "blue", item?.category)}
+            ${categoryChoice("consulting", "Консултации", "green", item?.category)}
+            ${categoryChoice("occupational_medicine", "Служба Трудова Медицина", "red", item?.category)}
+          </div>
+        </div>
         <div class="form-row">
           <label for="status">Статус</label>
           <select id="status" name="status">
@@ -2300,6 +2797,10 @@ function calendarEventForm(companyId, item, defaultDate) {
         <div class="form-row full">
           <label for="notes">Бележки</label>
           <textarea id="notes" name="notes" rows="3">${escapeHtml(item?.notes || "")}</textarea>
+        </div>
+        <div class="form-row full">
+          <label for="checklist">Checklist задачи</label>
+          <textarea id="checklist" name="checklist" rows="5" placeholder="pending | Проверка на документи | Георги | 2026-08-02&#10;in_progress | Потвърждение на час | Екатерина | 2026-08-03&#10;done | Изпратен протокол | Админ | 2026-08-04">${escapeHtml(formatChecklistForForm(item?.checklist || []))}</textarea>
         </div>
       </div>
       ${formActions()}
@@ -2400,6 +2901,16 @@ function option(value, label, selected) {
   return `<option value="${value}" ${selected === value ? "selected" : ""}>${label}</option>`;
 }
 
+function categoryChoice(value, label, color, selected) {
+  return `
+    <label class="category-choice ${color}">
+      <input type="radio" name="category" value="${escapeAttr(value)}" ${selected === value ? "checked" : ""} />
+      <i aria-hidden="true"></i>
+      <span>${escapeHtml(label)}</span>
+    </label>
+  `;
+}
+
 function field(name, label, type, value = "", required = false, elementId = name) {
   return `
     <div class="form-row">
@@ -2487,6 +2998,8 @@ async function handleForm(event) {
             time: data.time,
             title: data.title,
             auditor: data.auditor,
+            category: data.category || "",
+            color: calendarEventColor(data.calendarType, data.category, data.auditor),
             status: data.status,
             priority: data.priority,
             reminderDays: Number(data.reminderDays || 7),
@@ -2494,7 +3007,7 @@ async function handleForm(event) {
             sourceSheet: item.sourceSheet || "",
             sourceCell: item.sourceCell || "",
             notes: data.notes,
-            checklist: item.checklist || []
+            checklist: parseChecklist(data.checklist)
           },
           !isEdit
         )
@@ -2586,12 +3099,9 @@ async function handleForm(event) {
         const { error } = await supabaseClient.auth.updateUser({ password: data.newPassword });
         if (error) throw error;
       } else {
-        if (!user || user.password !== data.currentPassword) {
-          alert("Старата парола не е вярна.");
-          return;
-        }
+        alert("За смяна на парола е необходима активна Supabase сесия.");
+        return;
       }
-      user.password = data.newPassword;
       user.lastSeen = nowIso();
       addLog("Смени своята парола", "Потребител", user.id);
     }

@@ -129,14 +129,14 @@ function buildPath(node, byHandle) {
   return parts.reverse().join(" / ");
 }
 
-function buildPathParts(node, byHandle) {
-  const parts = [];
+function buildPathNodes(node, byHandle) {
+  const path = [];
   let current = node;
   while (current) {
-    if (current.name) parts.push(current.name);
+    if (current.name) path.push(current);
     current = byHandle.get(current.parent);
   }
-  return parts.reverse();
+  return path.reverse();
 }
 
 const { handle, key } = parseMegaFolderUrl(megaUrl);
@@ -173,17 +173,24 @@ const candidates = [];
 const folderCompanies = [];
 
 for (const node of nodes) {
-  const pathParts = buildPathParts(node, byHandle);
-  const rootName = pathParts[0] || "";
-  const companyFolder = pathParts[1] || (node.type === "folder" ? node.name : "");
+  const pathNodes = buildPathNodes(node, byHandle);
+  const pathParts = pathNodes.map((part) => part.name);
+  const rootName = pathNodes[0]?.name || "";
+  const companyFolderNode = pathNodes[1];
+  const companyFolder = companyFolderNode?.name || "";
   const cleanFolder = cleanCompanyFolderName(companyFolder);
-  if (cleanFolder && !isNoiseName(cleanFolder) && /сертификация/i.test(rootName)) {
+  if (
+    companyFolderNode?.type === "folder" &&
+    cleanFolder &&
+    !isNoiseName(cleanFolder) &&
+    /сертификация/i.test(rootName)
+  ) {
     folderCompanies.push({
       name: cleanFolder,
       source: "folder",
       originalName: companyFolder,
       path: pathParts.slice(0, 2).join(" / "),
-      megaUrl: pathParts[1] === node.name && node.type === "folder" ? folderUrl(handle, key, node.handle) : megaUrl,
+      megaUrl: folderUrl(handle, key, companyFolderNode.handle),
       score: 100
     });
   }
