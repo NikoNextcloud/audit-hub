@@ -574,6 +574,15 @@ th {
   background: #98a2b3;
 }
 
+.supabase-status small {
+  padding-left: 8px;
+  border-left: 1px solid currentColor;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.78;
+}
+
 .supabase-status.ok {
   color: #05603a;
   border-color: #abefc6;
@@ -1034,6 +1043,175 @@ th {
   padding: 18px;
 }
 
+.usage-modal {
+  width: min(100%, 720px);
+}
+
+.usage-modal .modal-head > div {
+  display: grid;
+  gap: 4px;
+}
+
+.eyebrow {
+  color: #667085;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.usage-summary {
+  display: grid;
+  gap: 22px;
+}
+
+.usage-meter {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.usage-meter-head,
+.usage-meter-foot,
+.usage-pricing-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.usage-meter-head {
+  align-items: start;
+}
+
+.usage-meter-head h4,
+.usage-pricing h4 {
+  margin: 0;
+}
+
+.usage-meter-head p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.usage-meter-head > strong {
+  flex: 0 0 auto;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.usage-track {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #e4e7ec;
+}
+
+.usage-track > span {
+  display: block;
+  min-width: 2px;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.usage-track > span.ok {
+  background: #16856b;
+}
+
+.usage-track > span.warning {
+  background: #f79009;
+}
+
+.usage-track > span.danger {
+  background: #d92d20;
+}
+
+.usage-meter-foot {
+  color: #667085;
+  font-size: 13px;
+}
+
+.usage-measured {
+  margin: 12px 0 20px;
+  color: #667085;
+  font-size: 12px;
+  text-align: right;
+}
+
+.usage-pricing {
+  display: grid;
+  gap: 16px;
+  margin: 22px -18px -18px;
+  padding: 20px 18px;
+  border-top: 1px solid #b2ddff;
+  background: #eff8ff;
+}
+
+.usage-pricing-head {
+  align-items: end;
+}
+
+.price-note {
+  color: #475467;
+  font-size: 12px;
+}
+
+.usage-price-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid #b2ddff;
+  background: white;
+}
+
+.usage-price-grid > div {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+}
+
+.usage-price-grid > div + div {
+  border-left: 1px solid #b2ddff;
+}
+
+.usage-price-grid strong {
+  color: #175cd3;
+  font-size: 22px;
+}
+
+.usage-price-grid span {
+  color: #344054;
+  font-weight: 700;
+}
+
+.usage-price-grid small,
+.usage-pricing > p {
+  color: #475467;
+}
+
+.usage-pricing > p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.usage-error,
+.usage-loading {
+  padding: 18px;
+  border: 1px solid #fedf89;
+  background: #fffaeb;
+}
+
+.usage-error strong {
+  color: #93370d;
+}
+
+.usage-error p {
+  margin: 8px 0 0;
+  color: #7a2e0e;
+  line-height: 1.5;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1117,6 +1295,10 @@ th {
     margin-left: auto;
   }
 
+  .topbar .supabase-status small {
+    display: none;
+  }
+
   .topbar .top-action {
     width: 42px;
     min-width: 42px;
@@ -1186,5 +1368,24 @@ th {
 
   .compact-doc {
     grid-template-columns: 1fr;
+  }
+
+  .usage-meter-head,
+  .usage-pricing-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .usage-price-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .usage-price-grid > div + div {
+    border-top: 1px solid #b2ddff;
+    border-left: 0;
+  }
+
+  .usage-meter-foot {
+    flex-wrap: wrap;
   }
 }

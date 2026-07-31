@@ -11,11 +11,11 @@
 - Плащания със статуси: платено, очаква плащане, просрочено
 - Документи с бутон за качване и Mega линк
 - Mobile responsive и desktop layout
-- Данните се пазят локално в браузъра чрез `localStorage`
+- Данните се споделят чрез Supabase, с локален кеш в браузъра
 
 ## Пускане
 
-Отвори `index.html` директно в браузъра.
+Използвай публикуваната Vercel версия. Локално приложението трябва да се стартира през HTTP сървър, защото Supabase настройките се зареждат от `api/supabase-config.js`.
 
 ## Качване във Vercel
 
@@ -23,9 +23,11 @@
 
 ## Истинска база данни
 
-Файлът `database.sql` съдържа начална Supabase/Postgres схема. Следваща стъпка е да се свърже UI-то със Supabase Auth и таблиците вместо `localStorage`.
+Файлът `database.sql` съдържа началната Supabase/Postgres схема. Приложението използва Supabase Auth и споделените таблици, когато потребителят е влязъл.
 
 JavaScript кодът за Supabase client не се поставя в Supabase SQL Editor. SQL Editor приема само SQL. В това приложение публичните Supabase настройки се четат от Vercel Environment Variables чрез `api/supabase-config.js`.
+
+За панела с използваното място изпълни веднъж `supabase-usage-stats.sql` в Supabase SQL Editor. Функцията връща размера на базата и файловете само на удостоверени потребители и не изисква service-role ключ в браузъра.
 
 ## Mega.nz
 

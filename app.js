@@ -221,6 +221,19 @@ let supabaseStatus = {
   label: "Supabase",
   detail: "Не е проверено"
 };
+const SUPABASE_USAGE_LIMITS = {
+  freeDatabaseBytes: 500_000_000,
+  freeFileStorageBytes: 1_000_000_000,
+  proDatabaseBytes: 8_000_000_000,
+  proFileStorageBytes: 100_000_000_000
+};
+let supabaseUsage = {
+  state: "idle",
+  databaseBytes: 0,
+  fileStorageBytes: 0,
+  measuredAt: "",
+  error: ""
+};
 
 function loadState() {
   const saved = localStorage.getItem(storeKey) || localStorage.getItem(oldStoreKey);
@@ -945,15 +958,20 @@ function navButton(view, iconName, label) {
 }
 
 function renderSupabaseStatusButton() {
+  const usageLabel =
+    supabaseUsage.state === "ready"
+      ? `<small>DB ${Math.round(usagePercent(supabaseUsage.databaseBytes, SUPABASE_USAGE_LIMITS.freeDatabaseBytes))}%</small>`
+      : "";
   return `
     <button class="supabase-status ${supabaseStatus.state}" data-action="check-supabase" title="${escapeAttr(supabaseStatus.detail)}">
       <span></span>
       <strong>${escapeHtml(supabaseStatus.label)}</strong>
+      ${usageLabel}
     </button>
   `;
 }
 
-async function checkSupabaseConnection() {
+async function checkSupabaseConnection(showUsage = false) {
   supabaseStatus = { state: "checking", label: "Проверка...", detail: "Проверявам Supabase връзката." };
   render();
 
@@ -973,15 +991,199 @@ async function checkSupabaseConnection() {
         detail: "Приложението вижда Supabase URL, anon key и таблицата profiles."
       };
     }
+    await refreshSupabaseUsage();
   } catch (error) {
     supabaseStatus = {
       state: "error",
       label: "Supabase грешка",
       detail: error.message
     };
+    supabaseUsage = {
+      state: "error",
+      databaseBytes: 0,
+      fileStorageBytes: 0,
+      measuredAt: "",
+      error: error.message
+    };
   }
 
   render();
+  if (showUsage) openSupabaseUsageModal();
+}
+
+async function refreshSupabaseUsage() {
+  supabaseUsage = {
+    ...supabaseUsage,
+    state: "loading",
+    error: ""
+  };
+
+  try {
+    const client = await ensureSupabaseClient();
+    const { data, error } = await client.rpc("get_supabase_usage");
+    if (error) {
+      const missingFunction =
+        error.code === "PGRST202" ||
+        String(error.message || "").includes("get_supabase_usage");
+      throw new Error(
+        missingFunction
+          ? "Липсва SQL функцията get_supabase_usage. Пусни файла supabase-usage-stats.sql в Supabase SQL Editor."
+          : error.message
+      );
+    }
+
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) throw new Error("Supabase не върна данни за използваното място.");
+
+    supabaseUsage = {
+      state: "ready",
+      databaseBytes: Number(row.database_bytes) || 0,
+      fileStorageBytes: Number(row.file_storage_bytes) || 0,
+      measuredAt: row.measured_at || new Date().toISOString(),
+      error: ""
+    };
+  } catch (error) {
+    supabaseUsage = {
+      state: "error",
+      databaseBytes: 0,
+      fileStorageBytes: 0,
+      measuredAt: "",
+      error: error.message
+    };
+  }
+
+  return supabaseUsage;
+}
+
+function usagePercent(usedBytes, limitBytes) {
+  if (!limitBytes) return 0;
+  return Math.max(0, (Number(usedBytes) / Number(limitBytes)) * 100);
+}
+
+function usageTone(percent) {
+  if (percent >= 90) return "danger";
+  if (percent >= 70) return "warning";
+  return "ok";
+}
+
+function formatBytes(bytes) {
+  const value = Math.max(0, Number(bytes) || 0);
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  if (!value) return "0 B";
+  const unitIndex = Math.min(Math.floor(Math.log(value) / Math.log(1000)), units.length - 1);
+  const amount = value / 1000 ** unitIndex;
+  return `${new Intl.NumberFormat("bg-BG", {
+    maximumFractionDigits: unitIndex > 1 ? 2 : 1
+  }).format(amount)} ${units[unitIndex]}`;
+}
+
+function usageMeter(label, usedBytes, limitBytes, note) {
+  const percent = usagePercent(usedBytes, limitBytes);
+  const remaining = Math.max(0, limitBytes - usedBytes);
+  const tone = usageTone(percent);
+  return `
+    <section class="usage-meter">
+      <div class="usage-meter-head">
+        <div>
+          <h4>${escapeHtml(label)}</h4>
+          <p>${escapeHtml(note)}</p>
+        </div>
+        <strong>${formatBytes(usedBytes)} / ${formatBytes(limitBytes)}</strong>
+      </div>
+      <div class="usage-track" aria-label="${escapeAttr(`${label}: ${percent.toFixed(1)}%`)}">
+        <span class="${tone}" style="width: ${Math.min(percent, 100).toFixed(2)}%"></span>
+      </div>
+      <div class="usage-meter-foot">
+        <span>Използвани ${percent.toFixed(1)}%</span>
+        <span>Остават ${formatBytes(remaining)}</span>
+      </div>
+    </section>
+  `;
+}
+
+function supabaseUsageModalBody() {
+  if (supabaseUsage.state === "error") {
+    return `
+      <div class="usage-error">
+        <strong>Използването не може да бъде заредено</strong>
+        <p>${escapeHtml(supabaseUsage.error)}</p>
+      </div>
+      ${supabasePricingSummary()}
+    `;
+  }
+
+  if (supabaseUsage.state !== "ready") {
+    return `<div class="usage-loading">Зареждане на използваното място...</div>`;
+  }
+
+  return `
+    <div class="usage-summary">
+      ${usageMeter(
+        "База данни",
+        supabaseUsage.databaseBytes,
+        SUPABASE_USAGE_LIMITS.freeDatabaseBytes,
+        "Таблици, индекси и системни данни"
+      )}
+      ${usageMeter(
+        "Файлово хранилище",
+        supabaseUsage.fileStorageBytes,
+        SUPABASE_USAGE_LIMITS.freeFileStorageBytes,
+        "Само файловете в Supabase Storage; Mega файловете не се броят"
+      )}
+    </div>
+    <p class="usage-measured">Измерено: ${escapeHtml(new Date(supabaseUsage.measuredAt).toLocaleString("bg-BG"))}</p>
+    ${supabasePricingSummary()}
+  `;
+}
+
+function supabasePricingSummary() {
+  return `
+    <section class="usage-pricing">
+      <div class="usage-pricing-head">
+        <div>
+          <span class="eyebrow">След безплатния план</span>
+          <h4>Pro от $25 на месец</h4>
+        </div>
+        <span class="price-note">цени към 31.07.2026</span>
+      </div>
+      <div class="usage-price-grid">
+        <div>
+          <strong>${formatBytes(SUPABASE_USAGE_LIMITS.proDatabaseBytes)}</strong>
+          <span>диск за база включен</span>
+          <small>след това $0.125 / GB</small>
+        </div>
+        <div>
+          <strong>${formatBytes(SUPABASE_USAGE_LIMITS.proFileStorageBytes)}</strong>
+          <span>файлово място включено</span>
+          <small>след това $0.0213 / GB</small>
+        </div>
+      </div>
+      <p>Free не начислява автоматично. Над 500 MB базата може да премине в режим само за четене, докато не освободиш място или не надградиш плана.</p>
+    </section>
+  `;
+}
+
+function openSupabaseUsageModal() {
+  const root = document.querySelector("#modal-root");
+  root.innerHTML = `
+    <div class="modal" data-action="close-modal">
+      <div class="modal-card usage-modal" role="dialog" aria-modal="true" aria-labelledby="supabase-usage-title">
+        <div class="modal-head">
+          <div>
+            <span class="eyebrow">Състояние и лимити</span>
+            <h3 id="supabase-usage-title">Използване на Supabase</h3>
+          </div>
+          <button class="btn ghost" title="Затвори" aria-label="Затвори" data-action="close-modal-button">${icon("close")}</button>
+        </div>
+        <div class="modal-body">${supabaseUsageModalBody()}</div>
+      </div>
+    </div>
+  `;
+
+  root.querySelector(".modal")?.addEventListener("click", (event) => {
+    if (event.target.classList.contains("modal")) closeModal();
+  });
+  root.querySelector("[data-action='close-modal-button']")?.addEventListener("click", closeModal);
 }
 
 async function ensureSupabaseClient() {
@@ -1071,6 +1273,7 @@ async function loadRemoteData() {
     addLog(`Свърза ${megaSync.linked} фирми с техните Mega папки`, "Фирми", "mega-company-folders");
   }
   applyAutomaticOverdue();
+  await refreshSupabaseUsage();
   saveState();
   supabaseStatus = {
     state: "ok",
@@ -2240,7 +2443,7 @@ function bindEvents() {
   });
 
   document.querySelector("[data-action='check-supabase']")?.addEventListener("click", () => {
-    checkSupabaseConnection();
+    checkSupabaseConnection(true);
   });
 
   document.querySelectorAll("[data-action='company-profile']").forEach((button) => {
