@@ -1,5 +1,6 @@
 const storeKey = "audit-hub-state-v2";
 const oldStoreKey = "audit-hub-state-v1";
+const importedMegaCompanies = typeof window !== "undefined" ? window.AUDIT_HUB_MEGA_COMPANIES || [] : [];
 
 const seedData = {
   session: null,
@@ -227,6 +228,8 @@ function normalizeState(data) {
   }
   data.activityLog ||= structuredClone(seedData.activityLog);
   data.calendarEvents ||= structuredClone(seedData.calendarEvents);
+  data.companies ||= [];
+  mergeImportedMegaCompanies(data);
   for (const list of [data.companies, data.audits, data.payments, data.documents, data.calendarEvents]) {
     list.forEach((item) => {
       item.createdBy ||= "Администратор";
@@ -261,6 +264,46 @@ function normalizeState(data) {
   });
   applyAutomaticOverdue(data);
   return data;
+}
+
+function normalizedCompanyKey(name) {
+  return String(name || "")
+    .toLocaleLowerCase("bg-BG")
+    .replace(/\b(еоод|оод|ад|ет|eood|ood|ltd|plc|llc|gmbh)\b/gi, "")
+    .replace(/[^a-zа-я0-9]+/gi, "");
+}
+
+function megaCompanyToAppCompany(item) {
+  return {
+    id: item.id || id("mega"),
+    name: item.name,
+    bulstat: "",
+    contact: "",
+    phone: "",
+    email: "",
+    megaUrl: item.megaUrl || "",
+    status: "active",
+    notes: `Импорт от ${item.source || "Mega"}. Път: ${item.path || item.originalName || "Mega папка"}`,
+    createdBy: "Mega импорт",
+    updatedBy: "Mega импорт",
+    updatedAt: nowIso()
+  };
+}
+
+function mergeImportedMegaCompanies(targetState) {
+  if (!importedMegaCompanies.length) return 0;
+  const seen = new Set((targetState.companies || []).map((company) => normalizedCompanyKey(company.name)).filter(Boolean));
+  const additions = [];
+  importedMegaCompanies.forEach((item) => {
+    const key = normalizedCompanyKey(item.name);
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    additions.push(megaCompanyToAppCompany(item));
+  });
+  if (additions.length) {
+    targetState.companies.push(...additions);
+  }
+  return additions.length;
 }
 
 function applyAutomaticOverdue(targetState = state) {
@@ -870,6 +913,7 @@ async function loadRemoteData() {
   });
 
   state.companies = (companiesRes.data || []).map(mapCompany);
+  const importedCompaniesCount = await seedMegaCompaniesToSupabase();
   state.audits = (auditsRes.data || []).map((audit) => mapAudit(audit, tasksByAudit[audit.id] || []));
   state.payments = (paymentsRes.data || []).map(mapPayment);
   state.documents = (docsRes.data || []).map(mapDocument);
@@ -885,6 +929,9 @@ async function loadRemoteData() {
     if (seedResult.error) throw seedResult.error;
     state.calendarEvents = structuredClone(seedData.calendarEvents);
     addLog(`Импортира ${state.calendarEvents.length} Excel календарни записа`, "Календар", "calendar_events");
+  }
+  if (importedCompaniesCount) {
+    addLog(`Импортира ${importedCompaniesCount} фирми от Mega`, "Фирми", "mega-companies");
   }
   applyAutomaticOverdue();
   saveState();
@@ -919,6 +966,46 @@ async function remoteInsert(table, payload) {
   const { data, error } = await supabaseClient.from(table).insert(payload).select().single();
   if (error) throw error;
   return data;
+}
+
+async function seedMegaCompaniesToSupabase() {
+  if (!supabaseClient || !importedMegaCompanies.length) return 0;
+  const seen = new Set(state.companies.map((company) => normalizedCompanyKey(company.name)).filter(Boolean));
+  const missing = importedMegaCompanies
+    .filter((item) => {
+      const key = normalizedCompanyKey(item.name);
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .map((item) => {
+      const company = megaCompanyToAppCompany(item);
+      return {
+        name: company.name,
+        bulstat: null,
+        contact: null,
+        phone: null,
+        email: null,
+        mega_url: company.megaUrl || null,
+        status: "active",
+        notes: company.notes,
+        created_by: supabaseAuthUser?.id || null,
+        updated_by: supabaseAuthUser?.id || null,
+        updated_at: nowIso()
+      };
+    });
+
+  if (!missing.length) return 0;
+  let imported = 0;
+  for (let index = 0; index < missing.length; index += 100) {
+    const chunk = missing.slice(index, index + 100);
+    const { data, error } = await supabaseClient.from("companies").insert(chunk).select();
+    if (error) throw error;
+    const savedCompanies = (data || []).map(mapCompany);
+    state.companies.unshift(...savedCompanies);
+    imported += savedCompanies.length;
+  }
+  return imported;
 }
 
 async function remoteUpdate(table, idValue, payload) {
