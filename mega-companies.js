@@ -289,14 +289,6 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
   },
   {
     "id": "mega-company-00037",
-    "name": "БСА-Оферта за одит-бланка TSV",
-    "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q",
-    "source": "Mega папка",
-    "originalName": "БСА-Оферта за одит-бланка_TSV",
-    "path": "СЕРТИФИКАЦИЯ / БСА-Оферта за одит-бланка_TSV"
-  },
-  {
-    "id": "mega-company-00038",
     "name": "Бул смарт канстръкшън ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/qr4lnYQJ",
     "source": "Mega папка",
@@ -304,7 +296,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Бул смарт канстръкшън ЕООД № 211"
   },
   {
-    "id": "mega-company-00039",
+    "id": "mega-company-00038",
     "name": "Булбилд Гранд инженеринг ЕООД № - 195",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/inwTiRwI",
     "source": "Mega папка",
@@ -312,7 +304,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Булбилд Гранд инженеринг ЕООД № - 195"
   },
   {
-    "id": "mega-company-00040",
+    "id": "mega-company-00039",
     "name": "БУЛТЕКС 99 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/7rRXzLiZ",
     "source": "Mega папка",
@@ -320,7 +312,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / БУЛТЕКС 99 ЕООД"
   },
   {
-    "id": "mega-company-00041",
+    "id": "mega-company-00040",
     "name": "БУЛТЕКСТРОЙ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/byJ12RqZ",
     "source": "Mega папка",
@@ -328,7 +320,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / БУЛТЕКСТРОЙ ЕООД -  № 3"
   },
   {
-    "id": "mega-company-00042",
+    "id": "mega-company-00041",
     "name": "БЪЛГАРСКА ФИНАНСОВА ГРУПА ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/TzAwgTTY",
     "source": "Mega папка",
@@ -336,7 +328,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / БЪЛГАРСКА ФИНАНСОВА ГРУПА ООД  № 26"
   },
   {
-    "id": "mega-company-00043",
+    "id": "mega-company-00042",
     "name": "ВАГО ВУУД КОМЕРС ЕООД ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/quA0SJaD",
     "source": "Mega папка",
@@ -344,7 +336,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВАГО ВУУД КОМЕРС ЕООД  ЕООД - № 10"
   },
   {
-    "id": "mega-company-00044",
+    "id": "mega-company-00043",
     "name": "ВАДИМ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/r2oSVKwK",
     "source": "Mega папка",
@@ -352,7 +344,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВАДИМ ООД № 64"
   },
   {
-    "id": "mega-company-00045",
+    "id": "mega-company-00044",
     "name": "ВАЛМИЛК ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/PmIADbBT",
     "source": "Mega папка",
@@ -360,7 +352,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВАЛМИЛК ЕООД № 65"
   },
   {
-    "id": "mega-company-00046",
+    "id": "mega-company-00045",
     "name": "ВЕНИТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3zYmgTpL",
     "source": "Mega папка",
@@ -368,7 +360,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВЕНИТ  ЕООД № 75"
   },
   {
-    "id": "mega-company-00047",
+    "id": "mega-company-00046",
     "name": "ВИВАВЕЛ БЪЛГАРИЯ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/DipwWQwA",
     "source": "Mega папка",
@@ -376,7 +368,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВИВАВЕЛ БЪЛГАРИЯ ЕООД № 136"
   },
   {
-    "id": "mega-company-00048",
+    "id": "mega-company-00047",
     "name": "ВИД СТРОЙ - 59 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/v75kwara",
     "source": "Mega папка",
@@ -384,7 +376,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВИД СТРОЙ - 59 ЕООД"
   },
   {
-    "id": "mega-company-00049",
+    "id": "mega-company-00048",
     "name": "ВИКТТИ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/frQ2VLrQ",
     "source": "Mega папка",
@@ -392,7 +384,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВИКТТИ ЕООД № 151"
   },
   {
-    "id": "mega-company-00050",
+    "id": "mega-company-00049",
     "name": "ВИЛ ЛЕС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/u7hByb6I",
     "source": "Mega папка",
@@ -400,7 +392,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВИЛ ЛЕС ЕООД № 156"
   },
   {
-    "id": "mega-company-00051",
+    "id": "mega-company-00050",
     "name": "ВИТОША ГАЗ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/D2IkQRRJ",
     "source": "Mega папка",
@@ -408,7 +400,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВИТОША ГАЗ ЕООД  № 34"
   },
   {
-    "id": "mega-company-00052",
+    "id": "mega-company-00051",
     "name": "Витоша Клауд Консултинг ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/a7gmBYJA",
     "source": "Mega папка",
@@ -416,7 +408,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Витоша Клауд Консултинг ООД"
   },
   {
-    "id": "mega-company-00053",
+    "id": "mega-company-00052",
     "name": "ВНВ ТРАНС 1 ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/fz4AXLBZ",
     "source": "Mega папка",
@@ -424,7 +416,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВНВ ТРАНС 1 ООД"
   },
   {
-    "id": "mega-company-00054",
+    "id": "mega-company-00053",
     "name": "ВТА Секюрити Сървиз ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/X6YSQLLL",
     "source": "Mega папка",
@@ -432,7 +424,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ВТА Секюрити Сървиз ЕООД № 61"
   },
   {
-    "id": "mega-company-00055",
+    "id": "mega-company-00054",
     "name": "Г.Гетов ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/O6AGmTiT",
     "source": "Mega папка",
@@ -440,7 +432,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Г.Гетов ЕООД № 83"
   },
   {
-    "id": "mega-company-00056",
+    "id": "mega-company-00055",
     "name": "Г.М. ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/TmgjkBAT",
     "source": "Mega папка",
@@ -448,7 +440,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Г.М. ООД № 140"
   },
   {
-    "id": "mega-company-00057",
+    "id": "mega-company-00056",
     "name": "ГАП-07 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/2uJlWCCJ",
     "source": "Mega папка",
@@ -456,7 +448,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ГАП-07 ЕООД № 98"
   },
   {
-    "id": "mega-company-00058",
+    "id": "mega-company-00057",
     "name": "ГАРАНТСТРОЙ-ТРАЙКОВ 96 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/u64niSpI",
     "source": "Mega папка",
@@ -464,7 +456,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ГАРАНТСТРОЙ-ТРАЙКОВ 96 ЕООД  № 119"
   },
   {
-    "id": "mega-company-00059",
+    "id": "mega-company-00058",
     "name": "ГЕОДИМ ПРОПЪРТИС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/f7g2BZqI",
     "source": "Mega папка",
@@ -472,7 +464,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ГЕОДИМ ПРОПЪРТИС ЕООД № 172"
   },
   {
-    "id": "mega-company-00060",
+    "id": "mega-company-00059",
     "name": "ГОШКО ПОКРИВИ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/vnQwRbzA",
     "source": "Mega папка",
@@ -480,7 +472,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ГОШКО ПОКРИВИ ЕООД - № 76"
   },
   {
-    "id": "mega-company-00061",
+    "id": "mega-company-00060",
     "name": "ГРАНД ФАСИЛИТИ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/LyhgiKyL",
     "source": "Mega папка",
@@ -488,7 +480,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ГРАНД ФАСИЛИТИ ЕООД - № 194"
   },
   {
-    "id": "mega-company-00062",
+    "id": "mega-company-00061",
     "name": "Грижа и чистота ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Wrw3lKDJ",
     "source": "Mega папка",
@@ -496,7 +488,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Грижа и чистота ООД - № 17"
   },
   {
-    "id": "mega-company-00063",
+    "id": "mega-company-00062",
     "name": "Грийн Хаус БГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/XmIDVbhY",
     "source": "Mega папка",
@@ -504,7 +496,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Грийн Хаус БГ ЕООД - № 78"
   },
   {
-    "id": "mega-company-00064",
+    "id": "mega-company-00063",
     "name": "ГРИЙНБЪРН ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/WvBmDbJS",
     "source": "Mega папка",
@@ -512,7 +504,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ГРИЙНБЪРН ЕООД - № 196"
   },
   {
-    "id": "mega-company-00065",
+    "id": "mega-company-00064",
     "name": "ДАБЪЛ Д ГРУП ФУУД ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/a2RjiJpC",
     "source": "Mega папка",
@@ -520,7 +512,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ДАБЪЛ Д ГРУП ФУУД ЕООД - № 197"
   },
   {
-    "id": "mega-company-00066",
+    "id": "mega-company-00065",
     "name": "ДАРИ СТРОЙ ГРУП ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/OuAWWbAB",
     "source": "Mega папка",
@@ -528,7 +520,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ДАРИ СТРОЙ ГРУП ЕООД - № 129"
   },
   {
-    "id": "mega-company-00067",
+    "id": "mega-company-00066",
     "name": "ДЕОН-БГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/LjYnAB4a",
     "source": "Mega папка",
@@ -536,7 +528,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ДЕОН-БГ ЕООД № 212"
   },
   {
-    "id": "mega-company-00068",
+    "id": "mega-company-00067",
     "name": "ДЖЕНЕРАЛ КОНСТРУКШЪН ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/HqRg0RwA",
     "source": "Mega папка",
@@ -544,7 +536,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ДЖЕНЕРАЛ КОНСТРУКШЪН ЕООД № 225"
   },
   {
-    "id": "mega-company-00069",
+    "id": "mega-company-00068",
     "name": "Джи и Ей ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/HiQWybbL",
     "source": "Mega папка",
@@ -552,7 +544,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Джи и Ей ЕООД № 97"
   },
   {
-    "id": "mega-company-00070",
+    "id": "mega-company-00069",
     "name": "ДЖИ КОНСУЛТ 91 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/fywmwTBL",
     "source": "Mega папка",
@@ -560,7 +552,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ДЖИ КОНСУЛТ 91 ЕООД - № 45"
   },
   {
-    "id": "mega-company-00071",
+    "id": "mega-company-00070",
     "name": "ДИ АР АР КОНСТРЪКШЪНС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/r7ZmyZiQ",
     "source": "Mega папка",
@@ -568,7 +560,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ДИ АР АР КОНСТРЪКШЪНС ЕООД  № 52"
   },
   {
-    "id": "mega-company-00072",
+    "id": "mega-company-00071",
     "name": "ДИ ДЖИ ПИ ИНЖЕНЕРИНГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/v6xCGaSL",
     "source": "Mega папка",
@@ -576,7 +568,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ДИ ДЖИ ПИ ИНЖЕНЕРИНГ ЕООД"
   },
   {
-    "id": "mega-company-00073",
+    "id": "mega-company-00072",
     "name": "Ди Ти Ай Солюшънс ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Pug3VQhI",
     "source": "Mega папка",
@@ -584,7 +576,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Ди Ти Ай Солюшънс ООД № 213"
   },
   {
-    "id": "mega-company-00074",
+    "id": "mega-company-00073",
     "name": "ДИАНА 7 ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/235hAarT",
     "source": "Mega папка",
@@ -592,7 +584,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ДИАНА 7 ООД № 214"
   },
   {
-    "id": "mega-company-00075",
+    "id": "mega-company-00074",
     "name": "Дигиталстрой ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/22o3kQga",
     "source": "Mega папка",
@@ -600,7 +592,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Дигиталстрой ЕООД № 232"
   },
   {
-    "id": "mega-company-00076",
+    "id": "mega-company-00075",
     "name": "Добруджа кабел ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/yjg0TQDa",
     "source": "Mega папка",
@@ -608,7 +600,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Добруджа кабел ЕООД № 54"
   },
   {
-    "id": "mega-company-00077",
+    "id": "mega-company-00076",
     "name": "ДП БИЛД ИНВЕСТМЪНТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/GqZUSBYK",
     "source": "Mega папка",
@@ -616,7 +608,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ДП БИЛД ИНВЕСТМЪНТ ЕООД № 88"
   },
   {
-    "id": "mega-company-00078",
+    "id": "mega-company-00077",
     "name": "ДРААТ ХАНДЕЛ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/WzhBzJ4K",
     "source": "Mega папка",
@@ -624,7 +616,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ДРААТ ХАНДЕЛ ЕООД № 144"
   },
   {
-    "id": "mega-company-00079",
+    "id": "mega-company-00078",
     "name": "Дрийм Криейтърс ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/fygzEQYT",
     "source": "Mega папка",
@@ -632,7 +624,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Дрийм Криейтърс ЕООД № 111"
   },
   {
-    "id": "mega-company-00080",
+    "id": "mega-company-00079",
     "name": "ЕВРО ТИМБЪР ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/y2ZAyJ7B",
     "source": "Mega папка",
@@ -640,7 +632,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕВРО ТИМБЪР ЕООД № 72"
   },
   {
-    "id": "mega-company-00081",
+    "id": "mega-company-00080",
     "name": "ЕВРОБУЛПРОДЖЕКТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/myJmUJJL",
     "source": "Mega папка",
@@ -648,7 +640,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕВРОБУЛПРОДЖЕКТ ЕООД № 81"
   },
   {
-    "id": "mega-company-00082",
+    "id": "mega-company-00081",
     "name": "ЕВРОФОНД КЪНСЪЛТИНГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/6zAREB4S",
     "source": "Mega папка",
@@ -656,7 +648,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕВРОФОНД КЪНСЪЛТИНГ ЕООД № 80"
   },
   {
-    "id": "mega-company-00083",
+    "id": "mega-company-00082",
     "name": "ЕДЕЛВАЙС 1970 ООД № - 198",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/nioDFabT",
     "source": "Mega папка",
@@ -664,7 +656,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕДЕЛВАЙС 1970 ООД № - 198"
   },
   {
-    "id": "mega-company-00084",
+    "id": "mega-company-00083",
     "name": "ЕКО ГЛОБЪЛ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/zvJGVRJK",
     "source": "Mega папка",
@@ -672,7 +664,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕКО ГЛОБЪЛ ООД № 86"
   },
   {
-    "id": "mega-company-00085",
+    "id": "mega-company-00084",
     "name": "ЕКСПЕРТ ДИСИЖЪНС ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/SvJk3TAK",
     "source": "Mega папка",
@@ -680,7 +672,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕКСПЕРТ ДИСИЖЪНС ООД № 145"
   },
   {
-    "id": "mega-company-00086",
+    "id": "mega-company-00085",
     "name": "ЕЛЕГАНТ СИСТЕМС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/CmJXUBDT",
     "source": "Mega папка",
@@ -688,7 +680,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕЛЕГАНТ СИСТЕМС ЕООД"
   },
   {
-    "id": "mega-company-00087",
+    "id": "mega-company-00086",
     "name": "ЕМ СТРОЙ - 56 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/2v4gALIS",
     "source": "Mega папка",
@@ -696,7 +688,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕМ СТРОЙ - 56 ЕООД № 224"
   },
   {
-    "id": "mega-company-00088",
+    "id": "mega-company-00087",
     "name": "ЕМЕК БЪЛГАРИЯ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/K2QH3TgZ",
     "source": "Mega папка",
@@ -704,7 +696,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕМЕК БЪЛГАРИЯ ЕООД"
   },
   {
-    "id": "mega-company-00089",
+    "id": "mega-company-00088",
     "name": "ЕН ДЖИ БЕЙКЪРИ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/j6JW2R7T",
     "source": "Mega папка",
@@ -712,7 +704,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕН ДЖИ БЕЙКЪРИ  ЕООД - № 15"
   },
   {
-    "id": "mega-company-00090",
+    "id": "mega-company-00089",
     "name": "Ен Ти конструкт ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/CvpWCbwR",
     "source": "Mega папка",
@@ -720,7 +712,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Ен Ти конструкт ЕООД - № 39"
   },
   {
-    "id": "mega-company-00091",
+    "id": "mega-company-00090",
     "name": "ЕНДУРОСАТ ГАВЪРНМЪНТ ЕНД ДИФЕНС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/iz4yGbRa",
     "source": "Mega папка",
@@ -728,7 +720,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕНДУРОСАТ ГАВЪРНМЪНТ ЕНД ДИФЕНС ЕООД"
   },
   {
-    "id": "mega-company-00092",
+    "id": "mega-company-00091",
     "name": "ЕНДУРОСАТ ЕАД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/qjY1SRCa",
     "source": "Mega папка",
@@ -736,7 +728,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕНДУРОСАТ ЕАД № 216"
   },
   {
-    "id": "mega-company-00093",
+    "id": "mega-company-00092",
     "name": "ЕНЕРГИЯ ТЪРГОВИЩЕ АД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3n5GBJJZ",
     "source": "Mega папка",
@@ -744,7 +736,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕНЕРГИЯ ТЪРГОВИЩЕ АД № 157"
   },
   {
-    "id": "mega-company-00094",
+    "id": "mega-company-00093",
     "name": "ЕНЕРДЖИ ТРЕЙД 2009 ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/HjQggBrB",
     "source": "Mega папка",
@@ -752,7 +744,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕНЕРДЖИ ТРЕЙД 2009 ООД -  № 199"
   },
   {
-    "id": "mega-company-00095",
+    "id": "mega-company-00094",
     "name": "Ер билдинг Груп ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/T3QxkRgQ",
     "source": "Mega папка",
@@ -760,7 +752,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Ер билдинг Груп ЕООД № 159"
   },
   {
-    "id": "mega-company-00096",
+    "id": "mega-company-00095",
     "name": "Естет-Мебел ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/z7pUGbDA",
     "source": "Mega папка",
@@ -768,7 +760,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Естет-Мебел ЕООД № 217"
   },
   {
-    "id": "mega-company-00097",
+    "id": "mega-company-00096",
     "name": "ЕТ ДАРИНКА ГАНЕВА",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3vxQBBaJ",
     "source": "Mega папка",
@@ -776,7 +768,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕТ ДАРИНКА ГАНЕВА - № 200"
   },
   {
-    "id": "mega-company-00098",
+    "id": "mega-company-00097",
     "name": "ЕТ ФАИК ЕЛЕБАШЪ - 91",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/m6xFlBDJ",
     "source": "Mega папка",
@@ -784,7 +776,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕТ ФАИК ЕЛЕБАШЪ - 91  № 41"
   },
   {
-    "id": "mega-company-00099",
+    "id": "mega-company-00098",
     "name": "ЕТ ХРИСТО ЦОНКОВСКИ",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/PvxByYoS",
     "source": "Mega папка",
@@ -792,7 +784,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕТ ХРИСТО ЦОНКОВСКИ - № 201"
   },
   {
-    "id": "mega-company-00100",
+    "id": "mega-company-00099",
     "name": "ЕТРА - ЕЛ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/KjpCHCBQ",
     "source": "Mega папка",
@@ -800,7 +792,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЕТРА - ЕЛ ООД № 220"
   },
   {
-    "id": "mega-company-00101",
+    "id": "mega-company-00100",
     "name": "ЗДРАВЕЦ 7410 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/6vZXwbqS",
     "source": "Mega папка",
@@ -808,7 +800,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЗДРАВЕЦ 7410 ЕООД - № 202"
   },
   {
-    "id": "mega-company-00102",
+    "id": "mega-company-00101",
     "name": "И Ар Пи България ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/33IigZxS",
     "source": "Mega папка",
@@ -816,7 +808,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / И Ар Пи България ЕООД № 30"
   },
   {
-    "id": "mega-company-00103",
+    "id": "mega-company-00102",
     "name": "ИВЕНТИ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/S2AWSBKZ",
     "source": "Mega папка",
@@ -824,7 +816,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ИВЕНТИ ООД № 31"
   },
   {
-    "id": "mega-company-00104",
+    "id": "mega-company-00103",
     "name": "ИВТ ДИВЕЛЪПМЪНТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/ymRH0bQL",
     "source": "Mega папка",
@@ -832,7 +824,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ИВТ ДИВЕЛЪПМЪНТ ЕООД № 218"
   },
   {
-    "id": "mega-company-00105",
+    "id": "mega-company-00104",
     "name": "ИВТ КОНСУЛТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/6roRkTwD",
     "source": "Mega папка",
@@ -840,7 +832,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ИВТ КОНСУЛТ ЕООД  № 53"
   },
   {
-    "id": "mega-company-00106",
+    "id": "mega-company-00105",
     "name": "ИГА - СТРОЙ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/rnQ3QDIL",
     "source": "Mega папка",
@@ -848,7 +840,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ИГА - СТРОЙ ЕООД № 186"
   },
   {
-    "id": "mega-company-00107",
+    "id": "mega-company-00106",
     "name": "ИлийчоСтрой ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/evpEXIhT",
     "source": "Mega папка",
@@ -856,7 +848,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ИлийчоСтрой ЕООД № 152"
   },
   {
-    "id": "mega-company-00108",
+    "id": "mega-company-00107",
     "name": "ИНВЕСТ ИН 97 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/q6YA3TAY",
     "source": "Mega папка",
@@ -864,7 +856,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ИНВЕСТ ИН 97 ЕООД № 44"
   },
   {
-    "id": "mega-company-00109",
+    "id": "mega-company-00108",
     "name": "ИНВЕСТ ИН 99 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/j6xUwaKS",
     "source": "Mega папка",
@@ -872,7 +864,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ИНВЕСТ ИН 99 ЕООД № 188"
   },
   {
-    "id": "mega-company-00110",
+    "id": "mega-company-00109",
     "name": "ИНВЕСТМЪНТ ПРОДЖЕКТ МЕНИДЖМЪНТ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/i7ZylJLD",
     "source": "Mega папка",
@@ -880,7 +872,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ИНВЕСТМЪНТ ПРОДЖЕКТ МЕНИДЖМЪНТ ООД № 60"
   },
   {
-    "id": "mega-company-00111",
+    "id": "mega-company-00110",
     "name": "Индустриални батерии ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/n6J1WTKb",
     "source": "Mega папка",
@@ -888,7 +880,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Индустриални батерии ЕООД № 57"
   },
   {
-    "id": "mega-company-00112",
+    "id": "mega-company-00111",
     "name": "Индустриални суровини ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/33pylBYS",
     "source": "Mega папка",
@@ -896,7 +888,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Индустриални суровини ЕООД № 219"
   },
   {
-    "id": "mega-company-00113",
+    "id": "mega-company-00112",
     "name": "ИноваСтил ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/y7wUzTxJ",
     "source": "Mega папка",
@@ -904,7 +896,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ИноваСтил ЕООД № 116"
   },
   {
-    "id": "mega-company-00114",
+    "id": "mega-company-00113",
     "name": "Иновикс МК ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3zwWHKDC",
     "source": "Mega папка",
@@ -912,7 +904,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Иновикс МК ЕООД № 235"
   },
   {
-    "id": "mega-company-00115",
+    "id": "mega-company-00114",
     "name": "Интермедика Груп ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Pmh2jI7A",
     "source": "Mega папка",
@@ -920,7 +912,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Интермедика Груп ЕООД № 130"
   },
   {
-    "id": "mega-company-00116",
+    "id": "mega-company-00115",
     "name": "Инфрастрой 76 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/q25wQKJD",
     "source": "Mega папка",
@@ -928,7 +920,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Инфрастрой 76 ЕООД № 110"
   },
   {
-    "id": "mega-company-00117",
+    "id": "mega-company-00116",
     "name": "ИПО ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/72ZgXDqC",
     "source": "Mega папка",
@@ -936,7 +928,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ИПО ООД № 91"
   },
   {
-    "id": "mega-company-00118",
+    "id": "mega-company-00117",
     "name": "КА - ИМПЕКС ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/L3R2xR6L",
     "source": "Mega папка",
@@ -944,15 +936,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КА - ИМПЕКС ООД - № 11"
   },
   {
-    "id": "mega-company-00119",
-    "name": "календар одитори 2025",
-    "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q",
-    "source": "Mega папка",
-    "originalName": "календар одитори 2025",
-    "path": "СЕРТИФИКАЦИЯ / календар одитори 2025"
-  },
-  {
-    "id": "mega-company-00120",
+    "id": "mega-company-00118",
     "name": "Каприкорн Кемикълс Груп ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/q2JwAB7B",
     "source": "Mega папка",
@@ -960,7 +944,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Каприкорн Кемикълс Груп ООД   - № 21"
   },
   {
-    "id": "mega-company-00121",
+    "id": "mega-company-00119",
     "name": "Капс Ловеч ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/f2QU2Rxa",
     "source": "Mega папка",
@@ -968,7 +952,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Капс Ловеч ООД № 92"
   },
   {
-    "id": "mega-company-00122",
+    "id": "mega-company-00120",
     "name": "КАРГО ЛАЙН ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/S2xWBYCQ",
     "source": "Mega папка",
@@ -976,7 +960,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КАРГО ЛАЙН ЕООД № 141"
   },
   {
-    "id": "mega-company-00123",
+    "id": "mega-company-00121",
     "name": "КАСКОТРЕЙД ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/y3hEWLhS",
     "source": "Mega папка",
@@ -984,7 +968,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КАСКОТРЕЙД ЕООД № 227"
   },
   {
-    "id": "mega-company-00124",
+    "id": "mega-company-00122",
     "name": "КМП БИЛД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3vR33Qaa",
     "source": "Mega папка",
@@ -992,7 +976,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КМП БИЛД № 51"
   },
   {
-    "id": "mega-company-00125",
+    "id": "mega-company-00123",
     "name": "КОЗИРОГ-95 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/OvgnTaZA",
     "source": "Mega папка",
@@ -1000,7 +984,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КОЗИРОГ-95 ЕООД № 149"
   },
   {
-    "id": "mega-company-00126",
+    "id": "mega-company-00124",
     "name": "Колд пойнт ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Pj5BQLJY",
     "source": "Mega папка",
@@ -1008,7 +992,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Колд пойнт ООД № 223"
   },
   {
-    "id": "mega-company-00127",
+    "id": "mega-company-00125",
     "name": "КОМФОРТЪБЪЛ ЕООД № - 203",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/KnQ2Gb6I",
     "source": "Mega папка",
@@ -1016,7 +1000,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КОМФОРТЪБЪЛ ЕООД № - 203"
   },
   {
-    "id": "mega-company-00128",
+    "id": "mega-company-00126",
     "name": "КОНСОРЦИУМ СМАРТ ЕКО ПАКС СОЛУШЪНС ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Gq5AGBqQ",
     "source": "Mega папка",
@@ -1024,7 +1008,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КОНСОРЦИУМ СМАРТ ЕКО ПАКС СОЛУШЪНС ООД № 122"
   },
   {
-    "id": "mega-company-00129",
+    "id": "mega-company-00127",
     "name": "Контрон БГ Проект ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/OzwBAaBL",
     "source": "Mega папка",
@@ -1032,7 +1016,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Контрон БГ Проект ЕООД № 142"
   },
   {
-    "id": "mega-company-00130",
+    "id": "mega-company-00128",
     "name": "КОНТРОН БЪЛГАРИЯ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/K3QSzb7J",
     "source": "Mega папка",
@@ -1040,7 +1024,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КОНТРОН БЪЛГАРИЯ ООД № 89"
   },
   {
-    "id": "mega-company-00131",
+    "id": "mega-company-00129",
     "name": "КОТЕК ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/L3ohHbLa",
     "source": "Mega папка",
@@ -1048,7 +1032,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КОТЕК ЕООД № 67"
   },
   {
-    "id": "mega-company-00132",
+    "id": "mega-company-00130",
     "name": "КРАСИЛЕС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/HuoSlICL",
     "source": "Mega папка",
@@ -1056,7 +1040,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КРАСИЛЕС  ЕООД №  4"
   },
   {
-    "id": "mega-company-00133",
+    "id": "mega-company-00131",
     "name": "КРЕВ 21 ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/HqxkTKjK",
     "source": "Mega папка",
@@ -1064,7 +1048,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КРЕВ 21 ООД № 114"
   },
   {
-    "id": "mega-company-00134",
+    "id": "mega-company-00132",
     "name": "Кристал Сити ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/emYBjZDZ",
     "source": "Mega папка",
@@ -1072,7 +1056,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Кристал Сити ЕООД № 191"
   },
   {
-    "id": "mega-company-00135",
+    "id": "mega-company-00133",
     "name": "КУБАР СТРОЙ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/76QATBrZ",
     "source": "Mega папка",
@@ -1080,7 +1064,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / КУБАР СТРОЙ ЕООД - № 187"
   },
   {
-    "id": "mega-company-00136",
+    "id": "mega-company-00134",
     "name": "ЛИДЕР КОНСТРУКТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/LrJ0XLqB",
     "source": "Mega папка",
@@ -1088,7 +1072,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЛИДЕР КОНСТРУКТ ЕООД  - № 8"
   },
   {
-    "id": "mega-company-00137",
+    "id": "mega-company-00135",
     "name": "ЛИДЕРПРОЕКТ ЕООД - 204",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3yQTmDaT",
     "source": "Mega папка",
@@ -1096,7 +1080,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЛИДЕРПРОЕКТ ЕООД  - 204"
   },
   {
-    "id": "mega-company-00138",
+    "id": "mega-company-00136",
     "name": "ЛИМК БГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/ejYGHLRT",
     "source": "Mega папка",
@@ -1104,7 +1088,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЛИМК БГ ЕООД"
   },
   {
-    "id": "mega-company-00139",
+    "id": "mega-company-00137",
     "name": "Лоби Кар Транс и Ко ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/a7J3EbwJ",
     "source": "Mega папка",
@@ -1112,7 +1096,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Лоби Кар Транс и Ко ЕООД"
   },
   {
-    "id": "mega-company-00140",
+    "id": "mega-company-00138",
     "name": "ЛЮВАНТРАНС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/qqAThJbK",
     "source": "Mega папка",
@@ -1120,7 +1104,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЛЮВАНТРАНС ЕООД № 154"
   },
   {
-    "id": "mega-company-00141",
+    "id": "mega-company-00139",
     "name": "М-ХАУС2011 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Cj4iySqD",
     "source": "Mega папка",
@@ -1128,7 +1112,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / М-ХАУС2011 ЕООД № 205"
   },
   {
-    "id": "mega-company-00142",
+    "id": "mega-company-00140",
     "name": "МАИВ БИЛД ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/anIixT7B",
     "source": "Mega папка",
@@ -1136,7 +1120,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МАИВ БИЛД ООД № 40"
   },
   {
-    "id": "mega-company-00143",
+    "id": "mega-company-00141",
     "name": "Макс Еко Транс ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/yrwXHIJb",
     "source": "Mega папка",
@@ -1144,7 +1128,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Макс Еко Транс ЕООД"
   },
   {
-    "id": "mega-company-00144",
+    "id": "mega-company-00142",
     "name": "Максмарт ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/nmwnTLbA",
     "source": "Mega папка",
@@ -1152,7 +1136,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Максмарт ЕООД № 169"
   },
   {
-    "id": "mega-company-00145",
+    "id": "mega-company-00143",
     "name": "МАРИЦА ОЛИО АД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Wm5WRBYT",
     "source": "Mega папка",
@@ -1160,7 +1144,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МАРИЦА ОЛИО АД № 170"
   },
   {
-    "id": "mega-company-00146",
+    "id": "mega-company-00144",
     "name": "МАРС АРМОР ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/yuRjnBzY",
     "source": "Mega папка",
@@ -1168,7 +1152,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МАРС АРМОР ООД № 173"
   },
   {
-    "id": "mega-company-00147",
+    "id": "mega-company-00145",
     "name": "МЕАЦА ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Sy4yQKxL",
     "source": "Mega папка",
@@ -1176,7 +1160,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МЕАЦА ЕООД"
   },
   {
-    "id": "mega-company-00148",
+    "id": "mega-company-00146",
     "name": "Мегастрой-МК ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/qz5VlB7L",
     "source": "Mega папка",
@@ -1184,7 +1168,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Мегастрой-МК ЕООД"
   },
   {
-    "id": "mega-company-00149",
+    "id": "mega-company-00147",
     "name": "МЕДЕВ-79 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/q7wkESbK",
     "source": "Mega папка",
@@ -1192,7 +1176,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МЕДЕВ-79 ЕООД № 123"
   },
   {
-    "id": "mega-company-00150",
+    "id": "mega-company-00148",
     "name": "Меди Кеър",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/mmZgGJ7A",
     "source": "Mega папка",
@@ -1200,7 +1184,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Меди Кеър № 70"
   },
   {
-    "id": "mega-company-00151",
+    "id": "mega-company-00149",
     "name": "МЗМ - СТРОЙ 99 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/y7gzXBwY",
     "source": "Mega папка",
@@ -1208,7 +1192,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МЗМ - СТРОЙ 99 ЕООД № 182"
   },
   {
-    "id": "mega-company-00152",
+    "id": "mega-company-00150",
     "name": "Мил-Мар 80 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/LqQzlbSA",
     "source": "Mega папка",
@@ -1216,7 +1200,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Мил-Мар 80 ЕООД"
   },
   {
-    "id": "mega-company-00153",
+    "id": "mega-company-00151",
     "name": "МИЛАДОМ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/OqBExBAD",
     "source": "Mega папка",
@@ -1224,7 +1208,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МИЛАДОМ ООД № 46"
   },
   {
-    "id": "mega-company-00154",
+    "id": "mega-company-00152",
     "name": "Миноар",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/z6gUxZCa",
     "source": "Mega папка",
@@ -1232,7 +1216,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Миноар"
   },
   {
-    "id": "mega-company-00155",
+    "id": "mega-company-00153",
     "name": "Мир Инженеринг ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/72A3TTaa",
     "source": "Mega папка",
@@ -1240,7 +1224,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Мир Инженеринг ЕООД"
   },
   {
-    "id": "mega-company-00156",
+    "id": "mega-company-00154",
     "name": "МКХ Билдинг ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/D74w2J5Y",
     "source": "Mega папка",
@@ -1248,7 +1232,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МКХ Билдинг ЕООД  № 13"
   },
   {
-    "id": "mega-company-00157",
+    "id": "mega-company-00155",
     "name": "МЛ Инженеринг ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/qjoxGDZD",
     "source": "Mega папка",
@@ -1256,7 +1240,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МЛ Инженеринг ЕООД №  117"
   },
   {
-    "id": "mega-company-00158",
+    "id": "mega-company-00156",
     "name": "МОЛЕКЮЛАР СОЛУШЪНС БЪЛГАРИЯ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/vjBgzDbS",
     "source": "Mega папка",
@@ -1264,7 +1248,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МОЛЕКЮЛАР СОЛУШЪНС БЪЛГАРИЯ ЕООД № 153"
   },
   {
-    "id": "mega-company-00159",
+    "id": "mega-company-00157",
     "name": "МОНТАЖСТРОЙ ИНЖЕНЕРИНГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/36oAQZKD",
     "source": "Mega папка",
@@ -1272,7 +1256,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МОНТАЖСТРОЙ ИНЖЕНЕРИНГ ЕООД № 164"
   },
   {
-    "id": "mega-company-00160",
+    "id": "mega-company-00158",
     "name": "МУЛТИПЛЕКС ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/6yZ13SwB",
     "source": "Mega папка",
@@ -1280,7 +1264,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МУЛТИПЛЕКС ООД № 112"
   },
   {
-    "id": "mega-company-00161",
+    "id": "mega-company-00159",
     "name": "МУРА-ЛЕС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/b6BUQZjC",
     "source": "Mega папка",
@@ -1288,7 +1272,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / МУРА-ЛЕС ЕООД № 124"
   },
   {
-    "id": "mega-company-00162",
+    "id": "mega-company-00160",
     "name": "Н и Н КОМПЛЕКС СТРОЙ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/32pwzAyD",
     "source": "Mega папка",
@@ -1296,7 +1280,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Н и Н КОМПЛЕКС СТРОЙ ЕООД № 113"
   },
   {
-    "id": "mega-company-00163",
+    "id": "mega-company-00161",
     "name": "НАД ДИЗАИН ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/KuJGHJTA",
     "source": "Mega папка",
@@ -1304,7 +1288,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / НАД ДИЗАИН ЕООД № 36"
   },
   {
-    "id": "mega-company-00164",
+    "id": "mega-company-00162",
     "name": "НАС БГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/inpQiTqb",
     "source": "Mega папка",
@@ -1312,7 +1296,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / НАС БГ ЕООД № 100"
   },
   {
-    "id": "mega-company-00165",
+    "id": "mega-company-00163",
     "name": "Нестос Фешън",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/6jRkURRR",
     "source": "Mega папка",
@@ -1320,7 +1304,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Нестос Фешън № 47"
   },
   {
-    "id": "mega-company-00166",
+    "id": "mega-company-00164",
     "name": "НИГ СТРОЙ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/2yRR0LqZ",
     "source": "Mega папка",
@@ -1328,7 +1312,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / НИГ СТРОЙ ЕООД № 167"
   },
   {
-    "id": "mega-company-00167",
+    "id": "mega-company-00165",
     "name": "НИЕ МОЖЕМ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/OiwEVYjL",
     "source": "Mega папка",
@@ -1336,7 +1320,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / НИЕ МОЖЕМ ЕООД"
   },
   {
-    "id": "mega-company-00168",
+    "id": "mega-company-00166",
     "name": "НИКОНИ БИЛД БГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/S7RVzLTB",
     "source": "Mega папка",
@@ -1344,7 +1328,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / НИКОНИ БИЛД БГ ЕООД № 181"
   },
   {
-    "id": "mega-company-00169",
+    "id": "mega-company-00167",
     "name": "Нов - А строй ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Ljh2gQrA",
     "source": "Mega папка",
@@ -1352,7 +1336,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Нов - А строй ЕООД"
   },
   {
-    "id": "mega-company-00170",
+    "id": "mega-company-00168",
     "name": "Нова Траннслйет ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/byAEFZzC",
     "source": "Mega папка",
@@ -1360,7 +1344,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Нова Траннслйет  ЕООД № 48"
   },
   {
-    "id": "mega-company-00171",
+    "id": "mega-company-00169",
     "name": "НОЕЛ ИНЖЕНЕРИНГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/K752QARb",
     "source": "Mega папка",
@@ -1368,7 +1352,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / НОЕЛ ИНЖЕНЕРИНГ ЕООД № 166"
   },
   {
-    "id": "mega-company-00172",
+    "id": "mega-company-00170",
     "name": "НЮ ДАЙРЕКШЪНС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/DywBmLZA",
     "source": "Mega папка",
@@ -1376,7 +1360,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / НЮ ДАЙРЕКШЪНС ЕООД № 192"
   },
   {
-    "id": "mega-company-00173",
+    "id": "mega-company-00171",
     "name": "НЮ СОЛАР ПРОДЖЕКТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/muwSHIKT",
     "source": "Mega папка",
@@ -1384,7 +1368,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / НЮ СОЛАР ПРОДЖЕКТ ЕООД"
   },
   {
-    "id": "mega-company-00174",
+    "id": "mega-company-00172",
     "name": "ОГРАДНИ СИСТЕМИ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/nuJAwTQZ",
     "source": "Mega папка",
@@ -1392,7 +1376,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ОГРАДНИ СИСТЕМИ ЕООД № 87"
   },
   {
-    "id": "mega-company-00175",
+    "id": "mega-company-00173",
     "name": "ОЙЛ ФУУД ТЕХНОЛЪДЖИС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/L3gDXSpB",
     "source": "Mega папка",
@@ -1400,7 +1384,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ОЙЛ ФУУД ТЕХНОЛЪДЖИС ЕООД № 125"
   },
   {
-    "id": "mega-company-00176",
+    "id": "mega-company-00174",
     "name": "ОРАК ИНЖЕНЕРИНГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/SvZmhBhb",
     "source": "Mega папка",
@@ -1408,7 +1392,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ОРАК ИНЖЕНЕРИНГ  ЕООД  № 27"
   },
   {
-    "id": "mega-company-00177",
+    "id": "mega-company-00175",
     "name": "ОФИС ТРЕНД ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/aqoCgKZI",
     "source": "Mega папка",
@@ -1416,7 +1400,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ОФИС ТРЕНД ООД № 228"
   },
   {
-    "id": "mega-company-00178",
+    "id": "mega-company-00176",
     "name": "Пелетни камини и котли ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/DuIljZLY",
     "source": "Mega папка",
@@ -1424,7 +1408,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Пелетни камини и котли ЕООД № 59"
   },
   {
-    "id": "mega-company-00179",
+    "id": "mega-company-00177",
     "name": "ПЕРЛАМЕТ СЕ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/2zoxmChA",
     "source": "Mega папка",
@@ -1432,7 +1416,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПЕРЛАМЕТ СЕ ООД № 101"
   },
   {
-    "id": "mega-company-00180",
+    "id": "mega-company-00178",
     "name": "ПЕТРОНИКС ГРУП ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/XjhQ2CbD",
     "source": "Mega папка",
@@ -1440,7 +1424,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПЕТРОНИКС ГРУП ЕООД № 171"
   },
   {
-    "id": "mega-company-00181",
+    "id": "mega-company-00179",
     "name": "ПЕХА ТЕХ ЕНД ТРЕЙД ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/DuAnUbJT",
     "source": "Mega папка",
@@ -1448,7 +1432,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПЕХА ТЕХ ЕНД ТРЕЙД ЕООД № 183"
   },
   {
-    "id": "mega-company-00182",
+    "id": "mega-company-00180",
     "name": "Пи Ен Джи Груп ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/r7YRgLZL",
     "source": "Mega папка",
@@ -1456,7 +1440,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Пи Ен Джи Груп ЕООД № 189"
   },
   {
-    "id": "mega-company-00183",
+    "id": "mega-company-00181",
     "name": "ПИСАРСКИ ДИЗАЙН ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/TnQBABKT",
     "source": "Mega папка",
@@ -1464,7 +1448,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПИСАРСКИ ДИЗАЙН ЕООД  № 102"
   },
   {
-    "id": "mega-company-00184",
+    "id": "mega-company-00182",
     "name": "ПКЛИЙН ГРУП ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/GuAE0DBR",
     "source": "Mega папка",
@@ -1472,7 +1456,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПКЛИЙН ГРУП ЕООД № 236"
   },
   {
-    "id": "mega-company-00185",
+    "id": "mega-company-00183",
     "name": "ПЛ ПРОДЖЕКТ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/a6IyxDIY",
     "source": "Mega папка",
@@ -1480,7 +1464,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПЛ ПРОДЖЕКТ ООД № 62"
   },
   {
-    "id": "mega-company-00186",
+    "id": "mega-company-00184",
     "name": "ПЛАНТА ФРУКТ ЕКСПОРТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/jzJDUCKY",
     "source": "Mega папка",
@@ -1488,7 +1472,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПЛАНТА ФРУКТ ЕКСПОРТ ЕООД"
   },
   {
-    "id": "mega-company-00187",
+    "id": "mega-company-00185",
     "name": "ПЛОД - ФАМ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/yjwDEZhB",
     "source": "Mega папка",
@@ -1496,7 +1480,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПЛОД - ФАМ ЕООД № 56"
   },
   {
-    "id": "mega-company-00188",
+    "id": "mega-company-00186",
     "name": "ПМГ БИЛД ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/iyBAQZDL",
     "source": "Mega папка",
@@ -1504,7 +1488,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПМГ БИЛД ЕООД № 96"
   },
   {
-    "id": "mega-company-00189",
+    "id": "mega-company-00187",
     "name": "Поасон Дор ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/XmB0SJ4a",
     "source": "Mega папка",
@@ -1512,7 +1496,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Поасон Дор ЕООД № 38"
   },
   {
-    "id": "mega-company-00190",
+    "id": "mega-company-00188",
     "name": "ПОЛИХИМ - СС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/HmBmiByL",
     "source": "Mega папка",
@@ -1520,7 +1504,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПОЛИХИМ - СС ЕООД № 206"
   },
   {
-    "id": "mega-company-00191",
+    "id": "mega-company-00189",
     "name": "ПРЕМИУМ ИНЖЕНЕРИНГ ГРУП ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/qnB0nJDI",
     "source": "Mega папка",
@@ -1528,7 +1512,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПРЕМИУМ ИНЖЕНЕРИНГ ГРУП ЕООД № 147"
   },
   {
-    "id": "mega-company-00192",
+    "id": "mega-company-00190",
     "name": "ПРИНТ ЮНАЙТЕД ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/W7h0FaZB",
     "source": "Mega папка",
@@ -1536,7 +1520,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПРИНТ ЮНАЙТЕД ООД"
   },
   {
-    "id": "mega-company-00193",
+    "id": "mega-company-00191",
     "name": "Принтек България ЕАД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/C7RTVRLA",
     "source": "Mega папка",
@@ -1544,7 +1528,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Принтек България ЕАД № 174"
   },
   {
-    "id": "mega-company-00194",
+    "id": "mega-company-00192",
     "name": "Про Секюрити Груп ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/z3hFlDQY",
     "source": "Mega папка",
@@ -1552,7 +1536,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Про Секюрити Груп ООД № 233"
   },
   {
-    "id": "mega-company-00195",
+    "id": "mega-company-00193",
     "name": "ПРОАРХ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/TuJ0EJbD",
     "source": "Mega папка",
@@ -1560,7 +1544,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПРОАРХ  ЕООД - № 1"
   },
   {
-    "id": "mega-company-00196",
+    "id": "mega-company-00194",
     "name": "Пролет ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/KnRAlZpL",
     "source": "Mega папка",
@@ -1568,7 +1552,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Пролет  ЕООД № 55"
   },
   {
-    "id": "mega-company-00197",
+    "id": "mega-company-00195",
     "name": "ПроМедЕксперт АД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/CyoF1ZwL",
     "source": "Mega папка",
@@ -1576,7 +1560,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПроМедЕксперт АД № 207"
   },
   {
-    "id": "mega-company-00198",
+    "id": "mega-company-00196",
     "name": "ПРОФЕСИОНАЛ - 777 ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/TuZk2DjA",
     "source": "Mega папка",
@@ -1584,7 +1568,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПРОФЕСИОНАЛ - 777  ООД -  № 14"
   },
   {
-    "id": "mega-company-00199",
+    "id": "mega-company-00197",
     "name": "ПРОФЕСИОНАЛНА ЗАЩИТА – ЕЛЕКТРОНИК ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/HuBS1RSZ",
     "source": "Mega папка",
@@ -1592,7 +1576,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ПРОФЕСИОНАЛНА ЗАЩИТА – ЕЛЕКТРОНИК  ООД  - № 23"
   },
   {
-    "id": "mega-company-00200",
+    "id": "mega-company-00198",
     "name": "Равнако ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/erQm3TwK",
     "source": "Mega папка",
@@ -1600,7 +1584,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Равнако ООД № 93"
   },
   {
-    "id": "mega-company-00201",
+    "id": "mega-company-00199",
     "name": "РАЯ-96 ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/WzZiSZBB",
     "source": "Mega папка",
@@ -1608,7 +1592,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / РАЯ-96 ООД № 63"
   },
   {
-    "id": "mega-company-00202",
+    "id": "mega-company-00200",
     "name": "РВ КЪМПАНИ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/j6AR0DLY",
     "source": "Mega папка",
@@ -1616,7 +1600,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / РВ КЪМПАНИ ЕООД № 103"
   },
   {
-    "id": "mega-company-00203",
+    "id": "mega-company-00201",
     "name": "Рилана ЕАД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Gn5xVBRL",
     "source": "Mega папка",
@@ -1624,7 +1608,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Рилана ЕАД"
   },
   {
-    "id": "mega-company-00204",
+    "id": "mega-company-00202",
     "name": "РОНА ИНВЕСТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/OvAhCJxb",
     "source": "Mega папка",
@@ -1632,7 +1616,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / РОНА ИНВЕСТ ЕООД № 184"
   },
   {
-    "id": "mega-company-00205",
+    "id": "mega-company-00203",
     "name": "РУЛИП ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/vjIjwJoZ",
     "source": "Mega папка",
@@ -1640,7 +1624,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / РУЛИП ЕООД № 105"
   },
   {
-    "id": "mega-company-00206",
+    "id": "mega-company-00204",
     "name": "РУСЕВПЛАСТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/ujZi1DgS",
     "source": "Mega папка",
@@ -1648,7 +1632,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / РУСЕВПЛАСТ ЕООД № 84"
   },
   {
-    "id": "mega-company-00207",
+    "id": "mega-company-00205",
     "name": "С Тръст Груп ЕООД № - 9",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/PmYmFBoY",
     "source": "Mega папка",
@@ -1656,7 +1640,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / С Тръст Груп ЕООД  № - 9"
   },
   {
-    "id": "mega-company-00208",
+    "id": "mega-company-00206",
     "name": "С ТРЪСТ ЕНТЕРПРАИЗ АД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/erg2iZSJ",
     "source": "Mega папка",
@@ -1664,7 +1648,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / С ТРЪСТ ЕНТЕРПРАИЗ АД № 135"
   },
   {
-    "id": "mega-company-00209",
+    "id": "mega-company-00207",
     "name": "САГА-К ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/m2RmnTzC",
     "source": "Mega папка",
@@ -1672,7 +1656,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / САГА-К ЕООД № 175"
   },
   {
-    "id": "mega-company-00210",
+    "id": "mega-company-00208",
     "name": "САЙТЪР ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/yqQgyZrL",
     "source": "Mega папка",
@@ -1680,7 +1664,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / САЙТЪР ЕООД № 104"
   },
   {
-    "id": "mega-company-00211",
+    "id": "mega-company-00209",
     "name": "САЛОНИТА ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/6z4ggLRb",
     "source": "Mega папка",
@@ -1688,7 +1672,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / САЛОНИТА ООД № 185"
   },
   {
-    "id": "mega-company-00212",
+    "id": "mega-company-00210",
     "name": "САТИКА ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/a3ph3DpQ",
     "source": "Mega папка",
@@ -1696,7 +1680,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / САТИКА ЕООД № 137"
   },
   {
-    "id": "mega-company-00213",
+    "id": "mega-company-00211",
     "name": "СВЕТМЕД ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/fuhEiA6A",
     "source": "Mega папка",
@@ -1704,7 +1688,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СВЕТМЕД ЕООД № 162"
   },
   {
-    "id": "mega-company-00214",
+    "id": "mega-company-00212",
     "name": "СД АКВА СТРОЙ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/G651wQjB",
     "source": "Mega папка",
@@ -1712,7 +1696,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СД АКВА СТРОЙ ЕООД № 163"
   },
   {
-    "id": "mega-company-00215",
+    "id": "mega-company-00213",
     "name": "СЕРВИЗЕН ЦЕНТЪР ЗА МЕТАЛИ ЕАД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/32wg3aBa",
     "source": "Mega папка",
@@ -1720,15 +1704,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СЕРВИЗЕН ЦЕНТЪР ЗА МЕТАЛИ ЕАД № 158"
   },
   {
-    "id": "mega-company-00216",
-    "name": "СЕРТИФИКАЦИЯ",
-    "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q",
-    "source": "Mega папка",
-    "originalName": "СЕРТИФИКАЦИЯ",
-    "path": "СЕРТИФИКАЦИЯ"
-  },
-  {
-    "id": "mega-company-00217",
+    "id": "mega-company-00214",
     "name": "СИКО СОЛАР ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/aypGWTbA",
     "source": "Mega папка",
@@ -1736,7 +1712,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СИКО СОЛАР ЕООД № 148"
   },
   {
-    "id": "mega-company-00218",
+    "id": "mega-company-00215",
     "name": "СИТИ СТРОЙ 2025 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/jvhyHYrS",
     "source": "Mega папка",
@@ -1744,7 +1720,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СИТИ СТРОЙ 2025 ЕООД"
   },
   {
-    "id": "mega-company-00219",
+    "id": "mega-company-00216",
     "name": "Ситиком Рила ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/7ihACIxD",
     "source": "Mega папка",
@@ -1752,7 +1728,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Ситиком Рила ООД № 24"
   },
   {
-    "id": "mega-company-00220",
+    "id": "mega-company-00217",
     "name": "СКАЙ МЕДИКЪЛ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/OjQjlbTb",
     "source": "Mega папка",
@@ -1760,7 +1736,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СКАЙ МЕДИКЪЛ ООД № 178"
   },
   {
-    "id": "mega-company-00221",
+    "id": "mega-company-00218",
     "name": "СКАЙ ПРАЙМ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/amwRRLwI",
     "source": "Mega папка",
@@ -1768,7 +1744,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СКАЙ ПРАЙМ ЕООД"
   },
   {
-    "id": "mega-company-00222",
+    "id": "mega-company-00219",
     "name": "СКАПТО ТРЕЙД ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/y2QFETaZ",
     "source": "Mega папка",
@@ -1776,7 +1752,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СКАПТО ТРЕЙД ООД № 95"
   },
   {
-    "id": "mega-company-00223",
+    "id": "mega-company-00220",
     "name": "СЛЪНЧЕВА ТРАКИЯ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/GiJnVYKJ",
     "source": "Mega папка",
@@ -1784,7 +1760,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СЛЪНЧЕВА ТРАКИЯ ООД № 49"
   },
   {
-    "id": "mega-company-00224",
+    "id": "mega-company-00221",
     "name": "СМП ПЛЕВЕН ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/H2o0DaTL",
     "source": "Mega папка",
@@ -1792,7 +1768,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СМП ПЛЕВЕН ЕООД № 139"
   },
   {
-    "id": "mega-company-00225",
+    "id": "mega-company-00222",
     "name": "СОРИКО ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/umQiATJT",
     "source": "Mega папка",
@@ -1800,7 +1776,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СОРИКО ООД № 85"
   },
   {
-    "id": "mega-company-00226",
+    "id": "mega-company-00223",
     "name": "СПЕЦИАЛНИ ПОЛИМЕРИ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3nwnSKLL",
     "source": "Mega папка",
@@ -1808,7 +1784,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СПЕЦИАЛНИ ПОЛИМЕРИ ООД № 115"
   },
   {
-    "id": "mega-company-00227",
+    "id": "mega-company-00224",
     "name": "СПИЙД СЕКЮРИТИ 78 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/PvwT2QTQ",
     "source": "Mega папка",
@@ -1816,7 +1792,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СПИЙД СЕКЮРИТИ 78 ЕООД"
   },
   {
-    "id": "mega-company-00228",
+    "id": "mega-company-00225",
     "name": "СПИРОВ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Dyx3kaKL",
     "source": "Mega папка",
@@ -1824,7 +1800,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СПИРОВ ООД"
   },
   {
-    "id": "mega-company-00229",
+    "id": "mega-company-00226",
     "name": "СТОПЕР 90 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/HnQVlL6K",
     "source": "Mega папка",
@@ -1832,7 +1808,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СТОПЕР 90 ЕООД № 161"
   },
   {
-    "id": "mega-company-00230",
+    "id": "mega-company-00227",
     "name": "СТРОЙГРУП ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/7uh0UawA",
     "source": "Mega папка",
@@ -1840,7 +1816,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СТРОЙГРУП ЕООД"
   },
   {
-    "id": "mega-company-00231",
+    "id": "mega-company-00228",
     "name": "СУПЕРНОВА ИНЖЕНЕРИНГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3qhDAATA",
     "source": "Mega папка",
@@ -1848,7 +1824,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СУПЕРНОВА ИНЖЕНЕРИНГ ЕООД - № 106"
   },
   {
-    "id": "mega-company-00232",
+    "id": "mega-company-00229",
     "name": "Сънигранд ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/DiZDiL4J",
     "source": "Mega папка",
@@ -1856,7 +1832,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Сънигранд ЕООД № 79"
   },
   {
-    "id": "mega-company-00233",
+    "id": "mega-company-00230",
     "name": "СЪНТЕРА ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/aix21CTR",
     "source": "Mega папка",
@@ -1864,7 +1840,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / СЪНТЕРА ЕООД № 229"
   },
   {
-    "id": "mega-company-00234",
+    "id": "mega-company-00231",
     "name": "ТЕМПЕКС",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/mzIwBBCS",
     "source": "Mega папка",
@@ -1872,7 +1848,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТЕМПЕКС № 74"
   },
   {
-    "id": "mega-company-00235",
+    "id": "mega-company-00232",
     "name": "ТЕРМО - ЛУКС I ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/v3QASZ7Y",
     "source": "Mega папка",
@@ -1880,7 +1856,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТЕРМО - ЛУКС I ООД"
   },
   {
-    "id": "mega-company-00236",
+    "id": "mega-company-00233",
     "name": "ТЕХКОНСТРУКТ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/GvpD1ZhR",
     "source": "Mega папка",
@@ -1888,7 +1864,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТЕХКОНСТРУКТ ЕООД № 82"
   },
   {
-    "id": "mega-company-00237",
+    "id": "mega-company-00234",
     "name": "ТЕХНОМЕДИКЪЛ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/36JC1ZDK",
     "source": "Mega папка",
@@ -1896,7 +1872,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТЕХНОМЕДИКЪЛ ЕООД № 208"
   },
   {
-    "id": "mega-company-00238",
+    "id": "mega-company-00235",
     "name": "ТЕХНОПРОЕКТПЛАСТ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/KyQ2DDBS",
     "source": "Mega папка",
@@ -1904,7 +1880,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТЕХНОПРОЕКТПЛАСТ ООД  -№ 6"
   },
   {
-    "id": "mega-company-00239",
+    "id": "mega-company-00236",
     "name": "ТЕХНОСТРОЙ – ИНЖЕНЕРИНГ 99 АД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/evIAxThD",
     "source": "Mega папка",
@@ -1912,7 +1888,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТЕХНОСТРОЙ – ИНЖЕНЕРИНГ 99 АД  № 29"
   },
   {
-    "id": "mega-company-00240",
+    "id": "mega-company-00237",
     "name": "ТИФЛЕКС 1 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/HmQCybjL",
     "source": "Mega папка",
@@ -1920,7 +1896,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТИФЛЕКС 1 ЕООД  -  №  7"
   },
   {
-    "id": "mega-company-00241",
+    "id": "mega-company-00238",
     "name": "ТОДИС ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/WyRkRBZB",
     "source": "Mega папка",
@@ -1928,7 +1904,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТОДИС ЕООД № 71"
   },
   {
-    "id": "mega-company-00242",
+    "id": "mega-company-00239",
     "name": "ТОНИ ГРУП 76 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/OzhUyZYC",
     "source": "Mega папка",
@@ -1936,7 +1912,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТОНИ ГРУП 76 ЕООД № 28"
   },
   {
-    "id": "mega-company-00243",
+    "id": "mega-company-00240",
     "name": "ТОПЛИВО-ЮГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Wv5UDITT",
     "source": "Mega папка",
@@ -1944,7 +1920,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТОПЛИВО-ЮГ ЕООД  № 43"
   },
   {
-    "id": "mega-company-00244",
+    "id": "mega-company-00241",
     "name": "ТРАЙКО СТРОЙ БГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3u4khJgR",
     "source": "Mega папка",
@@ -1952,7 +1928,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТРАЙКО СТРОЙ БГ ЕООД № 107"
   },
   {
-    "id": "mega-company-00245",
+    "id": "mega-company-00242",
     "name": "ТРАЙЧО РУУФ КЪМПАНИ ГРУП 2023 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/S7xSQLAC",
     "source": "Mega папка",
@@ -1960,7 +1936,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТРАЙЧО РУУФ КЪМПАНИ ГРУП 2023 ЕООД № 160"
   },
   {
-    "id": "mega-company-00246",
+    "id": "mega-company-00243",
     "name": "ТРАНСИНКО ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/uzg2TRKC",
     "source": "Mega папка",
@@ -1968,7 +1944,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТРАНСИНКО ЕООД № 126"
   },
   {
-    "id": "mega-company-00247",
+    "id": "mega-company-00244",
     "name": "ТС Кънстракшън ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/z7wmWaAT",
     "source": "Mega папка",
@@ -1976,7 +1952,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТС Кънстракшън ЕООД № 165"
   },
   {
-    "id": "mega-company-00248",
+    "id": "mega-company-00245",
     "name": "ТСАКИ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/bq5AHRxI",
     "source": "Mega папка",
@@ -1984,7 +1960,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТСАКИ ООД № 132"
   },
   {
-    "id": "mega-company-00249",
+    "id": "mega-company-00246",
     "name": "ТТ ГРУП - 2010 ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/LqQnGRhQ",
     "source": "Mega папка",
@@ -1992,7 +1968,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ТТ ГРУП - 2010 ООД № 69"
   },
   {
-    "id": "mega-company-00250",
+    "id": "mega-company-00247",
     "name": "УЗУНОВ ТРАНС 90 ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/zjwhWIaA",
     "source": "Mega папка",
@@ -2000,7 +1976,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / УЗУНОВ ТРАНС 90 ООД № 127"
   },
   {
-    "id": "mega-company-00251",
+    "id": "mega-company-00248",
     "name": "УЛТРА ФЛЕКС ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/XmoWiRyb",
     "source": "Mega папка",
@@ -2008,7 +1984,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / УЛТРА ФЛЕКС ООД № 37"
   },
   {
-    "id": "mega-company-00252",
+    "id": "mega-company-00249",
     "name": "ФАЕЛ ГРУП ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/OzIT2LgC",
     "source": "Mega папка",
@@ -2016,7 +1992,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ФАЕЛ ГРУП ЕООД № 176"
   },
   {
-    "id": "mega-company-00253",
+    "id": "mega-company-00250",
     "name": "ФАРМАЛАЙЗ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/OyYA3L5a",
     "source": "Mega папка",
@@ -2024,7 +2000,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ФАРМАЛАЙЗ ООД"
   },
   {
-    "id": "mega-company-00254",
+    "id": "mega-company-00251",
     "name": "ФЕЕРИЯ -98 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/XqRQWTJa",
     "source": "Mega папка",
@@ -2032,7 +2008,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ФЕЕРИЯ -98 ЕООД - № 2"
   },
   {
-    "id": "mega-company-00255",
+    "id": "mega-company-00252",
     "name": "ФЕЙЗАЛ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/WzBSgBaR",
     "source": "Mega папка",
@@ -2040,7 +2016,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ФЕЙЗАЛ ЕООД № 143"
   },
   {
-    "id": "mega-company-00256",
+    "id": "mega-company-00253",
     "name": "ФЕШЪН СЪПЛАЙ ЕАД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/jzI2VDpa",
     "source": "Mega папка",
@@ -2048,7 +2024,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ФЕШЪН СЪПЛАЙ ЕАД № 50"
   },
   {
-    "id": "mega-company-00257",
+    "id": "mega-company-00254",
     "name": "ФОРЕСТ-70 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/mixB1YTB",
     "source": "Mega папка",
@@ -2056,7 +2032,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ФОРЕСТ-70 ЕООД № 209"
   },
   {
-    "id": "mega-company-00258",
+    "id": "mega-company-00255",
     "name": "ФОТЕКС",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/uyIEQBya",
     "source": "Mega папка",
@@ -2064,7 +2040,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ФОТЕКС - № 12"
   },
   {
-    "id": "mega-company-00259",
+    "id": "mega-company-00256",
     "name": "ХАСИ - ИНЖЕНЕРИНГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/z35E3ZIJ",
     "source": "Mega папка",
@@ -2072,7 +2048,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ХАСИ - ИНЖЕНЕРИНГ ЕООД № 99"
   },
   {
-    "id": "mega-company-00260",
+    "id": "mega-company-00257",
     "name": "ХЕБЪРСТРОЙ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Kv42zQBZ",
     "source": "Mega папка",
@@ -2080,7 +2056,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ХЕБЪРСТРОЙ ООД № 177"
   },
   {
-    "id": "mega-company-00261",
+    "id": "mega-company-00258",
     "name": "Хигиямед ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/n2AmmBbT",
     "source": "Mega папка",
@@ -2088,7 +2064,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Хигиямед ООД № 66"
   },
   {
-    "id": "mega-company-00262",
+    "id": "mega-company-00259",
     "name": "Хидройоникс",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/muZAWL5Q",
     "source": "Mega папка",
@@ -2096,7 +2072,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Хидройоникс № 5"
   },
   {
-    "id": "mega-company-00263",
+    "id": "mega-company-00260",
     "name": "ХИМКОМЕРС - ИНЖЕНЕРИНГ ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/evgiyCKT",
     "source": "Mega папка",
@@ -2104,7 +2080,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ХИМКОМЕРС - ИНЖЕНЕРИНГ ООД"
   },
   {
-    "id": "mega-company-00264",
+    "id": "mega-company-00261",
     "name": "ХИП 19 ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/Hy5SAD4I",
     "source": "Mega папка",
@@ -2112,7 +2088,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ХИП 19 ЕООД № 94"
   },
   {
-    "id": "mega-company-00265",
+    "id": "mega-company-00262",
     "name": "ХоумМарт ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/2rYygTbY",
     "source": "Mega папка",
@@ -2120,7 +2096,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ХоумМарт ЕООД № 58"
   },
   {
-    "id": "mega-company-00266",
+    "id": "mega-company-00263",
     "name": "ЧЕРНЕВ 2024 ООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/67xiDKiA",
     "source": "Mega папка",
@@ -2128,7 +2104,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЧЕРНЕВ 2024 ООД № 234"
   },
   {
-    "id": "mega-company-00267",
+    "id": "mega-company-00264",
     "name": "ШАРАН ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/zrZE0bQR",
     "source": "Mega папка",
@@ -2136,7 +2112,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ШАРАН ЕООД № 215"
   },
   {
-    "id": "mega-company-00268",
+    "id": "mega-company-00265",
     "name": "ШАРК СТРОЙ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/SqAFQDYZ",
     "source": "Mega папка",
@@ -2144,7 +2120,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ШАРК СТРОЙ ЕООД № 133"
   },
   {
-    "id": "mega-company-00269",
+    "id": "mega-company-00266",
     "name": "ЯНЕВ ИНЖЕНЕРИНГ ЕООД",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/DyQETbxJ",
     "source": "Mega папка",
@@ -2152,7 +2128,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / ЯНЕВ ИНЖЕНЕРИНГ ЕООД № 42"
   },
   {
-    "id": "mega-company-00270",
+    "id": "mega-company-00267",
     "name": "briklabs",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/C2gE2AZD",
     "source": "Mega папка",
@@ -2160,7 +2136,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / briklabs"
   },
   {
-    "id": "mega-company-00271",
+    "id": "mega-company-00268",
     "name": "DojoBits",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/DygRAKJb",
     "source": "Mega папка",
@@ -2168,23 +2144,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / DojoBits"
   },
   {
-    "id": "mega-company-00272",
-    "name": "EUR 2023 ОФЕРТА ДАККС БЪЛГАРСКИ ЕЗИК",
-    "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q",
-    "source": "Mega папка",
-    "originalName": "EUR_2023_ОФЕРТА_ДАККС_БЪЛГАРСКИ ЕЗИК",
-    "path": "СЕРТИФИКАЦИЯ / EUR_2023_ОФЕРТА_ДАККС_БЪЛГАРСКИ ЕЗИК"
-  },
-  {
-    "id": "mega-company-00273",
-    "name": "FB-03-009-BG Angaben für Angebote",
-    "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q",
-    "source": "Mega папка",
-    "originalName": "FB-03-009-BG Angaben für Angebote",
-    "path": "СЕРТИФИКАЦИЯ / FB-03-009-BG Angaben für Angebote"
-  },
-  {
-    "id": "mega-company-00274",
+    "id": "mega-company-00269",
     "name": "Muehlbauer",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/u7hQiTBb",
     "source": "Mega папка",
@@ -2192,7 +2152,7 @@ window.AUDIT_HUB_MEGA_COMPANIES = [
     "path": "СЕРТИФИКАЦИЯ / Muehlbauer"
   },
   {
-    "id": "mega-company-00275",
+    "id": "mega-company-00270",
     "name": "WORLDGRID FRANCE SAS",
     "megaUrl": "https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/nyQhlJbZ",
     "source": "Mega папка",
