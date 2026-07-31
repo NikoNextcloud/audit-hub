@@ -705,6 +705,30 @@ th {
   background: white;
 }
 
+.calendar-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 16px;
+}
+
+.calendar-switch button {
+  min-height: 54px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  background: white;
+  font-weight: 850;
+  box-shadow: 0 10px 24px rgba(20, 33, 61, 0.06);
+}
+
+.calendar-switch button.active {
+  color: white;
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
 .segmented button {
   min-height: 40px;
   padding: 8px 14px;
@@ -1081,7 +1105,8 @@ th {
   }
 
   .tool-grid,
-  .profile-grid {
+  .profile-grid,
+  .calendar-switch {
     grid-template-columns: 1fr;
   }
 

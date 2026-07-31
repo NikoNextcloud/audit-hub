@@ -165,6 +165,16 @@ const seedData = {
       updatedAt: nowIso()
     }
   ],
+  calendarEvents: (typeof window !== "undefined" ? window.AUDIT_HUB_IMPORTED_CALENDARS || [] : []).map((event) => ({
+    ...event,
+    time: "",
+    checklist: [],
+    reminderDays: 7,
+    reminderSent: false,
+    createdBy: "Импорт Excel",
+    updatedBy: "Импорт Excel",
+    updatedAt: nowIso()
+  })),
   activityLog: [
     {
       id: "log-1",
@@ -185,6 +195,7 @@ let selectedStatus = "all";
 let auditMode = "calendar";
 let calendarDate = new Date("2026-08-01T12:00:00");
 let activeCompanyId = "";
+let selectedCalendarType = "planned";
 let supabaseClient = null;
 let supabaseAuthUser = null;
 let profileById = {};
@@ -215,7 +226,8 @@ function normalizeState(data) {
     data.session = null;
   }
   data.activityLog ||= structuredClone(seedData.activityLog);
-  for (const list of [data.companies, data.audits, data.payments, data.documents]) {
+  data.calendarEvents ||= structuredClone(seedData.calendarEvents);
+  for (const list of [data.companies, data.audits, data.payments, data.documents, data.calendarEvents]) {
     list.forEach((item) => {
       item.createdBy ||= "Администратор";
       item.updatedBy ||= item.createdBy;
@@ -237,6 +249,16 @@ function normalizeState(data) {
     audit.reminderSent ||= false;
   });
   data.documents.forEach((doc) => (doc.uploadStatus ||= doc.megaUrl ? "uploaded" : "local"));
+  data.calendarEvents.forEach((event) => {
+    event.calendarType ||= "planned";
+    event.calendarName ||= event.calendarType === "planned" ? "Планирани дейности" : "Одитори";
+    event.status ||= "upcoming";
+    event.priority ||= "normal";
+    event.time ||= "";
+    event.checklist ||= [];
+    event.reminderDays ||= 7;
+    event.reminderSent ||= false;
+  });
   applyAutomaticOverdue(data);
   return data;
 }
@@ -442,6 +464,50 @@ function taskPayload(task, auditId) {
   };
 }
 
+function mapCalendarEvent(row) {
+  return {
+    id: row.id,
+    calendarType: row.calendar_type || "planned",
+    calendarName: row.calendar_type === "auditors" ? "Одитори" : "Планирани дейности",
+    date: row.event_date,
+    time: row.event_time || "",
+    title: row.title,
+    auditor: row.auditor || "",
+    status: row.status || "upcoming",
+    priority: row.priority || "normal",
+    sourceSheet: row.source_sheet || "",
+    sourceCell: row.source_cell || "",
+    notes: row.notes || "",
+    checklist: row.checklist || [],
+    reminderDays: row.reminder_days || 7,
+    reminderSent: Boolean(row.reminder_sent),
+    createdBy: nameFromProfile(row.created_by, "Система"),
+    updatedBy: nameFromProfile(row.updated_by, "Система"),
+    updatedAt: row.updated_at || row.created_at || nowIso()
+  };
+}
+
+function calendarEventPayload(item) {
+  return {
+    id: item.id,
+    calendar_type: item.calendarType || selectedCalendarType,
+    event_date: item.date,
+    event_time: item.time || null,
+    title: item.title,
+    auditor: item.auditor || null,
+    status: item.status || "upcoming",
+    priority: item.priority || "normal",
+    source_sheet: item.sourceSheet || null,
+    source_cell: item.sourceCell || null,
+    notes: item.notes || null,
+    checklist: item.checklist || [],
+    reminder_days: Number(item.reminderDays || 7),
+    reminder_sent: Boolean(item.reminderSent),
+    updated_by: supabaseAuthUser?.id || null,
+    updated_at: nowIso()
+  };
+}
+
 function id(prefix) {
   return `${prefix}-${crypto.randomUUID()}`;
 }
@@ -577,7 +643,7 @@ function render() {
         <nav class="nav">
           ${navButton("dashboard", "home", "Начало")}
           ${navButton("companies", "users", "Фирми")}
-          ${navButton("audits", "calendar", "Одити")}
+          ${navButton("audits", "calendar", "Календар")}
           ${navButton("payments", "card", "Плащания")}
           ${navButton("documents", "file", "Документи")}
           ${navButton("notifications", "activity", "Известия")}
@@ -782,17 +848,18 @@ async function ensureRemoteProfile(appUser) {
 
 async function loadRemoteData() {
   if (!supabaseClient) return;
-  const [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes] = await Promise.all([
+  const [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes, calendarEventsRes] = await Promise.all([
     supabaseClient.from("profiles").select("*"),
     supabaseClient.from("companies").select("*").order("created_at", { ascending: false }),
     supabaseClient.from("audits").select("*").order("audit_date", { ascending: true }),
     supabaseClient.from("payments").select("*").order("due_date", { ascending: false }),
     supabaseClient.from("documents").select("*").order("created_at", { ascending: false }),
     supabaseClient.from("activity_log").select("*").order("created_at", { ascending: false }).limit(200),
-    supabaseClient.from("audit_tasks").select("*")
+    supabaseClient.from("audit_tasks").select("*"),
+    supabaseClient.from("calendar_events").select("*").order("event_date", { ascending: true })
   ]);
 
-  const firstError = [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes].find((result) => result.error)?.error;
+  const firstError = [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes, calendarEventsRes].find((result) => result.error)?.error;
   if (firstError) throw firstError;
 
   profileById = Object.fromEntries((profilesRes.data || []).map((profile) => [profile.id, profile]));
@@ -807,6 +874,18 @@ async function loadRemoteData() {
   state.payments = (paymentsRes.data || []).map(mapPayment);
   state.documents = (docsRes.data || []).map(mapDocument);
   state.activityLog = (logsRes.data || []).map(mapLog);
+  if ((calendarEventsRes.data || []).length) {
+    state.calendarEvents = calendarEventsRes.data.map(mapCalendarEvent);
+  } else if (seedData.calendarEvents.length) {
+    const rows = seedData.calendarEvents.map((event) => ({
+      ...calendarEventPayload(event),
+      created_by: supabaseAuthUser?.id || null
+    }));
+    const seedResult = await supabaseClient.from("calendar_events").insert(rows);
+    if (seedResult.error) throw seedResult.error;
+    state.calendarEvents = structuredClone(seedData.calendarEvents);
+    addLog(`Импортира ${state.calendarEvents.length} Excel календарни записа`, "Календар", "calendar_events");
+  }
   applyAutomaticOverdue();
   saveState();
   supabaseStatus = {
@@ -1026,18 +1105,22 @@ function filteredAudits() {
 }
 
 function renderAudits() {
-  const audits = filteredAudits();
+  const events = filteredCalendarEvents();
+  const calendarTitle = selectedCalendarType === "planned" ? "Планирани дейности" : "Одитори";
   return `
     <div class="page-head">
       <div>
-        <h2>График с одити</h2>
-        <p>Календар, списък, бърза промяна на статуси и инструменти за управление.</p>
+        <h2>Календар</h2>
+        <p>Два независими календара с общ достъп, редакция, статуси, списък и календарен изглед.</p>
       </div>
-      <button class="btn primary" data-action="open-modal" data-modal="audit">${icon("plus")} Нов одит</button>
+      <button class="btn primary" data-action="open-modal" data-modal="calendarEvent">${icon("plus")} Нов запис</button>
+    </div>
+    <div class="calendar-switch">
+      <button class="${selectedCalendarType === "planned" ? "active" : ""}" data-action="calendar-type" data-type="planned">Планирани дейности</button>
+      <button class="${selectedCalendarType === "auditors" ? "active" : ""}" data-action="calendar-type" data-type="auditors">Одитори</button>
     </div>
     <div class="toolbar">
       <div class="filters">
-        ${companyFilter()}
         ${statusFilter([
           ["all", "Всички статуси"],
           ["upcoming", "Предстои"],
@@ -1054,8 +1137,8 @@ function renderAudits() {
     </div>
     ${
       auditMode === "calendar"
-        ? `<section class="panel">${renderCalendar(audits)}</section><section class="panel audit-tools">${renderAuditTools()}</section>`
-        : `<section class="panel">${renderAuditList(audits, false)}</section><section class="panel audit-tools">${renderAuditTools()}</section>`
+        ? `<section class="panel">${renderCalendarEvents(events)}</section><section class="panel audit-tools">${renderCalendarEventTools(events.length, calendarTitle)}</section>`
+        : `<section class="panel">${renderCalendarEventList(events)}</section><section class="panel audit-tools">${renderCalendarEventTools(events.length, calendarTitle)}</section>`
     }
   `;
 }
@@ -1103,6 +1186,105 @@ function renderAuditTools() {
     <div class="tool-grid">
       <button class="btn ghost" data-action="export-csv" data-kind="audits">${icon("file")} Експорт CSV (${count})</button>
       <button class="btn ghost" data-action="open-modal" data-modal="audit">${icon("plus")} Бързо добавяне</button>
+    </div>
+  `;
+}
+
+function filteredCalendarEvents() {
+  return state.calendarEvents
+    .filter((event) => event.calendarType === selectedCalendarType)
+    .filter((event) => selectedStatus === "all" || event.status === selectedStatus)
+    .filter((event) => {
+      const needle = query.trim().toLowerCase();
+      if (!needle) return true;
+      return [event.title, event.auditor, event.notes, event.sourceSheet, event.calendarName].join(" ").toLowerCase().includes(needle);
+    })
+    .sort((a, b) => `${a.date} ${a.time || ""}`.localeCompare(`${b.date} ${b.time || ""}`));
+}
+
+function renderCalendarEvents(events) {
+  const year = calendarDate.getFullYear();
+  const month = calendarDate.getMonth();
+  const first = new Date(year, month, 1);
+  const startOffset = (first.getDay() + 6) % 7;
+  const start = new Date(year, month, 1 - startOffset);
+  const cells = Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(start);
+    date.setDate(start.getDate() + index);
+    const iso = dateInput(date);
+    const dayEvents = events.filter((event) => event.date === iso);
+    return `
+      <button class="calendar-cell ${date.getMonth() !== month ? "outside" : ""}" data-action="open-modal" data-modal="calendarEvent" data-date="${iso}">
+        <strong>${date.getDate()}</strong>
+        ${dayEvents
+          .slice(0, 4)
+          .map((event) => `<span class="calendar-chip ${event.status}">${escapeHtml(event.auditor ? `${event.auditor}: ${event.title}` : event.title)}</span>`)
+          .join("")}
+        ${dayEvents.length > 4 ? `<em>+${dayEvents.length - 4}</em>` : ""}
+      </button>
+    `;
+  });
+
+  return `
+    <div class="calendar-head">
+      <button class="btn ghost" data-action="month-prev">Назад</button>
+      <h3>${new Intl.DateTimeFormat("bg-BG", { month: "long", year: "numeric" }).format(calendarDate)}</h3>
+      <button class="btn ghost" data-action="month-next">Напред</button>
+    </div>
+    <div class="calendar-weekdays">
+      <span>Пон</span><span>Вто</span><span>Сря</span><span>Чет</span><span>Пет</span><span>Съб</span><span>Нед</span>
+    </div>
+    <div class="calendar-grid">${cells.join("")}</div>
+  `;
+}
+
+function renderCalendarEventList(events) {
+  if (!events.length) return `<div class="empty">Няма записи за избрания календар.</div>`;
+  return `
+    <div class="calendar-list">
+      ${events
+        .map((event) => {
+          const days = daysUntil(event.date);
+          const dayText = days < 0 ? "минал" : days === 0 ? "днес" : `${days} дни`;
+          return `
+            <div class="calendar-item audit-row">
+              <div class="date-badge audit-date">
+                <strong>${formatShortDate(event.date)}</strong>
+                <small>${event.time || ""}</small>
+              </div>
+              <div class="audit-main">
+                <strong>${escapeHtml(event.title)}</strong>
+                <div class="meta">
+                  <span>${escapeHtml(event.calendarName)}${event.auditor ? ` · ${escapeHtml(event.auditor)}` : ""}</span>
+                  <span>${escapeHtml(event.notes || "")}</span>
+                  <span>Източник: ${escapeHtml(event.sourceSheet || "ръчно")} ${escapeHtml(event.sourceCell || "")}</span>
+                  <span>Последно: ${escapeHtml(event.updatedBy)} · ${formatTime(event.updatedAt)}</span>
+                </div>
+              </div>
+              <div class="card-actions audit-actions">
+                <span class="status ${days < 0 ? "danger" : days <= 7 ? "warn" : "info"}">${dayText}</span>
+                ${statusBadge("audit", event.status)}
+                ${statusBadge("priority", event.priority)}
+                <select class="inline-select" data-action="calendar-event-status" data-id="${event.id}">
+                  ${auditStatusOptions(event.status)}
+                </select>
+                <button class="icon-btn" title="Редактирай" data-action="open-modal" data-modal="calendarEvent" data-id="${event.id}">${icon("edit")}</button>
+                ${canDelete() ? `<button class="icon-btn danger" title="Изтрий" data-action="delete-calendar-event" data-id="${event.id}">${icon("trash")}</button>` : ""}
+              </div>
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+}
+
+function renderCalendarEventTools(count, title) {
+  return `
+    <div class="panel-head"><h3>Инструменти: ${escapeHtml(title)}</h3></div>
+    <div class="tool-grid">
+      <button class="btn ghost" data-action="export-csv" data-kind="calendarEvents">${icon("file")} Експорт CSV (${count})</button>
+      <button class="btn ghost" data-action="open-modal" data-modal="calendarEvent">${icon("plus")} Бързо добавяне</button>
     </div>
   `;
 }
@@ -1803,6 +1985,14 @@ function bindEvents() {
     });
   });
 
+  document.querySelectorAll("[data-action='calendar-type']").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedCalendarType = button.dataset.type;
+      selectedStatus = "all";
+      render();
+    });
+  });
+
   document.querySelector("[data-action='month-prev']")?.addEventListener("click", () => {
     calendarDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1);
     render();
@@ -1820,8 +2010,16 @@ function bindEvents() {
     });
   });
 
+  document.querySelectorAll("[data-action='calendar-event-status']").forEach((control) => {
+    control.addEventListener("change", () => updateCalendarEventStatus(control.dataset.id, control.value));
+  });
+
   document.querySelectorAll("[data-action='delete']").forEach((button) => {
     button.addEventListener("click", () => deleteItem(button.dataset.kind, button.dataset.id));
+  });
+
+  document.querySelectorAll("[data-action='delete-calendar-event']").forEach((button) => {
+    button.addEventListener("click", () => deleteCalendarEvent(button.dataset.id));
   });
 
   document.querySelectorAll("[data-action='duplicate-audit']").forEach((button) => {
@@ -1847,6 +2045,7 @@ function openModal(type, companyId = "", itemId = "", defaultDate = "") {
     audit: auditForm,
     payment: paymentForm,
     document: documentForm,
+    calendarEvent: calendarEventForm,
     mega: megaForm,
     changePassword: changePasswordForm
   };
@@ -1885,7 +2084,8 @@ function findItem(type, itemId) {
     company: state.companies,
     audit: state.audits,
     payment: state.payments,
-    document: state.documents
+    document: state.documents,
+    calendarEvent: state.calendarEvents
   };
   return lists[type]?.find((item) => item.id === itemId) || null;
 }
@@ -1896,6 +2096,7 @@ function modalTitle(type, item) {
     audit: item ? "Редакция на одит" : "Нов одит",
     payment: item ? "Редакция на плащане" : "Ново плащане",
     document: item ? "Редакция на документ" : "Качване на документ",
+    calendarEvent: item ? "Редакция на календарен запис" : "Нов календарен запис",
     mega: "Mega папка",
     changePassword: "Смяна на парола"
   };
@@ -1970,6 +2171,48 @@ function auditForm(companyId, item, defaultDate) {
         <div class="form-row full">
           <label for="checklist">Checklist задачи</label>
           <textarea id="checklist" name="checklist" rows="5" placeholder="pending | Проверка на документи | Николай | 2026-08-02&#10;in_progress | Потвърждение на час | Анна | 2026-08-03&#10;done | Изпратен протокол | Администратор | 2026-08-04">${escapeHtml(formatChecklistForForm(item?.checklist || []))}</textarea>
+        </div>
+      </div>
+      ${formActions()}
+    </form>
+  `;
+}
+
+function calendarEventForm(companyId, item, defaultDate) {
+  const calendarType = item?.calendarType || selectedCalendarType;
+  return `
+    <form data-form="calendarEvent">
+      <input type="hidden" name="id" value="${escapeAttr(item?.id || "")}" />
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="calendarType">Календар</label>
+          <select id="calendarType" name="calendarType" required>
+            ${option("planned", "Планирани дейности", calendarType)}
+            ${option("auditors", "Одитори", calendarType)}
+          </select>
+        </div>
+        ${field("date", "Дата", "date", item?.date || defaultDate || "", true)}
+        ${field("time", "Час", "time", item?.time || "")}
+        ${field("title", "Запис", "text", item?.title || "", true)}
+        ${field("auditor", "Одитор/отговорник", "text", item?.auditor || "")}
+        <div class="form-row">
+          <label for="status">Статус</label>
+          <select id="status" name="status">
+            ${auditStatusOptions(item?.status || "upcoming")}
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="priority">Приоритет</label>
+          <select id="priority" name="priority">
+            ${option("low", "Нисък", item?.priority)}
+            ${option("normal", "Нормален", item?.priority || "normal")}
+            ${option("high", "Висок", item?.priority)}
+          </select>
+        </div>
+        ${field("reminderDays", "Напомняне дни преди", "number", item?.reminderDays || 7, true)}
+        <div class="form-row full">
+          <label for="notes">Бележки</label>
+          <textarea id="notes" name="notes" rows="3">${escapeHtml(item?.notes || "")}</textarea>
         </div>
       </div>
       ${formActions()}
@@ -2144,6 +2387,43 @@ async function handleForm(event) {
       addLog(`${isEdit ? "Редактира" : "Добави"} одит: ${companyName(data.companyId)}`, "Одит", item.id);
     }
 
+    if (kind === "calendarEvent") {
+      const item = isEdit ? findItem("calendarEvent", data.id) : { id: id("ce") };
+      Object.assign(
+        item,
+        stamp(
+          {
+            ...item,
+            calendarType: data.calendarType,
+            calendarName: data.calendarType === "auditors" ? "Одитори" : "Планирани дейности",
+            date: data.date,
+            time: data.time,
+            title: data.title,
+            auditor: data.auditor,
+            status: data.status,
+            priority: data.priority,
+            reminderDays: Number(data.reminderDays || 7),
+            reminderSent: false,
+            sourceSheet: item.sourceSheet || "",
+            sourceCell: item.sourceCell || "",
+            notes: data.notes,
+            checklist: item.checklist || []
+          },
+          !isEdit
+        )
+      );
+      if (supabaseClient && supabaseAuthUser) {
+        const payload = calendarEventPayload(item);
+        const saved = isEdit
+          ? await remoteUpdate("calendar_events", item.id, payload)
+          : await remoteInsert("calendar_events", { ...payload, created_by: supabaseAuthUser.id });
+        Object.assign(item, mapCalendarEvent(saved));
+      }
+      if (!isEdit) state.calendarEvents.push(item);
+      selectedCalendarType = item.calendarType;
+      addLog(`${isEdit ? "Редактира" : "Добави"} календарен запис: ${data.title}`, item.calendarName, item.id);
+    }
+
     if (kind === "payment") {
       const item = isEdit ? findItem("payment", data.id) : { id: id("p") };
       Object.assign(item, stamp({ ...item, companyId: data.companyId, invoice: data.invoice, amount: Number(data.amount), dueDate: data.dueDate, paidDate: data.paidDate, status: data.status }, !isEdit));
@@ -2256,6 +2536,40 @@ async function updateStatus(kind, itemId, status) {
   }
 }
 
+async function updateCalendarEventStatus(itemId, status) {
+  const item = findItem("calendarEvent", itemId);
+  if (!item) return;
+  item.status = status;
+  stamp(item);
+  try {
+    if (supabaseClient && supabaseAuthUser) await remoteUpdate("calendar_events", item.id, calendarEventPayload(item));
+    addLog(`Промени статус на календарен запис: ${status}`, item.calendarName, item.id);
+    saveState();
+    render();
+  } catch (error) {
+    alert(`Supabase статусът не се записа: ${error.message}`);
+  }
+}
+
+async function deleteCalendarEvent(itemId) {
+  if (!canDelete()) {
+    alert("Само Админ може да трие записи.");
+    return;
+  }
+  const item = findItem("calendarEvent", itemId);
+  if (!item) return;
+  if (!confirm("Сигурни ли сте, че искате да изтриете календарния запис? Историята на промяната ще остане.")) return;
+  try {
+    if (supabaseClient && supabaseAuthUser) await remoteDelete("calendar_events", itemId);
+    state.calendarEvents = state.calendarEvents.filter((event) => event.id !== itemId);
+    addLog(`Изтри календарен запис: ${item.title}`, item.calendarName, item.id);
+    saveState();
+    render();
+  } catch (error) {
+    alert(`Supabase изтриването не мина: ${error.message}`);
+  }
+}
+
 async function deleteItem(kind, itemId) {
   if (!canDelete()) {
     alert("Само Админ може да трие записи.");
@@ -2340,7 +2654,8 @@ function exportCsv(kind) {
     company: filteredCompanies().map((c) => [c.name, c.bulstat, c.contact, c.phone, c.email, c.status, c.megaUrl]),
     payment: state.payments.map((p) => [companyName(p.companyId), p.invoice, p.amount, p.dueDate, p.paidDate, p.status]),
     document: state.documents.map((d) => [companyName(d.companyId), d.name, d.kind, d.createdAt, d.megaUrl]),
-    audits: filteredAudits().map((a) => [companyName(a.companyId), a.date, a.time, a.type, a.auditor, a.status, a.priority])
+    audits: filteredAudits().map((a) => [companyName(a.companyId), a.date, a.time, a.type, a.auditor, a.status, a.priority]),
+    calendarEvents: filteredCalendarEvents().map((event) => [event.calendarName, event.date, event.time, event.title, event.auditor, event.status, event.priority, event.sourceSheet, event.sourceCell])
   }[kind];
   const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
