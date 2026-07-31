@@ -1,6 +1,14 @@
-insert into companies (name, mega_url, status, notes)
-select v.name, v.mega_url, v.status, v.notes
-from (values
+begin;
+
+create temporary table mega_company_import (
+  name text not null,
+  mega_url text not null,
+  status text not null,
+  notes text
+) on commit drop;
+
+insert into mega_company_import (name, mega_url, status, notes)
+values
   ('АБЛАМИЛК ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/zqBkFLgR', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / АБЛАМИЛК ЕООД   - № 25'),
   ('АЙ ТРЕЙДИНГ ЛАБ ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3uw1QArL', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / АЙ ТРЕЙДИНГ ЛАБ ЕООД № 210'),
   ('АКВА-ТЕХ ООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/zvYC0TyY', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / АКВА-ТЕХ ООД   - № 19'),
@@ -37,7 +45,6 @@ from (values
   ('Браманд ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/3zZmlRaY', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / Браманд ЕООД  № 33'),
   ('БРАТЯ ПАЛОВИ ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/66p1kZrT', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / БРАТЯ ПАЛОВИ ЕООД № 120'),
   ('БРАТЯ ПАНЧЕВИ ООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/DjBGnZ6L', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / БРАТЯ ПАНЧЕВИ ООД № 134'),
-  ('БСА-Оферта за одит-бланка TSV', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / БСА-Оферта за одит-бланка_TSV'),
   ('Бул смарт канстръкшън ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/qr4lnYQJ', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / Бул смарт канстръкшън ЕООД № 211'),
   ('Булбилд Гранд инженеринг ЕООД № - 195', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/inwTiRwI', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / Булбилд Гранд инженеринг ЕООД № - 195'),
   ('БУЛТЕКС 99 ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/7rRXzLiZ', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / БУЛТЕКС 99 ЕООД'),
@@ -119,7 +126,6 @@ from (values
   ('Инфрастрой 76 ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/q25wQKJD', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / Инфрастрой 76 ЕООД № 110'),
   ('ИПО ООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/72ZgXDqC', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / ИПО ООД № 91'),
   ('КА - ИМПЕКС ООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/L3R2xR6L', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / КА - ИМПЕКС ООД - № 11'),
-  ('календар одитори 2025', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / календар одитори 2025'),
   ('Каприкорн Кемикълс Груп ООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/q2JwAB7B', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / Каприкорн Кемикълс Груп ООД   - № 21'),
   ('Капс Ловеч ООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/f2QU2Rxa', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / Капс Ловеч ООД № 92'),
   ('КАРГО ЛАЙН ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/S2xWBYCQ', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / КАРГО ЛАЙН ЕООД № 141'),
@@ -216,7 +222,6 @@ from (values
   ('СВЕТМЕД ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/fuhEiA6A', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / СВЕТМЕД ЕООД № 162'),
   ('СД АКВА СТРОЙ ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/G651wQjB', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / СД АКВА СТРОЙ ЕООД № 163'),
   ('СЕРВИЗЕН ЦЕНТЪР ЗА МЕТАЛИ ЕАД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/32wg3aBa', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / СЕРВИЗЕН ЦЕНТЪР ЗА МЕТАЛИ ЕАД № 158'),
-  ('СЕРТИФИКАЦИЯ', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ'),
   ('СИКО СОЛАР ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/aypGWTbA', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / СИКО СОЛАР ЕООД № 148'),
   ('СИТИ СТРОЙ 2025 ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/jvhyHYrS', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / СИТИ СТРОЙ 2025 ЕООД'),
   ('Ситиком Рила ООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/7ihACIxD', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / Ситиком Рила ООД № 24'),
@@ -272,14 +277,30 @@ from (values
   ('ЯНЕВ ИНЖЕНЕРИНГ ЕООД', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/DyQETbxJ', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / ЯНЕВ ИНЖЕНЕРИНГ ЕООД № 42'),
   ('briklabs', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/C2gE2AZD', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / briklabs'),
   ('DojoBits', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/DygRAKJb', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / DojoBits'),
-  ('EUR 2023 ОФЕРТА ДАККС БЪЛГАРСКИ ЕЗИК', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / EUR_2023_ОФЕРТА_ДАККС_БЪЛГАРСКИ ЕЗИК'),
-  ('FB-03-009-BG Angaben für Angebote', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / FB-03-009-BG Angaben für Angebote'),
   ('Muehlbauer', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/u7hQiTBb', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / Muehlbauer'),
-  ('WORLDGRID FRANCE SAS', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/nyQhlJbZ', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / WORLDGRID FRANCE SAS')
-) as v(name, mega_url, status, notes)
+  ('WORLDGRID FRANCE SAS', 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q/folder/nyQhlJbZ', 'active', 'Импорт от Mega папка. Път: СЕРТИФИКАЦИЯ / WORLDGRID FRANCE SAS');
+
+update companies c
+set
+  mega_url = v.mega_url,
+  updated_at = now()
+from mega_company_import v
+where lower(regexp_replace(c.name, '[^[:alnum:]]+', '', 'g')) =
+      lower(regexp_replace(v.name, '[^[:alnum:]]+', '', 'g'))
+  and (
+    c.mega_url is null
+    or btrim(c.mega_url) = ''
+    or btrim(c.mega_url) = 'https://mega.nz/folder/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q'
+  );
+
+insert into companies (name, mega_url, status, notes)
+select v.name, v.mega_url, v.status, v.notes
+from mega_company_import v
 where not exists (
   select 1
   from companies c
   where lower(regexp_replace(c.name, '[^[:alnum:]]+', '', 'g')) =
         lower(regexp_replace(v.name, '[^[:alnum:]]+', '', 'g'))
 );
+
+commit;

@@ -1,0 +1,14 @@
+node_modules/
+
+# Generated calendar and Mega import artifacts
+scripts/calendar-analysis/
+scripts/calendar-import*.json
+scripts/mega-companies.json
+scripts/mega-company-candidates.json
+scripts/mega-folder-companies.json
+scripts/workbook-inspection.json
+
+# Local configuration
+.env
+.env.*
+!.env.example

@@ -1,14 +1,29 @@
 const storeKey = "audit-hub-state-v2";
 const oldStoreKey = "audit-hub-state-v1";
 const importedMegaCompanies = typeof window !== "undefined" ? window.AUDIT_HUB_MEGA_COMPANIES || [] : [];
+const importedCalendarEvents = typeof window !== "undefined" ? window.AUDIT_HUB_IMPORTED_CALENDARS || [] : [];
+const importedCalendarSheets = new Set([
+  "Януари",
+  "Февруари",
+  "Март",
+  "Април",
+  "Май",
+  "Юни",
+  "Юли",
+  "Август",
+  "Септември",
+  "Октомври",
+  "Ноември",
+  "Декември"
+]);
 
 const seedData = {
   session: null,
   users: [
-    { id: "u-1", name: "Георги", email: "georgi@audit.local", password: "Geo2026", role: "auditor", online: false, lastSeen: nowIso() },
-    { id: "u-2", name: "Никол", email: "nikol@audit.local", password: "Niko26", role: "auditor", online: false, lastSeen: nowIso() },
-    { id: "u-3", name: "Админ", email: "admin@audit.local", password: "Admin26", role: "admin", online: false, lastSeen: nowIso() },
-    { id: "u-4", name: "Катя", email: "katya@audit.local", password: "Katy26", role: "accounting", online: false, lastSeen: nowIso() }
+    { id: "u-1", name: "Георги", email: "georgi@audit.local", role: "auditor", online: false, lastSeen: nowIso() },
+    { id: "u-2", name: "Никол", email: "nikol@audit.local", role: "auditor", online: false, lastSeen: nowIso() },
+    { id: "u-3", name: "Админ", email: "admin@audit.local", role: "admin", online: false, lastSeen: nowIso() },
+    { id: "u-4", name: "Катя", email: "katya@audit.local", role: "accounting", online: false, lastSeen: nowIso() }
   ],
   companies: [
     {
@@ -166,7 +181,7 @@ const seedData = {
       updatedAt: nowIso()
     }
   ],
-  calendarEvents: (typeof window !== "undefined" ? window.AUDIT_HUB_IMPORTED_CALENDARS || [] : []).map((event) => ({
+  calendarEvents: importedCalendarEvents.map((event) => ({
     ...event,
     time: "",
     checklist: [],
@@ -221,13 +236,16 @@ function normalizeState(data) {
   const savedUsers = data.users || [];
   data.users = seedData.users.map((user) => {
     const saved = savedUsers.find((item) => item.name === user.name);
-    return { ...user, ...saved, password: saved?.password || user.password };
+    if (!saved) return { ...user };
+    const { password: legacyPassword, ...safeSaved } = saved;
+    return { ...user, ...safeSaved };
   });
   if (data.session && !data.users.some((user) => user.name === data.session.name)) {
     data.session = null;
   }
   data.activityLog ||= structuredClone(seedData.activityLog);
   data.calendarEvents ||= structuredClone(seedData.calendarEvents);
+  mergeImportedCalendarEvents(data);
   data.companies ||= [];
   mergeImportedMegaCompanies(data);
   for (const list of [data.companies, data.audits, data.payments, data.documents, data.calendarEvents]) {
@@ -292,18 +310,145 @@ function megaCompanyToAppCompany(item) {
 
 function mergeImportedMegaCompanies(targetState) {
   if (!importedMegaCompanies.length) return 0;
-  const seen = new Set((targetState.companies || []).map((company) => normalizedCompanyKey(company.name)).filter(Boolean));
+  const existingByKey = new Map(
+    (targetState.companies || [])
+      .map((company) => [normalizedCompanyKey(company.name), company])
+      .filter(([key]) => Boolean(key))
+  );
   const additions = [];
   importedMegaCompanies.forEach((item) => {
     const key = normalizedCompanyKey(item.name);
-    if (!key || seen.has(key)) return;
-    seen.add(key);
+    if (!key) return;
+    const existing = existingByKey.get(key);
+    if (existing) {
+      if (item.megaUrl && shouldFillImportedMegaUrl(existing.megaUrl)) {
+        existing.megaUrl = item.megaUrl;
+        existing.updatedBy = "Mega импорт";
+        existing.updatedAt = nowIso();
+      }
+      return;
+    }
+    existingByKey.set(key, item);
     additions.push(megaCompanyToAppCompany(item));
   });
   if (additions.length) {
     targetState.companies.push(...additions);
   }
   return additions.length;
+}
+
+function shouldFillImportedMegaUrl(currentUrl) {
+  if (!currentUrl) return true;
+  return /^https:\/\/mega\.nz\/folder\/vvxAULDI#sc5y3rg4VtligSwYZ0D61Q\/?$/i.test(currentUrl.trim());
+}
+
+function calendarSourceKey(event) {
+  return [event.calendarType, event.sourceSheet, event.sourceCell].join("|");
+}
+
+function isExcelImportedCalendarEvent(event) {
+  return (
+    importedCalendarSheets.has(event.sourceSheet) &&
+    /^\d+:\d+$/.test(String(event.sourceCell || ""))
+  );
+}
+
+function normalizedImportedAuditor(auditor) {
+  const value = String(auditor || "").trim();
+  if (value === "Георги") return "Георги Георгиев - одитор";
+  if (value === "Катя") return "Екатерина Георгиева - одитор";
+  return value;
+}
+
+function importedCalendarEventToAppEvent(event) {
+  return {
+    ...event,
+    time: event.time || "",
+    checklist: event.checklist || [],
+    reminderDays: event.reminderDays || 7,
+    reminderSent: Boolean(event.reminderSent),
+    createdBy: event.createdBy || "Импорт Excel",
+    updatedBy: event.updatedBy || "Импорт Excel",
+    updatedAt: event.updatedAt || nowIso()
+  };
+}
+
+function buildCalendarImportPlan(existingEvents) {
+  const existingById = new Map(existingEvents.map((event) => [event.id, event]));
+  const existingBySource = new Map(
+    existingEvents
+      .filter(isExcelImportedCalendarEvent)
+      .map((event) => [calendarSourceKey(event), event])
+  );
+  const usedExistingIds = new Set();
+  const importedResults = [];
+  const upserts = [];
+  const staleIds = new Set();
+
+  importedCalendarEvents.forEach((sourceEvent) => {
+    const imported = importedCalendarEventToAppEvent(sourceEvent);
+    const exact = existingById.get(imported.id);
+    if (exact) {
+      usedExistingIds.add(exact.id);
+      const upgradedAuditor = normalizedImportedAuditor(exact.auditor);
+      const merged = {
+        ...exact,
+        calendarType: imported.calendarType,
+        calendarName: imported.calendarName,
+        sourceSheet: imported.sourceSheet,
+        sourceCell: imported.sourceCell,
+        auditor: upgradedAuditor,
+        color: imported.color
+      };
+      importedResults.push(merged);
+      if (upgradedAuditor !== exact.auditor) upserts.push(merged);
+      return;
+    }
+
+    const previous = existingBySource.get(calendarSourceKey(imported));
+    if (previous) {
+      usedExistingIds.add(previous.id);
+      staleIds.add(previous.id);
+      const corrected = {
+        ...imported,
+        time: previous.time || "",
+        status: previous.status || imported.status,
+        priority: previous.priority || imported.priority,
+        notes: previous.notes || imported.notes,
+        checklist: previous.checklist || [],
+        reminderDays: previous.reminderDays || 7,
+        reminderSent: Boolean(previous.reminderSent),
+        createdBy: previous.createdBy || imported.createdBy,
+        updatedBy: previous.updatedBy || imported.updatedBy,
+        updatedAt: nowIso()
+      };
+      importedResults.push(corrected);
+      upserts.push(corrected);
+      return;
+    }
+
+    importedResults.push(imported);
+    upserts.push(imported);
+  });
+
+  existingEvents.forEach((event) => {
+    if (isExcelImportedCalendarEvent(event) && !usedExistingIds.has(event.id)) {
+      staleIds.add(event.id);
+    }
+  });
+
+  const manualEvents = existingEvents.filter((event) => !isExcelImportedCalendarEvent(event));
+  return {
+    events: [...manualEvents, ...importedResults],
+    upserts,
+    staleIds: [...staleIds]
+  };
+}
+
+function mergeImportedCalendarEvents(targetState) {
+  if (!importedCalendarEvents.length) return;
+  const plan = buildCalendarImportPlan(targetState.calendarEvents || []);
+  targetState.calendarEvents = plan.events;
 }
 
 function applyAutomaticOverdue(targetState = state) {
@@ -715,7 +860,7 @@ function render() {
           <button class="btn ghost mobile-menu" data-action="toggle-menu">${icon("menu")}</button>
           <input class="search" value="${escapeAttr(query)}" data-action="search" placeholder="Търсене по фирма, контакт, фактура или документ" />
           ${renderSupabaseStatusButton()}
-          <button class="btn primary top-action" data-action="open-modal" data-modal="company">${icon("plus")} Нова фирма</button>
+          <button class="btn primary top-action" title="Нова фирма" aria-label="Нова фирма" data-action="open-modal" data-modal="company">${icon("plus")} Нова фирма</button>
         </header>
         <section class="content">${renderView()}</section>
       </main>
@@ -768,16 +913,9 @@ function renderLogin() {
     try {
       await signInWithSupabase(selectedUser, data.password);
     } catch (error) {
-      if (location.protocol !== "file:" && !String(error.message || "").includes("/api/supabase-config")) {
-        errorNode.textContent = `Supabase login грешка: ${error.message}`;
-        errorNode.classList.remove("hidden");
-        return;
-      }
-      if (!selectedUser || selectedUser.password !== data.password) {
-        errorNode.textContent = "Грешна парола за избрания потребител.";
-        errorNode.classList.remove("hidden");
-        return;
-      }
+      errorNode.textContent = `Supabase login грешка: ${error.message}`;
+      errorNode.classList.remove("hidden");
+      return;
     }
 
     if (!selectedUser) {
@@ -913,25 +1051,24 @@ async function loadRemoteData() {
   });
 
   state.companies = (companiesRes.data || []).map(mapCompany);
-  const importedCompaniesCount = await seedMegaCompaniesToSupabase();
+  const megaSync = await seedMegaCompaniesToSupabase();
   state.audits = (auditsRes.data || []).map((audit) => mapAudit(audit, tasksByAudit[audit.id] || []));
   state.payments = (paymentsRes.data || []).map(mapPayment);
   state.documents = (docsRes.data || []).map(mapDocument);
   state.activityLog = (logsRes.data || []).map(mapLog);
-  if ((calendarEventsRes.data || []).length) {
-    state.calendarEvents = calendarEventsRes.data.map(mapCalendarEvent);
-  } else if (seedData.calendarEvents.length) {
-    const rows = seedData.calendarEvents.map((event) => ({
-      ...calendarEventPayload(event),
-      created_by: supabaseAuthUser?.id || null
-    }));
-    const seedResult = await supabaseClient.from("calendar_events").upsert(rows, { onConflict: "id" });
-    if (seedResult.error) throw seedResult.error;
-    state.calendarEvents = structuredClone(seedData.calendarEvents);
-    addLog(`Импортира ${state.calendarEvents.length} Excel календарни записа`, "Календар", "calendar_events");
+  const calendarSync = await syncImportedCalendarEventsToSupabase(calendarEventsRes.data || []);
+  state.calendarEvents = calendarSync.events;
+  if (calendarSync.upserted) {
+    addLog(`Синхронизира ${calendarSync.upserted} Excel календарни записа`, "Календар", "calendar_events");
   }
-  if (importedCompaniesCount) {
-    addLog(`Импортира ${importedCompaniesCount} фирми от Mega`, "Фирми", "mega-companies");
+  if (calendarSync.removed) {
+    addLog(`Премахна ${calendarSync.removed} остарели календарни записа`, "Календар", "calendar_events-stale");
+  }
+  if (megaSync.imported) {
+    addLog(`Импортира ${megaSync.imported} фирми от Mega`, "Фирми", "mega-companies");
+  }
+  if (megaSync.linked) {
+    addLog(`Свърза ${megaSync.linked} фирми с техните Mega папки`, "Фирми", "mega-company-folders");
   }
   applyAutomaticOverdue();
   saveState();
@@ -969,8 +1106,37 @@ async function remoteInsert(table, payload) {
 }
 
 async function seedMegaCompaniesToSupabase() {
-  if (!supabaseClient || !importedMegaCompanies.length) return 0;
-  const seen = new Set(state.companies.map((company) => normalizedCompanyKey(company.name)).filter(Boolean));
+  if (!supabaseClient || !importedMegaCompanies.length) return { imported: 0, linked: 0 };
+  const existingByKey = new Map(
+    state.companies
+      .map((company) => [normalizedCompanyKey(company.name), company])
+      .filter(([key]) => Boolean(key))
+  );
+  const linkUpdates = importedMegaCompanies
+    .map((item) => ({ item, company: existingByKey.get(normalizedCompanyKey(item.name)) }))
+    .filter(({ item, company }) => company && item.megaUrl && shouldFillImportedMegaUrl(company.megaUrl));
+
+  let linked = 0;
+  for (let index = 0; index < linkUpdates.length; index += 100) {
+    const chunk = linkUpdates.slice(index, index + 100);
+    const rows = chunk.map(({ item, company }) => ({
+      id: company.id,
+      ...companyPayload({ ...company, megaUrl: item.megaUrl })
+    }));
+    const { data, error } = await supabaseClient
+      .from("companies")
+      .upsert(rows, { onConflict: "id" })
+      .select();
+    if (error) throw error;
+    const savedById = new Map((data || []).map((row) => [row.id, mapCompany(row)]));
+    chunk.forEach(({ company }) => {
+      const saved = savedById.get(company.id);
+      if (saved) Object.assign(company, saved);
+    });
+    linked += data?.length || 0;
+  }
+
+  const seen = new Set(existingByKey.keys());
   const missing = importedMegaCompanies
     .filter((item) => {
       const key = normalizedCompanyKey(item.name);
@@ -995,7 +1161,6 @@ async function seedMegaCompaniesToSupabase() {
       };
     });
 
-  if (!missing.length) return 0;
   let imported = 0;
   for (let index = 0; index < missing.length; index += 100) {
     const chunk = missing.slice(index, index + 100);
@@ -1005,7 +1170,48 @@ async function seedMegaCompaniesToSupabase() {
     state.companies.unshift(...savedCompanies);
     imported += savedCompanies.length;
   }
-  return imported;
+  return { imported, linked };
+}
+
+async function syncImportedCalendarEventsToSupabase(remoteRows) {
+  const existingEvents = remoteRows.map(mapCalendarEvent);
+  if (!importedCalendarEvents.length) {
+    return { events: existingEvents, upserted: 0, removed: 0 };
+  }
+
+  const plan = buildCalendarImportPlan(existingEvents);
+  const existingIds = new Set(existingEvents.map((event) => event.id));
+  let upserted = 0;
+
+  for (let index = 0; index < plan.upserts.length; index += 100) {
+    const chunk = plan.upserts.slice(index, index + 100);
+    const rows = chunk.map((event) => ({
+      ...calendarEventPayload(event),
+      ...(!existingIds.has(event.id) ? { created_by: supabaseAuthUser?.id || null } : {})
+    }));
+    const { data, error } = await supabaseClient
+      .from("calendar_events")
+      .upsert(rows, { onConflict: "id" })
+      .select();
+    if (error) throw error;
+    upserted += data?.length || 0;
+  }
+
+  let removed = 0;
+  if (canDelete()) {
+    for (let index = 0; index < plan.staleIds.length; index += 100) {
+      const chunk = plan.staleIds.slice(index, index + 100);
+      const { data, error } = await supabaseClient
+        .from("calendar_events")
+        .delete()
+        .in("id", chunk)
+        .select("id");
+      if (error) throw error;
+      removed += data?.length || 0;
+    }
+  }
+
+  return { events: plan.events, upserted, removed };
 }
 
 async function remoteUpdate(table, idValue, payload) {
@@ -1206,6 +1412,14 @@ function renderAudits() {
       <button class="${selectedCalendarType === "planned" ? "active" : ""}" data-action="calendar-type" data-type="planned">Планирани дейности</button>
       <button class="${selectedCalendarType === "auditors" ? "active" : ""}" data-action="calendar-type" data-type="auditors">Одитори</button>
     </div>
+    ${
+      selectedCalendarType === "auditors"
+        ? `<div class="auditor-legend">
+            <span><i class="auditor-dot georgi"></i> Георги Георгиев - одитор</span>
+            <span><i class="auditor-dot ekaterina"></i> Екатерина Георгиева - одитор</span>
+          </div>`
+        : ""
+    }
     <div class="toolbar">
       <div class="filters">
         ${statusFilter([
@@ -1289,6 +1503,13 @@ function filteredCalendarEvents() {
     .sort((a, b) => `${a.date} ${a.time || ""}`.localeCompare(`${b.date} ${b.time || ""}`));
 }
 
+function calendarAuditorClass(event) {
+  const auditor = normalizedImportedAuditor(event.auditor).toLocaleLowerCase("bg-BG");
+  if (auditor.includes("георги георгиев")) return "auditor-georgi";
+  if (auditor.includes("екатерина георгиева")) return "auditor-ekaterina";
+  return "auditor-neutral";
+}
+
 function renderCalendarEvents(events) {
   const year = calendarDate.getFullYear();
   const month = calendarDate.getMonth();
@@ -1305,7 +1526,7 @@ function renderCalendarEvents(events) {
         <strong>${date.getDate()}</strong>
         ${dayEvents
           .slice(0, 4)
-          .map((event) => `<span class="calendar-chip ${event.status}">${escapeHtml(event.auditor ? `${event.auditor}: ${event.title}` : event.title)}</span>`)
+          .map((event) => `<span class="calendar-chip ${event.status} ${calendarAuditorClass(event)}" title="${escapeAttr(event.auditor ? `${normalizedImportedAuditor(event.auditor)}: ${event.title}` : event.title)}">${escapeHtml(event.title)}</span>`)
           .join("")}
         ${dayEvents.length > 4 ? `<em>+${dayEvents.length - 4}</em>` : ""}
       </button>
@@ -1334,7 +1555,7 @@ function renderCalendarEventList(events) {
           const days = daysUntil(event.date);
           const dayText = days < 0 ? "минал" : days === 0 ? "днес" : `${days} дни`;
           return `
-            <div class="calendar-item audit-row">
+            <div class="calendar-item audit-row ${calendarAuditorClass(event)}">
               <div class="date-badge audit-date">
                 <strong>${formatShortDate(event.date)}</strong>
                 <small>${event.time || ""}</small>
@@ -2586,12 +2807,9 @@ async function handleForm(event) {
         const { error } = await supabaseClient.auth.updateUser({ password: data.newPassword });
         if (error) throw error;
       } else {
-        if (!user || user.password !== data.currentPassword) {
-          alert("Старата парола не е вярна.");
-          return;
-        }
+        alert("За смяна на парола е необходима активна Supabase сесия.");
+        return;
       }
-      user.password = data.newPassword;
       user.lastSeen = nowIso();
       addLog("Смени своята парола", "Потребител", user.id);
     }
