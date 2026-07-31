@@ -881,7 +881,7 @@ async function loadRemoteData() {
       ...calendarEventPayload(event),
       created_by: supabaseAuthUser?.id || null
     }));
-    const seedResult = await supabaseClient.from("calendar_events").insert(rows);
+    const seedResult = await supabaseClient.from("calendar_events").upsert(rows, { onConflict: "id" });
     if (seedResult.error) throw seedResult.error;
     state.calendarEvents = structuredClone(seedData.calendarEvents);
     addLog(`Импортира ${state.calendarEvents.length} Excel календарни записа`, "Календар", "calendar_events");
