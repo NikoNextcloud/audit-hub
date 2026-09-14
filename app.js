@@ -33,6 +33,8 @@ const seedData = {
       contact: "Мария Иванова",
       phone: "+359 888 123 456",
       email: "office@alfa-foods.bg",
+      activities: ["certification"],
+      standards: [{ name: "9001", color: "blue" }, { name: "14001", color: "green" }],
       megaUrl: "https://mega.nz/folder/example-alfa",
       status: "active",
       notes: "Основен контакт за одити: Мария.",
@@ -47,6 +49,8 @@ const seedData = {
       contact: "Георги Петров",
       phone: "+359 887 222 111",
       email: "audit@betalogi.bg",
+      activities: ["consulting", "occupational_medicine"],
+      standards: [{ name: "27001", color: "purple" }],
       megaUrl: "https://mega.nz/folder/example-beta",
       status: "active",
       notes: "Имат две локации за проверка.",
@@ -61,6 +65,8 @@ const seedData = {
       contact: "Елена Димитрова",
       phone: "+359 889 510 201",
       email: "admin@sigmamed.bg",
+      activities: ["certification", "consulting"],
+      standards: [{ name: "BSCI", color: "orange" }],
       megaUrl: "",
       status: "watch",
       notes: "Очаква се нов договор.",
@@ -208,6 +214,8 @@ let activeView = "dashboard";
 let query = "";
 let selectedCompany = "all";
 let selectedStatus = "all";
+let selectedCompanyActivity = "all";
+let selectedCompanyStandard = "all";
 let auditMode = "calendar";
 let calendarDate = new Date("2026-08-01T12:00:00");
 let activeCompanyId = "";
@@ -261,6 +269,11 @@ function normalizeState(data) {
   mergeImportedCalendarEvents(data);
   data.companies ||= [];
   mergeImportedMegaCompanies(data);
+  data.companies.forEach((company) => {
+    company.activities = Array.isArray(company.activities) ? company.activities : [];
+    company.standards = Array.isArray(company.standards) ? company.standards : [];
+    if (company.status === "watch" || company.status === "archived") company.status = "inactive";
+  });
   for (const list of [data.companies, data.audits, data.payments, data.documents, data.calendarEvents]) {
     list.forEach((item) => {
       item.createdBy ||= "Администратор";
@@ -314,6 +327,8 @@ function megaCompanyToAppCompany(item) {
     contact: "",
     phone: "",
     email: "",
+    activities: [],
+    standards: [],
     megaUrl: item.megaUrl || "",
     status: "active",
     notes: `Импорт от ${item.source || "Mega"}. Път: ${item.path || item.originalName || "Mega папка"}`,
@@ -544,6 +559,8 @@ function mapCompany(row) {
     contact: row.contact || "",
     phone: row.phone || "",
     email: row.email || "",
+    activities: Array.isArray(row.activities) ? row.activities : [],
+    standards: Array.isArray(row.standards) ? row.standards : [],
     megaUrl: row.mega_url || "",
     status: row.status || "active",
     notes: row.notes || "",
@@ -560,6 +577,8 @@ function companyPayload(item) {
     contact: item.contact || null,
     phone: item.phone || null,
     email: item.email || null,
+    activities: item.activities || [],
+    standards: item.standards || [],
     mega_url: item.megaUrl || null,
     status: item.status || "active",
     notes: item.notes || null,
@@ -819,6 +838,7 @@ function daysUntil(date) {
 function statusBadge(type, value) {
   const labels = {
     active: ["Активен", "ok"],
+    inactive: ["Неактивен", "danger"],
     watch: ["Наблюдение", "warn"],
     archived: ["Архив", "muted"],
     paid: ["Платено", "ok"],
@@ -1495,14 +1515,36 @@ function filteredCompanies() {
   return state.companies.filter((company) => {
     const matchesQuery =
       !needle ||
-      [company.name, company.contact, company.email, company.bulstat, company.notes]
+      [company.name, company.contact, company.phone, company.email, company.bulstat, company.notes]
+        .concat((company.activities || []).map(companyActivityLabel))
+        .concat((company.standards || []).map((standard) => standard.name))
         .concat(company.megaUrl || "")
         .join(" ")
         .toLowerCase()
         .includes(needle);
     const matchesStatus = selectedStatus === "all" || company.status === selectedStatus;
-    return matchesQuery && matchesStatus;
+    const matchesActivity = selectedCompanyActivity === "all" || (company.activities || []).includes(selectedCompanyActivity);
+    const matchesStandard = selectedCompanyStandard === "all" || (company.standards || []).some((standard) => standard.name === selectedCompanyStandard);
+    return matchesQuery && matchesStatus && matchesActivity && matchesStandard;
   });
+}
+
+function companyActivityLabel(value) {
+  return { certification: "Сертификация", consulting: "Консултация", occupational_medicine: "СТМ" }[value] || value;
+}
+
+function renderCompanyActivities(company) {
+  const activities = company.activities || [];
+  return activities.length
+    ? `<div class="company-tags">${activities.map((activity) => `<span class="activity-tag">${escapeHtml(companyActivityLabel(activity))}</span>`).join("")}</div>`
+    : `<span class="cell-empty">—</span>`;
+}
+
+function renderCompanyStandards(company) {
+  const standards = company.standards || [];
+  return standards.length
+    ? `<div class="company-tags">${standards.map((standard) => `<span class="standard-tag ${escapeAttr(standard.color || "blue")}">${escapeHtml(standard.name)}</span>`).join("")}</div>`
+    : `<span class="cell-empty">—</span>`;
 }
 
 function renderDashboard() {
@@ -1573,55 +1615,58 @@ function renderCompanies() {
     <div class="page-head">
       <div>
         <h2>Фирми и контакти</h2>
-        <p>Единна база с данни, Mega папки, бележки и текущ статус.</p>
+        <p>Табличен регистър с дейности, стандарти, контакти и текущ статус.</p>
       </div>
       <button class="btn primary" data-action="open-modal" data-modal="company">${icon("plus")} Добави фирма</button>
     </div>
-    ${renderToolbar("company")}
-    <div class="cards-grid">
-      ${
-        companies.length
-          ? companies
-              .map(
-                (company) => `
-                  <article class="record-card">
-                    <div class="record-title">
-                      <div>
-                        <h3>${escapeHtml(company.name)}</h3>
-                        ${statusBadge("company", company.status)}
-                      </div>
-                      <div class="mini-actions">
-                        <button class="icon-btn" title="Редактирай" data-action="open-modal" data-modal="company" data-id="${company.id}">${icon("edit")}</button>
-                        ${canDelete() ? `<button class="icon-btn danger" title="Изтрий" data-action="delete" data-kind="company" data-id="${company.id}">${icon("trash")}</button>` : ""}
-                      </div>
-                    </div>
-                    <div class="meta">
-                      <span>Булстат: ${escapeHtml(company.bulstat || "-")}</span>
-                      <span>Контакт: ${escapeHtml(company.contact || "-")}</span>
-                      <span>Телефон: ${escapeHtml(company.phone || "-")}</span>
-                      <span>Имейл: ${escapeHtml(company.email || "-")}</span>
-                      <span>Последно: ${escapeHtml(company.updatedBy)} · ${formatTime(company.updatedAt)}</span>
-                    </div>
-                    ${renderCompanyPaymentHistory(company.id)}
-                    <p>${escapeHtml(company.notes || "")}</p>
-                    <div class="card-actions">
-                      <button class="btn primary" data-action="company-profile" data-id="${company.id}">${icon("file")} Профил</button>
-                      <button class="btn ghost" data-action="open-modal" data-modal="audit" data-company="${company.id}">${icon("calendar")} Одит</button>
-                      <button class="btn ghost" data-action="open-modal" data-modal="document" data-company="${company.id}">${icon("upload")} Документ</button>
-                      ${
-                        company.megaUrl
-                          ? `<a class="btn primary" href="${escapeAttr(company.megaUrl)}" target="_blank" rel="noreferrer">${icon("link")} Mega</a>`
-                          : `<button class="btn ghost" data-action="open-modal" data-modal="mega" data-company="${company.id}">${icon("link")} Mega линк</button>`
-                      }
-                    </div>
-                  </article>
-                `
-              )
-              .join("")
-          : `<div class="empty">Няма намерени фирми.</div>`
-      }
-    </div>
+    ${renderCompanyToolbar()}
+    <section class="panel company-table-panel">
+      <div class="table-wrap">
+        <table class="company-table">
+          <thead><tr><th>Фирма</th><th>Дейност</th><th>Стандарти</th><th>Булстат</th><th>Контакти</th><th>Статус</th></tr></thead>
+          <tbody>
+            ${companies.length ? companies.map((company) => `
+              <tr>
+                <td class="company-name-cell">
+                  <button class="company-name-link" data-action="company-profile" data-id="${company.id}">${escapeHtml(company.name)}</button>
+                  <div class="company-row-actions">
+                    <button class="icon-btn compact" title="Редактирай" data-action="open-modal" data-modal="company" data-id="${company.id}">${icon("edit")}</button>
+                    ${company.megaUrl ? `<a class="icon-btn compact" title="Mega папка" href="${escapeAttr(company.megaUrl)}" target="_blank" rel="noreferrer">${icon("link")}</a>` : ""}
+                    ${canDelete() ? `<button class="icon-btn compact danger" title="Изтрий" data-action="delete" data-kind="company" data-id="${company.id}">${icon("trash")}</button>` : ""}
+                  </div>
+                </td>
+                <td>${renderCompanyActivities(company)}</td>
+                <td>${renderCompanyStandards(company)}</td>
+                <td class="nowrap">${escapeHtml(company.bulstat || "—")}</td>
+                <td><div class="contact-cell">${company.email ? `<a href="mailto:${escapeAttr(company.email)}">${escapeHtml(company.email)}</a>` : ""}${company.phone ? `<a href="tel:${escapeAttr(company.phone)}">${escapeHtml(company.phone)}</a>` : ""}${!company.email && !company.phone ? "—" : ""}</div></td>
+                <td>${statusBadge("company", company.status)}</td>
+              </tr>`).join("") : `<tr><td colspan="6"><div class="empty">Няма намерени фирми.</div></td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </section>
   `;
+}
+
+function renderCompanyToolbar() {
+  const standards = [...new Set(state.companies.flatMap((company) => (company.standards || []).map((standard) => standard.name)).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, "bg-BG"));
+  return `
+    <div class="toolbar company-toolbar">
+      <div class="filters">
+        ${companyFilter()}
+        <select data-action="company-activity-filter">
+          ${[["all", "Всички дейности"], ["certification", "Сертификация"], ["consulting", "Консултация"], ["occupational_medicine", "СТМ"]].map(([value, label]) => option(value, label, selectedCompanyActivity)).join("")}
+        </select>
+        <select data-action="company-standard-filter">
+          ${option("all", "Всички стандарти", selectedCompanyStandard)}
+          ${standards.map((standard) => option(standard, standard, selectedCompanyStandard)).join("")}
+        </select>
+        ${statusFilter([["all", "Всички статуси"], ["active", "Активен"], ["inactive", "Неактивен"]])}
+        <button class="btn ghost" data-action="clear-company-filters">Изчисти филтрите</button>
+      </div>
+      <button class="btn ghost" data-action="export-csv" data-kind="company">${icon("file")} Експорт CSV</button>
+    </div>`;
 }
 
 function filteredAudits() {
@@ -2553,6 +2598,25 @@ function bindEvents() {
     render();
   });
 
+  document.querySelector("[data-action='company-activity-filter']")?.addEventListener("change", (event) => {
+    selectedCompanyActivity = event.target.value;
+    render();
+  });
+
+  document.querySelector("[data-action='company-standard-filter']")?.addEventListener("change", (event) => {
+    selectedCompanyStandard = event.target.value;
+    render();
+  });
+
+  document.querySelector("[data-action='clear-company-filters']")?.addEventListener("click", () => {
+    selectedCompany = "all";
+    selectedStatus = "all";
+    selectedCompanyActivity = "all";
+    selectedCompanyStandard = "all";
+    query = "";
+    render();
+  });
+
   document.querySelectorAll("[data-action='audit-mode']").forEach((button) => {
     button.addEventListener("click", () => {
       auditMode = button.dataset.mode;
@@ -2644,6 +2708,13 @@ function openModal(type, companyId = "", itemId = "", defaultDate = "") {
     button.addEventListener("click", closeModal);
   });
   document.querySelector(".modal form").addEventListener("submit", handleForm);
+  document.querySelector("[data-action='add-standard']")?.addEventListener("click", () => {
+    document.querySelector("#company-standards")?.insertAdjacentHTML("beforeend", standardFormRow());
+  });
+  document.querySelector("#company-standards")?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-action='remove-standard']");
+    if (button) button.closest(".standard-form-row")?.remove();
+  });
   document.querySelector("#doc-file")?.addEventListener("change", (event) => {
     const file = event.target.files[0];
     if (file) document.querySelector("#doc-name").value = file.name;
@@ -2692,13 +2763,26 @@ function companyForm(companyId, item) {
         ${field("contact", "Лице за контакт", "text", item?.contact || "")}
         ${field("phone", "Телефон", "tel", item?.phone || "")}
         ${field("email", "Имейл", "email", item?.email || "")}
+        <fieldset class="form-row full company-activities-field">
+          <legend>Дейност</legend>
+          <div class="checkbox-grid">
+            ${activityCheckbox("certification", "Сертификация", item?.activities)}
+            ${activityCheckbox("consulting", "Консултация", item?.activities)}
+            ${activityCheckbox("occupational_medicine", "СТМ", item?.activities)}
+          </div>
+        </fieldset>
+        <div class="form-row full">
+          <div class="field-label-row"><label>Стандарти</label><button class="btn ghost small" type="button" data-action="add-standard">${icon("plus")} Добави стандарт</button></div>
+          <div id="company-standards" class="standards-form-list">
+            ${(item?.standards?.length ? item.standards : [{ name: "", color: "blue" }]).map((standard) => standardFormRow(standard)).join("")}
+          </div>
+        </div>
         ${field("megaUrl", "Mega папка", "url", item?.megaUrl || "")}
         <div class="form-row">
           <label for="status">Статус</label>
           <select id="status" name="status">
             ${option("active", "Активен", item?.status)}
-            ${option("watch", "Наблюдение", item?.status)}
-            ${option("archived", "Архив", item?.status)}
+            ${option("inactive", "Неактивен", item?.status)}
           </select>
         </div>
         <div class="form-row full">
@@ -2709,6 +2793,15 @@ function companyForm(companyId, item) {
       ${formActions()}
     </form>
   `;
+}
+
+function activityCheckbox(value, label, selected = []) {
+  return `<label class="checkbox-choice"><input type="checkbox" name="activities" value="${escapeAttr(value)}" ${(selected || []).includes(value) ? "checked" : ""} /><span>${escapeHtml(label)}</span></label>`;
+}
+
+function standardFormRow(standard = { name: "", color: "blue" }) {
+  const colors = [["blue", "Син"], ["green", "Зелен"], ["red", "Червен"], ["orange", "Оранжев"], ["purple", "Лилав"], ["gray", "Сив"]];
+  return `<div class="standard-form-row"><input name="standardName" type="text" value="${escapeAttr(standard.name || "")}" placeholder="напр. 9001 или BSCI" /><select name="standardColor">${colors.map(([value, label]) => option(value, label, standard.color || "blue")).join("")}</select><button class="icon-btn danger" type="button" title="Премахни" data-action="remove-standard">${icon("trash")}</button></div>`;
 }
 
 function auditForm(companyId, item, defaultDate) {
@@ -2932,14 +3025,18 @@ function formActions(label = "Запази") {
 async function handleForm(event) {
   event.preventDefault();
   const form = event.currentTarget;
-  const data = Object.fromEntries(new FormData(form).entries());
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
   const kind = form.dataset.form;
   const isEdit = Boolean(data.id);
 
   try {
     if (kind === "company") {
       const item = isEdit ? findItem("company", data.id) : { id: id("c") };
-      Object.assign(item, stamp({ ...item, name: data.name, bulstat: data.bulstat, contact: data.contact, phone: data.phone, email: data.email, megaUrl: data.megaUrl, status: data.status, notes: data.notes }, !isEdit));
+      const standardNames = formData.getAll("standardName");
+      const standardColors = formData.getAll("standardColor");
+      const standards = standardNames.map((name, index) => ({ name: String(name).trim(), color: standardColors[index] || "blue" })).filter((standard) => standard.name);
+      Object.assign(item, stamp({ ...item, name: data.name, bulstat: data.bulstat, contact: data.contact, phone: data.phone, email: data.email, activities: formData.getAll("activities"), standards, megaUrl: data.megaUrl, status: data.status, notes: data.notes }, !isEdit));
       if (supabaseClient && supabaseAuthUser) {
         const payload = companyPayload(item);
         const saved = isEdit
@@ -3248,7 +3345,7 @@ async function markMegaUploaded(itemId) {
 
 function exportCsv(kind) {
   const rows = {
-    company: filteredCompanies().map((c) => [c.name, c.bulstat, c.contact, c.phone, c.email, c.status, c.megaUrl]),
+    company: filteredCompanies().map((c) => [c.name, (c.activities || []).map(companyActivityLabel).join("; "), (c.standards || []).map((s) => s.name).join("; "), c.bulstat, [c.email, c.phone].filter(Boolean).join("; "), c.status === "active" ? "Активен" : "Неактивен"]),
     payment: state.payments.map((p) => [companyName(p.companyId), p.invoice, p.amount, p.dueDate, p.paidDate, p.status]),
     document: state.documents.map((d) => [companyName(d.companyId), d.name, d.kind, d.createdAt, d.megaUrl]),
     audits: filteredAudits().map((a) => [companyName(a.companyId), a.date, a.time, a.type, a.auditor, a.status, a.priority]),
