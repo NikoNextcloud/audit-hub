@@ -1746,7 +1746,6 @@ function monthlyCalendarEvents() {
   const year = calendarDate.getFullYear();
   const month = calendarDate.getMonth();
   return filteredCalendarEvents()
-    .filter((event) => !isArchivedCalendarEvent(event))
     .filter((event) => {
       const date = new Date(`${event.date}T12:00:00`);
       return date.getFullYear() === year && date.getMonth() === month;
