@@ -492,6 +492,40 @@ textarea:focus {
   overflow-x: auto;
 }
 
+.company-table-panel { padding: 0; overflow: hidden; }
+.company-table { min-width: 1050px; }
+.company-table th { position: sticky; top: 0; z-index: 1; background: #f8fafc; }
+.company-table tbody tr:hover { background: #f8fbff; }
+.company-name-cell { min-width: 210px; }
+.company-name-link { display: block; padding: 0; border: 0; background: none; color: var(--brand-strong); font: inherit; font-weight: 850; text-align: left; cursor: pointer; }
+.company-name-link:hover { text-decoration: underline; }
+.company-row-actions { display: flex; gap: 5px; margin-top: 8px; }
+.icon-btn.compact { width: 30px; height: 30px; flex-basis: 30px; }
+.company-tags { display: flex; flex-wrap: wrap; gap: 6px; min-width: 130px; }
+.activity-tag,
+.standard-tag { display: inline-flex; align-items: center; min-height: 26px; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+.activity-tag { color: #344054; background: #eef2f6; }
+.standard-tag.blue { color: #175cd3; background: #dbeafe; }
+.standard-tag.green { color: #05603a; background: #dcfae6; }
+.standard-tag.red { color: #912018; background: #fee4e2; }
+.standard-tag.orange { color: #92400e; background: #fef3c7; }
+.standard-tag.purple { color: #6941c6; background: #eee8ff; }
+.standard-tag.gray { color: #475467; background: #eef2f6; }
+.contact-cell { display: grid; gap: 5px; min-width: 190px; }
+.contact-cell a { color: var(--brand-strong); text-decoration: none; }
+.contact-cell a:hover { text-decoration: underline; }
+.nowrap { white-space: nowrap; }
+.cell-empty { color: var(--muted); }
+.standards-form-list { display: grid; gap: 8px; }
+.standard-form-row { display: grid; grid-template-columns: minmax(0, 1fr) 150px 36px; gap: 8px; align-items: center; }
+.field-label-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.btn.small { min-height: 34px; padding: 6px 10px; font-size: 12px; }
+.company-activities-field { margin: 0; padding: 0; border: 0; }
+.company-activities-field legend { margin-bottom: 8px; font-weight: 800; }
+.checkbox-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.checkbox-choice { display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.checkbox-choice input { width: auto; }
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -1482,6 +1516,8 @@ th {
   .filters input {
     width: 100%;
   }
+
+  .standard-form-row { grid-template-columns: 1fr 110px 36px; }
 
   .stats-grid,
   .cards-grid,
