@@ -1621,13 +1621,6 @@ function renderDashboard() {
         ${renderDashboardEventList(paymentOkEvents.slice(0, 6), "payment")}
       </section>
     </div>
-    <section class="panel activity-panel">
-      <div class="panel-head">
-        <h3>Последни промени</h3>
-        <button class="btn ghost" data-view="activity">${icon("activity")} История</button>
-      </div>
-      ${renderActivityList(state.activityLog.slice(0, 6))}
-    </section>
   `;
 }
 
