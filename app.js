@@ -1572,55 +1572,53 @@ function renderCompanyStandards(company) {
 }
 
 function renderDashboard() {
-  const upcomingAudits = state.audits
-    .filter((audit) => audit.status === "upcoming" || audit.status === "waiting_docs" || audit.status === "in_progress")
+  const now = new Date();
+  const currentMonthEvents = state.calendarEvents
+    .filter((event) => {
+      const date = new Date(`${event.date}T12:00:00`);
+      return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+    })
     .sort((a, b) => a.date.localeCompare(b.date));
-  const unpaid = state.payments.filter((payment) => payment.status !== "paid");
-  const overdue = state.payments.filter((payment) => payment.status === "overdue");
-  const revenue = state.payments.filter((payment) => payment.status === "paid").reduce((sum, payment) => sum + Number(payment.amount), 0);
-  const reminders = upcomingAudits.filter((audit) => {
-    const days = daysUntil(audit.date);
-    return !audit.reminderSent && days >= 0 && days <= Number(audit.reminderDays || 7);
-  });
+  const archivedEvents = state.calendarEvents.filter(isArchivedCalendarEvent).sort((a, b) => a.date.localeCompare(b.date));
+  const paymentOkEvents = state.calendarEvents.filter((event) => event.paymentOk).sort((a, b) => b.date.localeCompare(a.date));
+  const activeCompanies = state.companies.filter((company) => company.status === "active");
+  const monthLabel = new Intl.DateTimeFormat("bg-BG", { month: "long", year: "numeric" }).format(now);
 
   return `
     <div class="page-head">
       <div>
         <h2>Работно табло</h2>
-        <p>Най-важното за одити, плащания, документи, Mega папки и история.</p>
+        <p>Обобщение на фирмите и графика за ${escapeHtml(monthLabel)}.</p>
       </div>
       <div class="card-actions">
-        <button class="btn primary" data-action="open-modal" data-modal="audit">${icon("calendar")} Нов одит</button>
-        <button class="btn accent" data-action="open-modal" data-modal="document">${icon("upload")} Качи документ</button>
+        <button class="btn primary" data-action="open-modal" data-modal="calendarEvent">${icon("calendar")} Нов запис</button>
+        <button class="btn ghost" data-view="companies">${icon("users")} Фирми</button>
       </div>
     </div>
     <div class="stats-grid">
-      <div class="stat"><span>Фирми</span><strong>${state.companies.length}</strong></div>
-      <div class="stat"><span>Предстоящи одити</span><strong>${upcomingAudits.length}</strong></div>
-      <div class="stat"><span>Неплатени</span><strong>${unpaid.length}</strong></div>
-      <div class="stat"><span>Платено общо</span><strong>${revenue} лв.</strong></div>
+      <button class="stat dashboard-stat" data-view="companies"><span>Активни фирми</span><strong>${activeCompanies.length}</strong><small>от ${state.companies.length} общо</small></button>
+      <button class="stat dashboard-stat" data-view="audits"><span>График този месец</span><strong>${currentMonthEvents.length}</strong><small>${escapeHtml(monthLabel)}</small></button>
+      <button class="stat dashboard-stat danger-stat" data-view="archive"><span>В архив / неприключени</span><strong>${archivedEvents.length}</strong><small>изискват внимание</small></button>
+      <button class="stat dashboard-stat success-stat" data-view="payments"><span>Плащане OK</span><strong>${paymentOkEvents.length}</strong><small>от календара</small></button>
     </div>
-    <section class="panel reminder-panel">
-      <div class="panel-head">
-        <h3>Автоматични напомняния преди одит</h3>
-        <span class="status ${reminders.length ? "warn" : "ok"}">${reminders.length ? `${reminders.length} активни` : "няма спешни"}</span>
-      </div>
-      ${renderReminderList(reminders)}
+    <section class="panel dashboard-schedule-panel">
+      <div class="panel-head"><h3>График за ${escapeHtml(monthLabel)}</h3><button class="btn ghost" data-view="audits">Отвори календара</button></div>
+      ${renderDashboardSchedule(currentMonthEvents)}
     </section>
     <div class="dashboard-grid">
       <section class="panel">
         <div class="panel-head">
-          <h3>Следващи одити</h3>
-          <button class="btn ghost" data-view="audits">${icon("calendar")} Всички</button>
+          <h3>Неприключени за внимание</h3>
+          <button class="btn ghost" data-view="archive">${icon("file")} Архив</button>
         </div>
-        ${renderAuditList(upcomingAudits.slice(0, 5), true)}
+        ${renderDashboardEventList(archivedEvents.slice(0, 6), "archive")}
       </section>
       <section class="panel">
         <div class="panel-head">
-          <h3>Плащания за внимание</h3>
-          <button class="btn ghost" data-view="payments">${icon("card")} Всички</button>
+          <h3>Плащане OK</h3>
+          <button class="btn ghost" data-view="payments">${icon("card")} Плащания</button>
         </div>
-        ${overdue.length ? renderPaymentSummary(overdue.concat(unpaid.filter((p) => p.status !== "overdue")).slice(0, 5)) : renderPaymentSummary(unpaid.slice(0, 5))}
+        ${renderDashboardEventList(paymentOkEvents.slice(0, 6), "payment")}
       </section>
     </div>
     <section class="panel activity-panel">
@@ -1631,6 +1629,29 @@ function renderDashboard() {
       ${renderActivityList(state.activityLog.slice(0, 6))}
     </section>
   `;
+}
+
+function calendarStageProgress(event) {
+  return [event.schedulingOk, event.paymentOk, event.auditOk, event.completed].filter(Boolean).length;
+}
+
+function renderDashboardSchedule(events) {
+  if (!events.length) return `<div class="empty">Няма фирми в графика за текущия месец.</div>`;
+  return `<div class="table-wrap"><table class="dashboard-schedule-table"><thead><tr><th>Фирма</th><th>Дата</th><th>Планиране</th><th>Насрочване</th><th>Плащане</th><th>Одит</th><th>Приключена</th></tr></thead><tbody>
+    ${events.slice(0, 10).map((event) => {
+      const company = eventCompany(event);
+      const mark = (ok) => `<span class="mini-status ${ok ? "ok" : "no"}">${ok ? "OK" : "NO"}</span>`;
+      return `<tr><td><strong>${escapeHtml(company?.name || event.title)}</strong></td><td>${formatDate(event.date)}</td><td><span class="mini-status ${event.planningStatus === "planned" ? "ok" : "no"}">${event.planningStatus === "planned" ? "Планирано" : "Непланирано"}</span></td><td>${mark(event.schedulingOk)}</td><td>${mark(event.paymentOk)}</td><td>${mark(event.auditOk)}</td><td>${mark(event.completed)}</td></tr>`;
+    }).join("")}
+  </tbody></table></div>${events.length > 10 ? `<button class="btn ghost dashboard-more" data-view="audits">Покажи всички ${events.length}</button>` : ""}`;
+}
+
+function renderDashboardEventList(events, type) {
+  if (!events.length) return `<div class="empty">${type === "archive" ? "Няма просрочени неприключени фирми." : "Няма фирми с плащане OK."}</div>`;
+  return `<div class="dashboard-event-list">${events.map((event) => {
+    const company = eventCompany(event);
+    return `<div class="dashboard-event-row"><div><strong>${escapeHtml(company?.name || event.title)}</strong><span>${formatDate(event.date)}</span></div>${type === "archive" ? `<span class="status danger">${calendarStageProgress(event)}/4 етапа</span>` : `<span class="status ok">OK</span>`}</div>`;
+  }).join("")}</div>`;
 }
 
 function renderCompanies() {
