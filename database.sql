@@ -45,6 +45,7 @@ create table audits (
 create table payments (
   id uuid primary key default gen_random_uuid(),
   company_id uuid not null references companies(id) on delete cascade,
+  calendar_event_id text,
   invoice text,
   amount numeric(12, 2) not null default 0,
   due_date date not null,
@@ -97,7 +98,7 @@ create table audit_tasks (
 
 create table calendar_events (
   id text primary key,
-  company_id uuid references companies(id) on delete set null,
+  company_id uuid references companies(id) on delete cascade,
   calendar_type text not null check (calendar_type in ('planned', 'auditors')),
   event_date date not null,
   event_time time,
@@ -125,6 +126,14 @@ create table calendar_events (
   updated_at timestamptz not null default now(),
   created_at timestamptz not null default now()
 );
+
+alter table payments
+  add constraint payments_calendar_event_id_fkey
+  foreign key (calendar_event_id) references calendar_events(id) on delete cascade;
+
+create unique index payments_calendar_event_id_uidx
+  on payments(calendar_event_id)
+  where calendar_event_id is not null;
 
 alter table profiles enable row level security;
 alter table companies enable row level security;
