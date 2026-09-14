@@ -604,6 +604,23 @@ textarea:focus {
   background: #fff8f7;
 }
 
+.calendar-payments-panel {
+  margin-bottom: 18px;
+}
+
+.calendar-payments-table {
+  min-width: 850px;
+}
+
+.section-title {
+  margin: 22px 0 10px;
+}
+
+.section-title h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
