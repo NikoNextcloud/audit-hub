@@ -2044,6 +2044,16 @@ function megaUploadLabel(status) {
 }
 
 function renderPayments() {
+  const calendarPayments = state.calendarEvents
+    .filter((event) => event.paymentOk)
+    .filter((event) => selectedCompany === "all" || eventCompany(event)?.id === selectedCompany)
+    .filter((event) => {
+      const needle = query.trim().toLowerCase();
+      if (!needle) return true;
+      const company = eventCompany(event);
+      return [company?.name, ...(company?.activities || []).map(companyActivityLabel), event.title, event.date].join(" ").toLowerCase().includes(needle);
+    })
+    .sort((a, b) => b.date.localeCompare(a.date));
   const payments = state.payments
     .filter((payment) => selectedCompany === "all" || payment.companyId === selectedCompany)
     .filter((payment) => selectedStatus === "all" || payment.status === selectedStatus)
@@ -2057,11 +2067,31 @@ function renderPayments() {
     <div class="page-head">
       <div>
         <h2>Плащания</h2>
-        <p>Кой е платил, кой не е платил и кои срокове наближават.</p>
+        <p>Фирмите с отбелязано „Плащане: OK“ в календара и подробните платежни записи.</p>
       </div>
       <button class="btn primary" data-action="open-modal" data-modal="payment">${icon("plus")} Ново плащане</button>
     </div>
     ${renderToolbar("payment")}
+    <section class="panel calendar-payments-panel">
+      <div class="panel-head"><h3>Плащане OK от календара</h3><span class="status ok">${calendarPayments.length} фирми</span></div>
+      <div class="table-wrap">
+        <table class="calendar-payments-table">
+          <thead><tr><th>Фирма</th><th>Дейност</th><th>Дата на одита</th><th>Плащане</th><th>Приключена</th><th>Действие</th></tr></thead>
+          <tbody>${calendarPayments.length ? calendarPayments.map((event) => {
+            const company = eventCompany(event);
+            return `<tr>
+              <td><strong>${escapeHtml(company?.name || event.title)}</strong></td>
+              <td>${company ? renderCompanyActivities(company) : `<span class="cell-empty">—</span>`}</td>
+              <td>${formatDate(event.date)}</td>
+              <td><span class="status ok">OK</span></td>
+              <td><span class="status ${event.completed ? "ok" : "danger"}">${event.completed ? "OK" : "NO"}</span></td>
+              <td><button class="icon-btn compact" title="Отвори календарния запис" data-action="open-modal" data-modal="calendarEvent" data-id="${event.id}">${icon("edit")}</button></td>
+            </tr>`;
+          }).join("") : `<tr><td colspan="6"><div class="empty">Все още няма фирми с „Плащане: OK“ в календара.</div></td></tr>`}</tbody>
+        </table>
+      </div>
+    </section>
+    <div class="section-title"><h3>Фактури и суми</h3></div>
     <section class="panel">
       <div class="table-wrap">
         <table>
