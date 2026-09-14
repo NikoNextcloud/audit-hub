@@ -12,6 +12,8 @@ create table companies (
   contact text,
   phone text,
   email text,
+  activities text[] not null default '{}',
+  standards jsonb not null default '[]'::jsonb,
   mega_url text,
   status text not null default 'active',
   notes text,
