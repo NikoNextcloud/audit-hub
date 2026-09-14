@@ -903,7 +903,6 @@ function render() {
           ${navButton("audits", "calendar", "Календар")}
           ${navButton("payments", "card", "Плащания")}
           ${navButton("documents", "file", "Документи")}
-          ${navButton("notifications", "activity", "Известия")}
           ${navButton("activity", "activity", "История")}
         </nav>
         <div class="online-box">
