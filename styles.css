@@ -526,6 +526,84 @@ textarea:focus {
 .checkbox-choice { display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
 .checkbox-choice input { width: auto; }
 
+.month-table-head {
+  margin-bottom: 14px;
+}
+
+.month-table-head h3 {
+  text-transform: capitalize;
+}
+
+.schedule-table-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.schedule-table {
+  min-width: 1120px;
+}
+
+.schedule-table th {
+  background: #f8fafc;
+}
+
+.schedule-table tbody tr:hover {
+  background: #f8fbff;
+}
+
+.schedule-table td:not(:first-child) {
+  text-align: center;
+}
+
+.schedule-company-cell {
+  position: relative;
+  min-width: 225px;
+  padding-right: 48px;
+}
+
+.schedule-company-cell strong,
+.schedule-company-cell span {
+  display: block;
+}
+
+.schedule-company-cell span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.schedule-company-cell .icon-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+.ok-no-select,
+.planning-select {
+  min-width: 112px;
+  border-width: 1px;
+  font-weight: 850;
+}
+
+.ok-no-select.is-ok,
+.planning-select.planned {
+  color: #05603a;
+  border-color: #86efac;
+  background: #dcfae6;
+}
+
+.ok-no-select.is-no,
+.planning-select.unplanned {
+  color: #912018;
+  border-color: #fda29b;
+  background: #fee4e2;
+}
+
+.archive-row {
+  background: #fff8f7;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
