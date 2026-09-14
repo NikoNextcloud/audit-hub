@@ -296,6 +296,7 @@ function normalizeState(data) {
     audit.reminderSent ||= false;
   });
   data.documents.forEach((doc) => (doc.uploadStatus ||= doc.megaUrl ? "uploaded" : "local"));
+  data.payments.forEach((payment) => (payment.calendarEventId ||= ""));
   data.calendarEvents.forEach((event) => {
     event.calendarType ||= "planned";
     event.calendarName ||= event.calendarType === "planned" ? "Планирани дейности" : "Одитори";
@@ -637,6 +638,7 @@ function mapPayment(row) {
   return {
     id: row.id,
     companyId: row.company_id,
+    calendarEventId: row.calendar_event_id || "",
     invoice: row.invoice || "",
     amount: Number(row.amount || 0),
     dueDate: row.due_date,
@@ -651,6 +653,7 @@ function mapPayment(row) {
 function paymentPayload(item) {
   return {
     company_id: item.companyId,
+    calendar_event_id: item.calendarEventId || null,
     invoice: item.invoice || null,
     amount: Number(item.amount || 0),
     due_date: item.dueDate,
@@ -659,6 +662,59 @@ function paymentPayload(item) {
     updated_by: supabaseAuthUser?.id || null,
     updated_at: nowIso()
   };
+}
+
+function paymentForCalendarEvent(calendarEventId) {
+  return state.payments.find((payment) => payment.calendarEventId === calendarEventId) || null;
+}
+
+async function syncCalendarPaymentRecord(event) {
+  const company = eventCompany(event);
+  let payment = paymentForCalendarEvent(event.id);
+  if (!company && !payment) return;
+  if (!payment && !event.paymentOk) return;
+
+  if (!payment) {
+    payment = stamp({
+      id: id("p"),
+      companyId: company.id,
+      calendarEventId: event.id,
+      invoice: `Календар ${event.date}`,
+      amount: 0,
+      dueDate: event.date,
+      paidDate: event.paymentOk ? new Date().toISOString().slice(0, 10) : "",
+      status: event.paymentOk ? "paid" : "pending"
+    }, true);
+    if (supabaseClient && supabaseAuthUser) {
+      const saved = await remoteInsert("payments", { ...paymentPayload(payment), created_by: supabaseAuthUser.id });
+      Object.assign(payment, mapPayment(saved));
+    }
+    state.payments.push(payment);
+    return;
+  }
+
+  payment.companyId = company?.id || payment.companyId;
+  payment.status = event.paymentOk ? "paid" : "pending";
+  payment.paidDate = event.paymentOk ? (payment.paidDate || new Date().toISOString().slice(0, 10)) : "";
+  stamp(payment);
+  if (supabaseClient && supabaseAuthUser) {
+    const saved = await remoteUpdate("payments", payment.id, paymentPayload(payment));
+    Object.assign(payment, mapPayment(saved));
+  }
+}
+
+async function syncPaymentToCalendar(payment) {
+  if (!payment.calendarEventId) return;
+  const event = findItem("calendarEvent", payment.calendarEventId);
+  if (!event) return;
+  const paymentOk = payment.status === "paid";
+  if (event.paymentOk === paymentOk) return;
+  event.paymentOk = paymentOk;
+  stamp(event);
+  if (supabaseClient && supabaseAuthUser) {
+    const saved = await remoteUpdate("calendar_events", event.id, calendarEventPayload(event));
+    Object.assign(event, mapCalendarEvent(saved));
+  }
 }
 
 function mapDocument(row) {
@@ -1526,12 +1582,10 @@ function renderView() {
     audits: renderAudits,
     archive: renderArchive,
     payments: renderPayments,
-    documents: renderDocuments,
     companyProfile: renderCompanyProfile,
-    notifications: renderNotifications,
     activity: renderActivity
   };
-  return views[activeView]();
+  return (views[activeView] || views.dashboard)();
 }
 
 function filteredCompanies() {
@@ -1748,7 +1802,12 @@ function eventCompany(event) {
     if (linked) return linked;
   }
   const eventKey = normalizedCompanyKey(event.title);
-  return state.companies.find((company) => normalizedCompanyKey(company.name) === eventKey) || null;
+  if (!eventKey) return null;
+  const candidates = state.companies
+    .map((company) => ({ company, key: normalizedCompanyKey(company.name) }))
+    .filter(({ key }) => key && (key === eventKey || eventKey.includes(key) || key.includes(eventKey)))
+    .sort((a, b) => b.key.length - a.key.length);
+  return candidates[0]?.company || null;
 }
 
 function isArchivedCalendarEvent(event) {
@@ -2093,13 +2152,14 @@ function renderPayments() {
           <thead><tr><th>Фирма</th><th>Дейност</th><th>Дата на одита</th><th>Плащане</th><th>Приключена</th><th>Действие</th></tr></thead>
           <tbody>${calendarPayments.length ? calendarPayments.map((event) => {
             const company = eventCompany(event);
+            const payment = paymentForCalendarEvent(event.id);
             return `<tr>
               <td><strong>${escapeHtml(company?.name || event.title)}</strong></td>
               <td>${company ? renderCompanyActivities(company) : `<span class="cell-empty">—</span>`}</td>
               <td>${formatDate(event.date)}</td>
               <td><span class="status ok">OK</span></td>
               <td><span class="status ${event.completed ? "ok" : "danger"}">${event.completed ? "OK" : "NO"}</span></td>
-              <td><button class="icon-btn compact" title="Отвори календарния запис" data-action="open-modal" data-modal="calendarEvent" data-id="${event.id}">${icon("edit")}</button></td>
+              <td><button class="icon-btn compact" title="${payment ? "Редактирай плащането" : "Отвори календарния запис"}" data-action="open-modal" data-modal="${payment ? "payment" : "calendarEvent"}" data-id="${payment?.id || event.id}">${icon("edit")}</button></td>
             </tr>`;
           }).join("") : `<tr><td colspan="6"><div class="empty">Все още няма фирми с „Плащане: OK“ в календара.</div></td></tr>`}</tbody>
         </table>
@@ -2207,9 +2267,8 @@ function renderDocuments() {
 function renderCompanyProfile() {
   const company = state.companies.find((item) => item.id === activeCompanyId) || state.companies[0];
   if (!company) return `<div class="empty">Няма избрана фирма.</div>`;
-  const audits = state.audits.filter((audit) => audit.companyId === company.id).sort((a, b) => b.date.localeCompare(a.date));
+  const calendarEvents = state.calendarEvents.filter((event) => eventCompany(event)?.id === company.id).sort((a, b) => b.date.localeCompare(a.date));
   const payments = state.payments.filter((payment) => payment.companyId === company.id).sort((a, b) => b.dueDate.localeCompare(a.dueDate));
-  const docs = state.documents.filter((doc) => doc.companyId === company.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const logs = state.activityLog.filter((log) => log.entityId === company.id || log.action.includes(company.name));
   const totalPaid = payments.filter((payment) => payment.status === "paid").reduce((sum, payment) => sum + Number(payment.amount), 0);
   const totalDue = payments.filter((payment) => payment.status !== "paid").reduce((sum, payment) => sum + Number(payment.amount), 0);
@@ -2218,7 +2277,7 @@ function renderCompanyProfile() {
     <div class="page-head">
       <div>
         <h2>${escapeHtml(company.name)}</h2>
-        <p>Пълен профил на фирма: одити, плащания, документи, Mega папка и история.</p>
+        <p>Пълен профил на фирма: месечен график, плащания, Mega папка и история.</p>
       </div>
       <div class="card-actions">
         <button class="btn ghost" data-view="companies">Назад</button>
@@ -2226,8 +2285,8 @@ function renderCompanyProfile() {
       </div>
     </div>
     <div class="stats-grid">
-      <div class="stat"><span>Одити</span><strong>${audits.length}</strong></div>
-      <div class="stat"><span>Документи</span><strong>${docs.length}</strong></div>
+      <div class="stat"><span>Записи в графика</span><strong>${calendarEvents.length}</strong></div>
+      <div class="stat"><span>Приключени</span><strong>${calendarEvents.filter((event) => event.completed).length}</strong></div>
       <div class="stat"><span>Платено</span><strong>${totalPaid} лв.</strong></div>
       <div class="stat"><span>Неплатено</span><strong>${totalDue} лв.</strong></div>
     </div>
@@ -2255,20 +2314,14 @@ function renderCompanyProfile() {
         </div>
       </div>
     </section>
-    <div class="dashboard-grid">
-      <section class="panel">
-        <div class="panel-head"><h3>Всички одити</h3><button class="btn ghost" data-action="open-modal" data-modal="audit" data-company="${company.id}">${icon("plus")} Одит</button></div>
-        ${renderAuditList(audits, false)}
-      </section>
+    <section>
+      <div class="panel-head"><h3>График и история на одитите</h3><button class="btn ghost" data-action="open-modal" data-modal="calendarEvent" data-company="${company.id}">${icon("plus")} Запис</button></div>
+      ${renderMonthlyScheduleTable(calendarEvents, false)}
+    </section>
+    <div class="dashboard-grid single-detail-grid">
       <section class="panel">
         <div class="panel-head"><h3>История на плащанията</h3><button class="btn ghost" data-action="open-modal" data-modal="payment" data-company="${company.id}">${icon("plus")} Плащане</button></div>
         ${renderPaymentSummary(payments)}
-      </section>
-    </div>
-    <div class="dashboard-grid">
-      <section class="panel">
-        <div class="panel-head"><h3>Документи</h3><button class="btn ghost" data-action="open-modal" data-modal="document" data-company="${company.id}">${icon("upload")} Документ</button></div>
-        ${renderProfileDocuments(docs)}
       </section>
       <section class="panel">
         <div class="panel-head"><h3>История за фирмата</h3></div>
@@ -3212,6 +3265,7 @@ async function handleForm(event) {
         Object.assign(item, mapCalendarEvent(saved));
       }
       if (!isEdit) state.calendarEvents.push(item);
+      await syncCalendarPaymentRecord(item);
       if (item.completed && !wasCompleted) await createNextYearCalendarEvent(item);
       addLog(`${isEdit ? "Редактира" : "Добави"} календарен запис: ${company?.name || item.title}`, item.calendarName, item.id);
     }
@@ -3227,6 +3281,7 @@ async function handleForm(event) {
         Object.assign(item, mapPayment(saved));
       }
       if (!isEdit) state.payments.push(item);
+      await syncPaymentToCalendar(item);
       addLog(`${isEdit ? "Редактира" : "Добави"} плащане: ${data.invoice}`, "Плащане", item.id);
     }
 
@@ -3317,6 +3372,7 @@ async function updateStatus(kind, itemId, status) {
       if (kind === "audit") await remoteUpdate("audits", item.id, auditPayload(item));
       if (kind === "payment") await remoteUpdate("payments", item.id, paymentPayload(item));
     }
+    if (kind === "payment") await syncPaymentToCalendar(item);
     addLog(`Промени статус на ${kind === "audit" ? "одит" : "плащане"}: ${status}`, kind === "audit" ? "Одит" : "Плащане", item.id);
     saveState();
     render();
@@ -3350,6 +3406,7 @@ async function updateCalendarField(itemId, field, value) {
   stamp(item);
   try {
     if (supabaseClient && supabaseAuthUser) await remoteUpdate("calendar_events", item.id, calendarEventPayload(item));
+    if (field === "paymentOk") await syncCalendarPaymentRecord(item);
     if (item.completed && !wasCompleted) await createNextYearCalendarEvent(item);
     addLog(`Промени ${field} за ${eventCompany(item)?.name || item.title}`, "Календар", item.id);
     saveState();
@@ -3367,7 +3424,13 @@ function nextAnnualAuditDate(date) {
 
 async function createNextYearCalendarEvent(source) {
   const nextDate = nextAnnualAuditDate(source.date);
-  const exists = state.calendarEvents.some((event) => event.renewalSourceId === source.id || (event.companyId === source.companyId && event.date === nextDate));
+  const sourceCompanyKey = normalizedCompanyKey(eventCompany(source)?.name || source.title);
+  const exists = state.calendarEvents.some((event) => {
+    if (event.renewalSourceId === source.id) return true;
+    if (event.date !== nextDate) return false;
+    if (source.companyId) return event.companyId === source.companyId;
+    return normalizedCompanyKey(eventCompany(event)?.name || event.title) === sourceCompanyKey;
+  });
   if (exists) return;
   const renewal = stamp({
     ...source,
@@ -3404,6 +3467,7 @@ async function deleteCalendarEvent(itemId) {
   try {
     if (supabaseClient && supabaseAuthUser) await remoteDelete("calendar_events", itemId);
     state.calendarEvents = state.calendarEvents.filter((event) => event.id !== itemId);
+    state.payments = state.payments.filter((payment) => payment.calendarEventId !== itemId);
     addLog(`Изтри календарен запис: ${item.title}`, item.calendarName, item.id);
     saveState();
     render();
@@ -3421,17 +3485,25 @@ async function deleteItem(kind, itemId) {
   if (!confirm(`Сигурни ли сте, че искате да изтриете ${labels[kind]}? Историята на промяната ще остане.`)) return;
   const lists = { company: state.companies, audit: state.audits, payment: state.payments, document: state.documents };
   const item = findItem(kind, itemId);
+  const linkedCalendarIds = kind === "company"
+    ? new Set(state.calendarEvents.filter((event) => eventCompany(event)?.id === itemId || event.companyId === itemId).map((event) => event.id))
+    : new Set();
   try {
     if (supabaseClient && supabaseAuthUser) {
       const table = { company: "companies", audit: "audits", payment: "payments", document: "documents" }[kind];
+      if (kind === "company" && linkedCalendarIds.size) {
+        const { error } = await supabaseClient.from("calendar_events").delete().in("id", [...linkedCalendarIds]);
+        if (error) throw error;
+      }
       await remoteDelete(table, itemId);
     }
     const index = lists[kind].findIndex((entry) => entry.id === itemId);
     if (index >= 0) lists[kind].splice(index, 1);
     if (kind === "company") {
       state.audits = state.audits.filter((audit) => audit.companyId !== itemId);
-      state.payments = state.payments.filter((payment) => payment.companyId !== itemId);
+      state.payments = state.payments.filter((payment) => payment.companyId !== itemId && !linkedCalendarIds.has(payment.calendarEventId));
       state.documents = state.documents.filter((doc) => doc.companyId !== itemId);
+      state.calendarEvents = state.calendarEvents.filter((event) => !linkedCalendarIds.has(event.id));
     }
     addLog(`Изтри ${labels[kind]}: ${item?.name || item?.invoice || item?.type || itemId}`, labels[kind], itemId);
     saveState();
