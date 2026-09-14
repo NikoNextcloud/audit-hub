@@ -97,6 +97,7 @@ create table audit_tasks (
 
 create table calendar_events (
   id text primary key,
+  company_id uuid references companies(id) on delete set null,
   calendar_type text not null check (calendar_type in ('planned', 'auditors')),
   event_date date not null,
   event_time time,
@@ -112,6 +113,13 @@ create table calendar_events (
   checklist jsonb not null default '[]'::jsonb,
   reminder_days integer not null default 7,
   reminder_sent boolean not null default false,
+  planning_status text not null default 'planned' check (planning_status in ('planned', 'unplanned')),
+  scheduling_ok boolean not null default false,
+  payment_ok boolean not null default false,
+  audit_ok boolean not null default false,
+  completed boolean not null default false,
+  completed_at timestamptz,
+  renewal_source_id text references calendar_events(id) on delete set null,
   created_by uuid references profiles(id),
   updated_by uuid references profiles(id),
   updated_at timestamptz not null default now(),
