@@ -47,6 +47,7 @@ drop policy if exists "authenticated users can write calendar events" on calenda
 drop policy if exists "authenticated users can insert calendar events" on calendar_events;
 drop policy if exists "authenticated users can update calendar events" on calendar_events;
 drop policy if exists "admin users can delete calendar events" on calendar_events;
+drop policy if exists "authenticated users can delete calendar events" on calendar_events;
 
 create policy "authenticated users can read calendar events" on calendar_events
   for select to authenticated using (true);
@@ -57,8 +58,8 @@ create policy "authenticated users can insert calendar events" on calendar_event
 create policy "authenticated users can update calendar events" on calendar_events
   for update to authenticated using (true) with check (true);
 
-create policy "admin users can delete calendar events" on calendar_events
-  for delete to authenticated using (public.is_admin());
+create policy "authenticated users can delete calendar events" on calendar_events
+  for delete to authenticated using (true);
 
 create index if not exists calendar_events_search_idx on calendar_events using gin (
   to_tsvector('simple', coalesce(title, '') || ' ' || coalesce(auditor, '') || ' ' || coalesce(notes, ''))
