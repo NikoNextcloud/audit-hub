@@ -665,7 +665,7 @@ textarea:focus {
 .nowrap { white-space: nowrap; }
 .cell-empty { color: var(--muted); }
 .standards-form-list { display: grid; gap: 8px; }
-.standard-form-row { display: grid; grid-template-columns: minmax(150px, 1fr) 120px minmax(155px, 0.8fr) 36px; gap: 8px; align-items: center; }
+.standard-form-row { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(155px, 0.8fr) 36px; gap: 8px; align-items: center; }
 .standard-with-date { display: inline-grid; justify-items: start; gap: 3px; }
 .standard-with-date small { color: var(--muted); font-size: 11px; }
 .field-label-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -1804,9 +1804,8 @@ th {
 
   .standard-form-row { grid-template-columns: minmax(0, 1fr) 36px; }
   .standard-form-row select[name="standardName"] { grid-column: 1 / -1; }
-  .standard-form-row select[name="standardColor"],
   .standard-form-row input[type="date"] { grid-column: 1; }
-  .standard-form-row .icon-btn { grid-column: 2; grid-row: 3; }
+  .standard-form-row .icon-btn { grid-column: 2; grid-row: 2; }
 
   .stats-grid,
   .cards-grid,

@@ -3189,8 +3189,7 @@ function standardNameOptions(selected = "") {
 }
 
 function standardFormRow(standard = { name: "", color: "blue", certificateIssueDate: "" }) {
-  const colors = [["blue", "Син"], ["green", "Зелен"], ["red", "Червен"], ["orange", "Оранжев"], ["purple", "Лилав"], ["gray", "Сив"]];
-  return `<div class="standard-form-row"><select name="standardName" aria-label="Стандарт">${standardNameOptions(standard.name || "")}</select><select name="standardColor" aria-label="Цвят на стандарта">${colors.map(([value, label]) => option(value, label, standard.color || "blue")).join("")}</select><input name="standardCertificateIssueDate" type="date" value="${escapeAttr(standard.certificateIssueDate || "")}" aria-label="Дата на издаване на сертификата" title="Дата на издаване на сертификата" /><button class="icon-btn danger" type="button" title="Премахни" data-action="remove-standard">${icon("trash")}</button></div>`;
+  return `<div class="standard-form-row"><select name="standardName" aria-label="Стандарт">${standardNameOptions(standard.name || "")}</select><input name="standardColor" type="hidden" value="${escapeAttr(standard.color || "blue")}" /><input name="standardCertificateIssueDate" type="date" value="${escapeAttr(standard.certificateIssueDate || "")}" aria-label="Дата на издаване на сертификата" title="Дата на издаване на сертификата" /><button class="icon-btn danger" type="button" title="Премахни" data-action="remove-standard">${icon("trash")}</button></div>`;
 }
 
 function auditForm(companyId, item, defaultDate) {
