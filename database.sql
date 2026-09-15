@@ -135,6 +135,40 @@ create unique index payments_calendar_event_id_uidx
   on payments(calendar_event_id)
   where calendar_event_id is not null;
 
+create table auditor_calendar_auditors (
+  id text primary key,
+  name text not null unique,
+  color text not null check (color ~ '^#[0-9A-Fa-f]{6}$'),
+  sort_order integer not null default 0,
+  created_by uuid references profiles(id),
+  updated_by uuid references profiles(id),
+  updated_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+
+create table auditor_calendar_entries (
+  id text primary key,
+  event_date date not null,
+  company_name text not null,
+  details text,
+  auditor_id text not null references auditor_calendar_auditors(id) on delete restrict,
+  source_sheet text,
+  source_cell text,
+  sort_order integer not null default 0,
+  created_by uuid references profiles(id),
+  updated_by uuid references profiles(id),
+  updated_at timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  unique (source_sheet, source_cell)
+);
+
+create index auditor_calendar_entries_date_idx on auditor_calendar_entries(event_date);
+create index auditor_calendar_entries_auditor_idx on auditor_calendar_entries(auditor_id);
+create index auditor_calendar_auditors_created_by_idx on auditor_calendar_auditors(created_by);
+create index auditor_calendar_auditors_updated_by_idx on auditor_calendar_auditors(updated_by);
+create index auditor_calendar_entries_created_by_idx on auditor_calendar_entries(created_by);
+create index auditor_calendar_entries_updated_by_idx on auditor_calendar_entries(updated_by);
+
 alter table profiles enable row level security;
 alter table companies enable row level security;
 alter table audits enable row level security;
@@ -143,6 +177,8 @@ alter table documents enable row level security;
 alter table activity_log enable row level security;
 alter table audit_tasks enable row level security;
 alter table calendar_events enable row level security;
+alter table auditor_calendar_auditors enable row level security;
+alter table auditor_calendar_entries enable row level security;
 
 create policy "authenticated users can read profiles" on profiles
   for select to authenticated using (true);
@@ -188,6 +224,26 @@ create policy "authenticated users can read calendar events" on calendar_events
 
 create policy "authenticated users can write calendar events" on calendar_events
   for all to authenticated using (true) with check (true);
+
+create policy "authenticated users can read auditor calendar auditors" on auditor_calendar_auditors
+  for select to authenticated using (true);
+
+create policy "authenticated users can insert auditor calendar auditors" on auditor_calendar_auditors
+  for insert to authenticated with check (true);
+create policy "authenticated users can update auditor calendar auditors" on auditor_calendar_auditors
+  for update to authenticated using (true) with check (true);
+create policy "authenticated users can delete auditor calendar auditors" on auditor_calendar_auditors
+  for delete to authenticated using (true);
+
+create policy "authenticated users can read auditor calendar entries" on auditor_calendar_entries
+  for select to authenticated using (true);
+
+create policy "authenticated users can insert auditor calendar entries" on auditor_calendar_entries
+  for insert to authenticated with check (true);
+create policy "authenticated users can update auditor calendar entries" on auditor_calendar_entries
+  for update to authenticated using (true) with check (true);
+create policy "authenticated users can delete auditor calendar entries" on auditor_calendar_entries
+  for delete to authenticated using (true);
 
 create index companies_mega_url_idx on companies using gin (to_tsvector('simple', coalesce(mega_url, '')));
 create index documents_search_idx on documents using gin (

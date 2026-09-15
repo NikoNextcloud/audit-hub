@@ -2,6 +2,9 @@ const storeKey = "audit-hub-state-v2";
 const oldStoreKey = "audit-hub-state-v1";
 const importedMegaCompanies = typeof window !== "undefined" ? window.AUDIT_HUB_MEGA_COMPANIES || [] : [];
 const importedCalendarEvents = typeof window !== "undefined" ? window.AUDIT_HUB_IMPORTED_CALENDARS || [] : [];
+const importedAuditorCalendar = typeof window !== "undefined"
+  ? window.AUDIT_HUB_AUDITOR_CALENDAR || { auditors: [], entries: [] }
+  : { auditors: [], entries: [] };
 const importedCalendarSheets = new Set([
   "Януари",
   "Февруари",
@@ -197,6 +200,13 @@ const seedData = {
     updatedBy: "Импорт Excel",
     updatedAt: nowIso()
   })),
+  auditorCalendarAuditors: importedAuditorCalendar.auditors.map((auditor) => ({ ...auditor })),
+  auditorCalendarEntries: importedAuditorCalendar.entries.map((entry) => ({
+    ...entry,
+    createdBy: "Импорт Excel",
+    updatedBy: "Импорт Excel",
+    updatedAt: nowIso()
+  })),
   activityLog: [
     {
       id: "log-1",
@@ -218,6 +228,7 @@ let selectedCompanyActivity = "all";
 let selectedCompanyStandard = "all";
 let auditMode = "calendar";
 let calendarDate = new Date();
+let auditorCalendarDate = new Date(2026, 0, 1);
 let activeCompanyId = "";
 let selectedCalendarType = "planned";
 let supabaseClient = null;
@@ -266,6 +277,8 @@ function normalizeState(data) {
   }
   data.activityLog ||= structuredClone(seedData.activityLog);
   data.calendarEvents ||= structuredClone(seedData.calendarEvents);
+  data.auditorCalendarAuditors ||= structuredClone(seedData.auditorCalendarAuditors);
+  data.auditorCalendarEntries ||= structuredClone(seedData.auditorCalendarEntries);
   mergeImportedCalendarEvents(data);
   data.companies ||= [];
   mergeImportedMegaCompanies(data);
@@ -274,7 +287,7 @@ function normalizeState(data) {
     company.standards = Array.isArray(company.standards) ? company.standards : [];
     if (company.status === "watch" || company.status === "archived") company.status = "inactive";
   });
-  for (const list of [data.companies, data.audits, data.payments, data.documents, data.calendarEvents]) {
+  for (const list of [data.companies, data.audits, data.payments, data.documents, data.calendarEvents, data.auditorCalendarEntries]) {
     list.forEach((item) => {
       item.createdBy ||= "Администратор";
       item.updatedBy ||= item.createdBy;
@@ -297,6 +310,10 @@ function normalizeState(data) {
   });
   data.documents.forEach((doc) => (doc.uploadStatus ||= doc.megaUrl ? "uploaded" : "local"));
   data.payments.forEach((payment) => (payment.calendarEventId ||= ""));
+  data.auditorCalendarAuditors.forEach((auditor, index) => {
+    auditor.color = safeHexColor(auditor.color);
+    auditor.sortOrder = Number(auditor.sortOrder ?? index);
+  });
   data.calendarEvents.forEach((event) => {
     event.calendarType ||= "planned";
     event.calendarName ||= event.calendarType === "planned" ? "Планирани дейности" : "Одитори";
@@ -780,6 +797,62 @@ function taskPayload(task, auditId) {
   };
 }
 
+function safeHexColor(color) {
+  return /^#[0-9a-f]{6}$/i.test(String(color || "")) ? String(color).toUpperCase() : "#64748B";
+}
+
+function mapAuditorCalendarAuditor(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    color: safeHexColor(row.color),
+    sortOrder: Number(row.sort_order || 0),
+    updatedBy: nameFromProfile(row.updated_by, "Система"),
+    updatedAt: row.updated_at || row.created_at || nowIso()
+  };
+}
+
+function auditorCalendarAuditorPayload(item) {
+  return {
+    id: item.id,
+    name: item.name,
+    color: safeHexColor(item.color),
+    sort_order: Number(item.sortOrder || 0),
+    updated_by: supabaseAuthUser?.id || null,
+    updated_at: nowIso()
+  };
+}
+
+function mapAuditorCalendarEntry(row) {
+  return {
+    id: row.id,
+    date: row.event_date,
+    companyName: row.company_name,
+    details: row.details || "",
+    auditorId: row.auditor_id,
+    sourceSheet: row.source_sheet || "",
+    sourceCell: row.source_cell || "",
+    sortOrder: Number(row.sort_order || 0),
+    updatedBy: nameFromProfile(row.updated_by, "Система"),
+    updatedAt: row.updated_at || row.created_at || nowIso()
+  };
+}
+
+function auditorCalendarEntryPayload(item) {
+  return {
+    id: item.id,
+    event_date: item.date,
+    company_name: item.companyName,
+    details: item.details || null,
+    auditor_id: item.auditorId,
+    source_sheet: item.sourceSheet || null,
+    source_cell: item.sourceCell || null,
+    sort_order: Number(item.sortOrder || 0),
+    updated_by: supabaseAuthUser?.id || null,
+    updated_at: nowIso()
+  };
+}
+
 function mapCalendarEvent(row) {
   return {
     id: row.id,
@@ -981,6 +1054,7 @@ function render() {
           ${navButton("dashboard", "home", "Начало")}
           ${navButton("companies", "users", "Фирми")}
           ${navButton("audits", "calendar", "Календар")}
+          ${navButton("auditorCalendar", "calendar", "Календар Одити")}
           ${navButton("archive", "file", "Архив")}
           ${navButton("payments", "card", "Плащания")}
           ${navButton("activity", "activity", "История")}
@@ -1366,7 +1440,7 @@ async function ensureRemoteProfile(appUser) {
 
 async function loadRemoteData() {
   if (!supabaseClient) return;
-  const [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes, calendarEventsRes] = await Promise.all([
+  const [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes, calendarEventsRes, auditorCalendarAuditorsRes, auditorCalendarEntriesRes] = await Promise.all([
     supabaseClient.from("profiles").select("*"),
     supabaseClient.from("companies").select("*").order("created_at", { ascending: false }),
     supabaseClient.from("audits").select("*").order("audit_date", { ascending: true }),
@@ -1374,10 +1448,12 @@ async function loadRemoteData() {
     supabaseClient.from("documents").select("*").order("created_at", { ascending: false }),
     supabaseClient.from("activity_log").select("*").order("created_at", { ascending: false }).limit(200),
     supabaseClient.from("audit_tasks").select("*"),
-    supabaseClient.from("calendar_events").select("*").order("event_date", { ascending: true })
+    supabaseClient.from("calendar_events").select("*").order("event_date", { ascending: true }),
+    supabaseClient.from("auditor_calendar_auditors").select("*").order("sort_order", { ascending: true }),
+    supabaseClient.from("auditor_calendar_entries").select("*").order("event_date", { ascending: true }).order("sort_order", { ascending: true })
   ]);
 
-  const firstError = [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes, calendarEventsRes].find((result) => result.error)?.error;
+  const firstError = [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes, calendarEventsRes, auditorCalendarAuditorsRes, auditorCalendarEntriesRes].find((result) => result.error)?.error;
   if (firstError) throw firstError;
 
   profileById = Object.fromEntries((profilesRes.data || []).map((profile) => [profile.id, profile]));
@@ -1393,6 +1469,8 @@ async function loadRemoteData() {
   state.payments = (paymentsRes.data || []).map(mapPayment);
   state.documents = (docsRes.data || []).map(mapDocument);
   state.activityLog = (logsRes.data || []).map(mapLog);
+  state.auditorCalendarAuditors = (auditorCalendarAuditorsRes.data || []).map(mapAuditorCalendarAuditor);
+  state.auditorCalendarEntries = (auditorCalendarEntriesRes.data || []).map(mapAuditorCalendarEntry);
   const calendarSync = await syncImportedCalendarEventsToSupabase(calendarEventsRes.data || []);
   state.calendarEvents = calendarSync.events;
   if (calendarSync.upserted) {
@@ -1580,6 +1658,7 @@ function renderView() {
     dashboard: renderDashboard,
     companies: renderCompanies,
     audits: renderAudits,
+    auditorCalendar: renderAuditorCalendar,
     archive: renderArchive,
     payments: renderPayments,
     companyProfile: renderCompanyProfile,
@@ -1759,6 +1838,90 @@ function renderCompanyToolbar() {
       </div>
       <button class="btn ghost" data-action="export-csv" data-kind="company">${icon("file")} Експорт CSV</button>
     </div>`;
+}
+
+function auditorCalendarAuditor(auditorId) {
+  return state.auditorCalendarAuditors.find((auditor) => auditor.id === auditorId) || {
+    id: auditorId,
+    name: "Неизвестен одитор",
+    color: "#64748B",
+    sortOrder: 999
+  };
+}
+
+function renderAuditorCalendar() {
+  const year = auditorCalendarDate.getFullYear();
+  const month = auditorCalendarDate.getMonth();
+  const monthLabel = new Intl.DateTimeFormat("bg-BG", { month: "long", year: "numeric" }).format(auditorCalendarDate);
+  const needle = query.trim().toLocaleLowerCase("bg-BG");
+  const visibleEntries = state.auditorCalendarEntries.filter((entry) => {
+    if (!needle) return true;
+    const auditor = auditorCalendarAuditor(entry.auditorId);
+    return [entry.companyName, entry.details, auditor.name].join(" ").toLocaleLowerCase("bg-BG").includes(needle);
+  });
+  const currentMonthCount = visibleEntries.filter((entry) => {
+    const date = new Date(`${entry.date}T12:00:00`);
+    return date.getFullYear() === year && date.getMonth() === month;
+  }).length;
+  const first = new Date(year, month, 1);
+  const startOffset = (first.getDay() + 6) % 7;
+  const start = new Date(year, month, 1 - startOffset);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cellCount = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+  const cells = Array.from({ length: cellCount }, (_, index) => {
+    const date = new Date(start);
+    date.setDate(start.getDate() + index);
+    const iso = dateInput(date);
+    const dayEntries = visibleEntries
+      .filter((entry) => entry.date === iso)
+      .sort((a, b) => {
+        const auditorOrder = auditorCalendarAuditor(a.auditorId).sortOrder - auditorCalendarAuditor(b.auditorId).sortOrder;
+        return auditorOrder || a.sortOrder - b.sortOrder;
+      });
+    return `
+      <div class="auditor-calendar-cell ${date.getMonth() !== month ? "outside" : ""}">
+        <div class="auditor-day-head">
+          <span>${date.getDate()}</span>
+          <button class="auditor-day-add" title="Добави фирма за ${formatDate(iso)}" data-action="open-modal" data-modal="auditorCalendarEntry" data-date="${iso}">${icon("plus")}</button>
+        </div>
+        <div class="auditor-day-entries">
+          ${dayEntries.map((entry) => {
+            const auditor = auditorCalendarAuditor(entry.auditorId);
+            return `<button class="auditor-calendar-entry" style="--auditor-color:${safeHexColor(auditor.color)}" data-action="open-modal" data-modal="auditorCalendarEntry" data-id="${entry.id}" title="${escapeAttr(`${entry.companyName} · ${auditor.name}${entry.details ? ` · ${entry.details}` : ""}`)}"><strong>${escapeHtml(entry.companyName)}</strong>${entry.details ? `<small>${escapeHtml(entry.details)}</small>` : ""}</button>`;
+          }).join("")}
+        </div>
+      </div>`;
+  }).join("");
+
+  const auditors = [...state.auditorCalendarAuditors].sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, "bg-BG"));
+  return `
+    <div class="page-head">
+      <div>
+        <h2>Календар Одити</h2>
+        <p>Самостоятелен календар на одиторите, пренесен от Excel без връзка с останалите табове.</p>
+      </div>
+      <div class="card-actions">
+        <button class="btn ghost" data-action="open-modal" data-modal="auditorCalendarAuditor">${icon("users")} Добави одитор</button>
+        <button class="btn primary" data-action="open-modal" data-modal="auditorCalendarEntry">${icon("plus")} Добави фирма</button>
+      </div>
+    </div>
+    <section class="panel auditor-calendar-panel">
+      <div class="auditor-calendar-toolbar">
+        <button class="btn ghost" data-action="auditor-month-prev">Назад</button>
+        <div><h3>${escapeHtml(monthLabel)}</h3><span>${currentMonthCount} записа</span></div>
+        <button class="btn ghost" data-action="auditor-month-next">Напред</button>
+      </div>
+      <div class="auditor-legend">
+        ${auditors.map((auditor) => `<button data-action="open-modal" data-modal="auditorCalendarAuditor" data-id="${auditor.id}"><i style="background:${safeHexColor(auditor.color)}"></i>${escapeHtml(auditor.name)}</button>`).join("")}
+      </div>
+      <div class="auditor-calendar-scroll">
+        <div class="auditor-calendar-grid auditor-weekdays">
+          ${["понеделник", "вторник", "сряда", "четвъртък", "петък", "събота", "неделя"].map((day) => `<div>${day}</div>`).join("")}
+        </div>
+        <div class="auditor-calendar-grid auditor-calendar-days">${cells}</div>
+      </div>
+    </section>
+  `;
 }
 
 function filteredAudits() {
@@ -2798,6 +2961,16 @@ function bindEvents() {
     render();
   });
 
+  document.querySelector("[data-action='auditor-month-prev']")?.addEventListener("click", () => {
+    auditorCalendarDate = new Date(auditorCalendarDate.getFullYear(), auditorCalendarDate.getMonth() - 1, 1);
+    render();
+  });
+
+  document.querySelector("[data-action='auditor-month-next']")?.addEventListener("click", () => {
+    auditorCalendarDate = new Date(auditorCalendarDate.getFullYear(), auditorCalendarDate.getMonth() + 1, 1);
+    render();
+  });
+
   document.querySelectorAll("[data-action='quick-status']").forEach((control) => {
     control.addEventListener("change", () => updateStatus(control.dataset.kind, control.dataset.id, control.value));
     control.addEventListener("click", () => {
@@ -2841,6 +3014,8 @@ function openModal(type, companyId = "", itemId = "", defaultDate = "") {
     payment: paymentForm,
     document: documentForm,
     calendarEvent: calendarEventForm,
+    auditorCalendarEntry: auditorCalendarEntryForm,
+    auditorCalendarAuditor: auditorCalendarAuditorForm,
     mega: megaForm,
     changePassword: changePasswordForm
   };
@@ -2875,6 +3050,9 @@ function openModal(type, companyId = "", itemId = "", defaultDate = "") {
     const file = event.target.files[0];
     if (file) document.querySelector("#doc-name").value = file.name;
   });
+  document.querySelector("[data-action='delete-auditor-calendar-entry']")?.addEventListener("click", (event) => {
+    deleteAuditorCalendarEntry(event.currentTarget.dataset.id);
+  });
 }
 
 function closeModal() {
@@ -2887,7 +3065,9 @@ function findItem(type, itemId) {
     audit: state.audits,
     payment: state.payments,
     document: state.documents,
-    calendarEvent: state.calendarEvents
+    calendarEvent: state.calendarEvents,
+    auditorCalendarEntry: state.auditorCalendarEntries,
+    auditorCalendarAuditor: state.auditorCalendarAuditors
   };
   return lists[type]?.find((item) => item.id === itemId) || null;
 }
@@ -2899,6 +3079,8 @@ function modalTitle(type, item) {
     payment: item ? "Редакция на плащане" : "Ново плащане",
     document: item ? "Редакция на документ" : "Качване на документ",
     calendarEvent: item ? "Редакция на календарен запис" : "Нов календарен запис",
+    auditorCalendarEntry: item ? "Редакция в Календар Одити" : "Нова фирма в Календар Одити",
+    auditorCalendarAuditor: item ? "Редакция на одитор" : "Нов одитор",
     mega: "Mega папка",
     changePassword: "Смяна на парола"
   };
@@ -3038,6 +3220,51 @@ function calendarEventForm(companyId, item, defaultDate) {
 
 function booleanFormSelect(name, label, selected) {
   return `<div class="form-row"><label for="${name}">${label}</label><select id="${name}" name="${name}">${option("true", "OK", selected ? "true" : "false")}${option("false", "NO", selected ? "true" : "false")}</select></div>`;
+}
+
+function auditorCalendarEntryForm(companyId, item, defaultDate) {
+  const auditors = [...state.auditorCalendarAuditors].sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, "bg-BG"));
+  return `
+    <form data-form="auditorCalendarEntry">
+      <input type="hidden" name="id" value="${escapeAttr(item?.id || "")}" />
+      <div class="form-grid">
+        ${field("companyName", "Фирма", "text", item?.companyName || "", true)}
+        ${field("date", "Дата на одита", "date", item?.date || defaultDate || dateInput(auditorCalendarDate), true)}
+        <div class="form-row">
+          <label for="auditorId">Одитор</label>
+          <select id="auditorId" name="auditorId" required>
+            <option value="">Избери одитор</option>
+            ${auditors.map((auditor) => option(auditor.id, auditor.name, item?.auditorId || "")).join("")}
+          </select>
+        </div>
+        <div class="form-row full">
+          <label for="details">Данни и бележки</label>
+          <textarea id="details" name="details" rows="4">${escapeHtml(item?.details || "")}</textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn primary" type="submit">Запази</button>
+        <button class="btn ghost" type="button" data-action="close-modal-button">Отказ</button>
+        ${item && canDelete() ? `<button class="btn danger" type="button" data-action="delete-auditor-calendar-entry" data-id="${item.id}">${icon("trash")} Изтрий</button>` : ""}
+      </div>
+    </form>
+  `;
+}
+
+function auditorCalendarAuditorForm(companyId, item) {
+  return `
+    <form data-form="auditorCalendarAuditor">
+      <input type="hidden" name="id" value="${escapeAttr(item?.id || "")}" />
+      <div class="form-grid">
+        ${field("name", "Име на одитор", "text", item?.name || "", true)}
+        <div class="form-row">
+          <label for="color">Цвят</label>
+          <input id="color" name="color" type="color" value="${safeHexColor(item?.color || "#2563EB")}" required />
+        </div>
+      </div>
+      ${formActions(item ? "Запази одитор" : "Добави одитор")}
+    </form>
+  `;
 }
 
 function paymentForm(companyId, item) {
@@ -3270,6 +3497,50 @@ async function handleForm(event) {
       addLog(`${isEdit ? "Редактира" : "Добави"} календарен запис: ${company?.name || item.title}`, item.calendarName, item.id);
     }
 
+    if (kind === "auditorCalendarEntry") {
+      const item = isEdit ? findItem("auditorCalendarEntry", data.id) : { id: id("audcal") };
+      const nextSortOrder = state.auditorCalendarEntries.reduce((max, entry) => Math.max(max, Number(entry.sortOrder || 0)), 0) + 1;
+      Object.assign(item, stamp({
+        ...item,
+        date: data.date,
+        companyName: data.companyName,
+        details: data.details,
+        auditorId: data.auditorId,
+        sourceSheet: item.sourceSheet || "",
+        sourceCell: item.sourceCell || "",
+        sortOrder: item.sortOrder || nextSortOrder
+      }, !isEdit));
+      if (supabaseClient && supabaseAuthUser) {
+        const payload = auditorCalendarEntryPayload(item);
+        const saved = isEdit
+          ? await remoteUpdate("auditor_calendar_entries", item.id, payload)
+          : await remoteInsert("auditor_calendar_entries", { ...payload, created_by: supabaseAuthUser.id });
+        Object.assign(item, mapAuditorCalendarEntry(saved));
+      }
+      if (!isEdit) state.auditorCalendarEntries.push(item);
+      const [year, month] = data.date.split("-").map(Number);
+      auditorCalendarDate = new Date(year, month - 1, 1);
+    }
+
+    if (kind === "auditorCalendarAuditor") {
+      const item = isEdit ? findItem("auditorCalendarAuditor", data.id) : { id: id("auditor") };
+      const nextSortOrder = state.auditorCalendarAuditors.reduce((max, auditor) => Math.max(max, Number(auditor.sortOrder || 0)), 0) + 1;
+      Object.assign(item, stamp({
+        ...item,
+        name: data.name,
+        color: safeHexColor(data.color),
+        sortOrder: item.sortOrder ?? nextSortOrder
+      }, !isEdit));
+      if (supabaseClient && supabaseAuthUser) {
+        const payload = auditorCalendarAuditorPayload(item);
+        const saved = isEdit
+          ? await remoteUpdate("auditor_calendar_auditors", item.id, payload)
+          : await remoteInsert("auditor_calendar_auditors", { ...payload, created_by: supabaseAuthUser.id });
+        Object.assign(item, mapAuditorCalendarAuditor(saved));
+      }
+      if (!isEdit) state.auditorCalendarAuditors.push(item);
+    }
+
     if (kind === "payment") {
       const item = isEdit ? findItem("payment", data.id) : { id: id("p") };
       Object.assign(item, stamp({ ...item, companyId: data.companyId, invoice: data.invoice, amount: Number(data.amount), dueDate: data.dueDate, paidDate: data.paidDate, status: data.status }, !isEdit));
@@ -3473,6 +3744,24 @@ async function deleteCalendarEvent(itemId) {
     render();
   } catch (error) {
     alert(`Supabase изтриването не мина: ${error.message}`);
+  }
+}
+
+async function deleteAuditorCalendarEntry(itemId) {
+  if (!canDelete()) {
+    alert("Само Админ може да трие записи.");
+    return;
+  }
+  const item = findItem("auditorCalendarEntry", itemId);
+  if (!item || !confirm(`Сигурни ли сте, че искате да изтриете ${item.companyName} от Календар Одити?`)) return;
+  try {
+    if (supabaseClient && supabaseAuthUser) await remoteDelete("auditor_calendar_entries", itemId);
+    state.auditorCalendarEntries = state.auditorCalendarEntries.filter((entry) => entry.id !== itemId);
+    saveState();
+    closeModal();
+    render();
+  } catch (error) {
+    alert(`Записът не беше изтрит: ${error.message}`);
   }
 }
 
