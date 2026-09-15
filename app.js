@@ -226,6 +226,7 @@ let selectedCompany = "all";
 let selectedStatus = "all";
 let selectedCompanyActivity = "all";
 let selectedCompanyStandard = "all";
+let selectedCompanySort = "az";
 let auditMode = "calendar";
 let calendarDate = new Date();
 let auditorCalendarDate = new Date(2026, 0, 1);
@@ -1706,6 +1707,9 @@ function filteredCompanies() {
     const matchesActivity = selectedCompanyActivity === "all" || (company.activities || []).includes(selectedCompanyActivity);
     const matchesStandard = selectedCompanyStandard === "all" || (company.standards || []).some((standard) => standard.name === selectedCompanyStandard);
     return matchesQuery && matchesStatus && matchesActivity && matchesStandard;
+  }).sort((a, b) => {
+    const direction = selectedCompanySort === "za" ? -1 : 1;
+    return direction * String(a.name || "").localeCompare(String(b.name || ""), "bg-BG", { numeric: true, sensitivity: "base" });
   });
 }
 
@@ -1855,6 +1859,10 @@ function renderCompanyToolbar() {
         <select data-action="company-standard-filter">
           ${option("all", "Всички стандарти", selectedCompanyStandard)}
           ${standards.map((standard) => option(standard, standard, selectedCompanyStandard)).join("")}
+        </select>
+        <select data-action="company-sort" aria-label="Сортиране на фирмите">
+          ${option("az", "Име: A–Z", selectedCompanySort)}
+          ${option("za", "Име: Z–A", selectedCompanySort)}
         </select>
         ${statusFilter([["all", "Всички статуси"], ["active", "Активен"], ["inactive", "Неактивен"]])}
         <button class="btn ghost" data-action="clear-company-filters">Изчисти филтрите</button>
@@ -2964,11 +2972,17 @@ function bindEvents() {
     render();
   });
 
+  document.querySelector("[data-action='company-sort']")?.addEventListener("change", (event) => {
+    selectedCompanySort = event.target.value;
+    render();
+  });
+
   document.querySelector("[data-action='clear-company-filters']")?.addEventListener("click", () => {
     selectedCompany = "all";
     selectedStatus = "all";
     selectedCompanyActivity = "all";
     selectedCompanyStandard = "all";
+    selectedCompanySort = "az";
     query = "";
     render();
   });
