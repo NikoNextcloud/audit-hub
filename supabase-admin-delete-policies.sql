@@ -48,6 +48,7 @@ drop policy if exists "authenticated users can write audit tasks" on audit_tasks
 drop policy if exists "authenticated users can insert companies" on companies;
 drop policy if exists "authenticated users can update companies" on companies;
 drop policy if exists "admin users can delete companies" on companies;
+drop policy if exists "authenticated users can delete companies" on companies;
 
 drop policy if exists "authenticated users can insert audits" on audits;
 drop policy if exists "authenticated users can update audits" on audits;
@@ -69,8 +70,8 @@ create policy "authenticated users can insert companies" on companies
   for insert to authenticated with check (true);
 create policy "authenticated users can update companies" on companies
   for update to authenticated using (true) with check (true);
-create policy "admin users can delete companies" on companies
-  for delete to authenticated using (public.is_admin());
+create policy "authenticated users can delete companies" on companies
+  for delete to authenticated using (true);
 
 create policy "authenticated users can insert audits" on audits
   for insert to authenticated with check (true);
