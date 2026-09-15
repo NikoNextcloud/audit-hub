@@ -3807,8 +3807,8 @@ function nextAnnualAuditDate(date) {
 function certificationAuditDate(issueDate, yearsAhead) {
   const [year, month, day] = String(issueDate || "").split("-").map(Number);
   if (!year || !month || !day) return "";
-  const date = new Date(year, month - 1, day + 1, 12);
-  date.setFullYear(date.getFullYear() + yearsAhead);
+  const date = new Date(year + yearsAhead, month - 1, day, 12);
+  date.setDate(date.getDate() - 1);
   return dateInput(date);
 }
 
