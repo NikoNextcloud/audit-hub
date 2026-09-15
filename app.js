@@ -3094,7 +3094,7 @@ function openModal(type, companyId = "", itemId = "", defaultDate = "") {
   });
   document.querySelector("[data-action='delete-company-from-form']")?.addEventListener("click", async (event) => {
     const itemId = event.currentTarget.dataset.id;
-    await deleteItem("company", itemId);
+    await deleteItem("company", itemId, true);
     if (!state.companies.some((company) => company.id === itemId)) closeModal();
   });
 }
@@ -3176,7 +3176,7 @@ function companyForm(companyId, item) {
       <div class="form-actions">
         <button class="btn primary" type="submit">Запази</button>
         <button class="btn ghost" type="button" data-action="close-modal-button">Отказ</button>
-        ${item && canDelete() ? `<button class="btn danger" type="button" data-action="delete-company-from-form" data-id="${item.id}">${icon("trash")} Изтрий фирмата</button>` : ""}
+        ${item ? `<button class="btn danger" type="button" data-action="delete-company-from-form" data-id="${item.id}">${icon("trash")} Изтрий фирмата</button>` : ""}
       </div>
     </form>
   `;
@@ -3939,8 +3939,8 @@ async function deleteAuditorCalendarAuditor(itemId) {
   }
 }
 
-async function deleteItem(kind, itemId) {
-  if (!canDelete()) {
+async function deleteItem(kind, itemId, allowAllUsers = false) {
+  if (!allowAllUsers && !canDelete()) {
     alert("Само Админ може да трие записи.");
     return;
   }
