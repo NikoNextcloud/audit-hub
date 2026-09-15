@@ -124,6 +124,7 @@ create table calendar_events (
   renewal_source_id text references calendar_events(id) on delete set null,
   certificate_issue_date date,
   certification_stage text check (certification_stage is null or certification_stage in ('first_control', 'second_control', 'recertification')),
+  certification_standard text,
   created_by uuid references profiles(id),
   updated_by uuid references profiles(id),
   updated_at timestamptz not null default now(),
@@ -139,8 +140,8 @@ create unique index payments_calendar_event_id_uidx
   where calendar_event_id is not null;
 
 create unique index calendar_events_certification_cycle_uidx
-  on calendar_events(company_id, certificate_issue_date, certification_stage)
-  where certificate_issue_date is not null and certification_stage is not null;
+  on calendar_events(company_id, certification_standard, certificate_issue_date, certification_stage)
+  where certification_standard is not null and certificate_issue_date is not null and certification_stage is not null;
 
 create table auditor_calendar_auditors (
   id text primary key,
