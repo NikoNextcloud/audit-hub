@@ -1005,6 +1005,11 @@ function dateInput(date) {
   return new Date(date).toISOString().slice(0, 10);
 }
 
+function localDateInput(date) {
+  const value = new Date(date);
+  return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
+}
+
 function daysUntil(date) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -1901,7 +1906,7 @@ function renderAuditorCalendar() {
   const cells = Array.from({ length: cellCount }, (_, index) => {
     const date = new Date(start);
     date.setDate(start.getDate() + index);
-    const iso = dateInput(date);
+    const iso = localDateInput(date);
     const dayEntries = visibleEntries
       .filter((entry) => entry.date === iso)
       .sort((a, b) => {
@@ -3304,7 +3309,7 @@ function auditorCalendarEntryForm(companyId, item, defaultDate) {
       <input type="hidden" name="id" value="${escapeAttr(item?.id || "")}" />
       <div class="form-grid">
         ${field("companyName", "Фирма", "text", item?.companyName || "", true)}
-        ${field("date", "Дата на одита", "date", item?.date || defaultDate || dateInput(auditorCalendarDate), true)}
+        ${field("date", "Дата на одита", "date", item?.date || defaultDate || localDateInput(auditorCalendarDate), true)}
         <div class="form-row">
           <label for="auditorId">Одитор</label>
           <select id="auditorId" name="auditorId" required>
