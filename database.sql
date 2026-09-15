@@ -14,6 +14,7 @@ create table companies (
   email text,
   activities text[] not null default '{}',
   standards jsonb not null default '[]'::jsonb,
+  certificate_issue_date date,
   mega_url text,
   status text not null default 'active',
   notes text,
@@ -121,6 +122,8 @@ create table calendar_events (
   completed boolean not null default false,
   completed_at timestamptz,
   renewal_source_id text references calendar_events(id) on delete set null,
+  certificate_issue_date date,
+  certification_stage text check (certification_stage is null or certification_stage in ('first_control', 'second_control', 'recertification')),
   created_by uuid references profiles(id),
   updated_by uuid references profiles(id),
   updated_at timestamptz not null default now(),
@@ -134,6 +137,10 @@ alter table payments
 create unique index payments_calendar_event_id_uidx
   on payments(calendar_event_id)
   where calendar_event_id is not null;
+
+create unique index calendar_events_certification_cycle_uidx
+  on calendar_events(company_id, certificate_issue_date, certification_stage)
+  where certificate_issue_date is not null and certification_stage is not null;
 
 create table auditor_calendar_auditors (
   id text primary key,

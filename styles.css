@@ -244,6 +244,14 @@ a {
   margin: 18px 0;
 }
 
+.form-hint {
+  align-self: end;
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 label {
   color: #344054;
   font-weight: 650;
@@ -631,6 +639,14 @@ textarea:focus {
 .company-name-cell { min-width: 210px; }
 .company-name-link { display: block; padding: 0; border: 0; background: none; color: var(--brand-strong); font: inherit; font-weight: 850; text-align: left; cursor: pointer; }
 .company-name-link:hover { text-decoration: underline; }
+.company-certificate-date,
+.table-subtitle {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
 .company-row-actions { display: flex; gap: 5px; margin-top: 8px; }
 .icon-btn.compact { width: 30px; height: 30px; flex-basis: 30px; }
 .company-tags { display: flex; flex-wrap: wrap; gap: 6px; min-width: 130px; }
@@ -696,6 +712,11 @@ textarea:focus {
 .schedule-company-cell strong,
 .schedule-company-cell span {
   display: block;
+}
+
+.schedule-company-cell .certification-stage {
+  color: var(--brand-strong);
+  font-weight: 750;
 }
 
 .schedule-company-cell span {
