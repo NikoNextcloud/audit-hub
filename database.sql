@@ -115,7 +115,7 @@ create table calendar_events (
   checklist jsonb not null default '[]'::jsonb,
   reminder_days integer not null default 7,
   reminder_sent boolean not null default false,
-  planning_status text not null default 'planned' check (planning_status in ('planned', 'unplanned')),
+  planning_status text not null default 'unplanned' check (planning_status in ('planned', 'unplanned')),
   scheduling_ok boolean not null default false,
   payment_ok boolean not null default false,
   audit_ok boolean not null default false,
