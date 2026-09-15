@@ -1,7 +1,7 @@
 -- Изпълни веднъж в Supabase SQL Editor преди сливане на новия месечен график.
 alter table public.calendar_events
   add column if not exists company_id uuid references public.companies(id) on delete set null,
-  add column if not exists planning_status text not null default 'planned',
+  add column if not exists planning_status text not null default 'unplanned',
   add column if not exists scheduling_ok boolean not null default false,
   add column if not exists payment_ok boolean not null default false,
   add column if not exists audit_ok boolean not null default false,
