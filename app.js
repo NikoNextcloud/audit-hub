@@ -1852,17 +1852,16 @@ function renderCompanyToolbar() {
   return `
     <div class="toolbar company-toolbar">
       <div class="filters">
-        ${companyFilter()}
+        <select data-action="company-sort" aria-label="Сортиране на фирмите">
+          ${option("az", "Име: A–Z", selectedCompanySort)}
+          ${option("za", "Име: Z–A", selectedCompanySort)}
+        </select>
         <select data-action="company-activity-filter">
           ${[["all", "Всички дейности"], ["certification", "Сертификация"], ["consulting", "Консултация"], ["occupational_medicine", "СТМ"], ["system", "Система"]].map(([value, label]) => option(value, label, selectedCompanyActivity)).join("")}
         </select>
         <select data-action="company-standard-filter">
           ${option("all", "Всички стандарти", selectedCompanyStandard)}
           ${standards.map((standard) => option(standard, standard, selectedCompanyStandard)).join("")}
-        </select>
-        <select data-action="company-sort" aria-label="Сортиране на фирмите">
-          ${option("az", "Име: A–Z", selectedCompanySort)}
-          ${option("za", "Име: Z–A", selectedCompanySort)}
         </select>
         ${statusFilter([["all", "Всички статуси"], ["active", "Активен"], ["inactive", "Неактивен"]])}
         <button class="btn ghost" data-action="clear-company-filters">Изчисти филтрите</button>
