@@ -3092,6 +3092,11 @@ function openModal(type, companyId = "", itemId = "", defaultDate = "") {
   document.querySelector("[data-action='delete-auditor-calendar-auditor']")?.addEventListener("click", (event) => {
     deleteAuditorCalendarAuditor(event.currentTarget.dataset.id);
   });
+  document.querySelector("[data-action='delete-company-from-form']")?.addEventListener("click", async (event) => {
+    const itemId = event.currentTarget.dataset.id;
+    await deleteItem("company", itemId);
+    if (!state.companies.some((company) => company.id === itemId)) closeModal();
+  });
 }
 
 function closeModal() {
@@ -3168,7 +3173,11 @@ function companyForm(companyId, item) {
           <textarea id="notes" name="notes" rows="3">${escapeHtml(item?.notes || "")}</textarea>
         </div>
       </div>
-      ${formActions()}
+      <div class="form-actions">
+        <button class="btn primary" type="submit">Запази</button>
+        <button class="btn ghost" type="button" data-action="close-modal-button">Отказ</button>
+        ${item && canDelete() ? `<button class="btn danger" type="button" data-action="delete-company-from-form" data-id="${item.id}">${icon("trash")} Изтрий фирмата</button>` : ""}
+      </div>
     </form>
   `;
 }
@@ -3936,7 +3945,10 @@ async function deleteItem(kind, itemId) {
     return;
   }
   const labels = { company: "фирмата", audit: "одита", payment: "плащането", document: "документа" };
-  if (!confirm(`Сигурни ли сте, че искате да изтриете ${labels[kind]}? Историята на промяната ще остане.`)) return;
+  const confirmation = kind === "company"
+    ? "Сигурни ли сте, че искате да изтриете фирмата? Свързаните одити, календарни записи, плащания и документи също ще бъдат премахнати. Историята на промяната ще остане."
+    : `Сигурни ли сте, че искате да изтриете ${labels[kind]}? Историята на промяната ще остане.`;
+  if (!confirm(confirmation)) return;
   const lists = { company: state.companies, audit: state.audits, payment: state.payments, document: state.documents };
   const item = findItem(kind, itemId);
   const linkedCalendarIds = kind === "company"
