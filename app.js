@@ -1884,6 +1884,25 @@ function auditorCalendarAuditor(auditorId) {
   };
 }
 
+function groupAuditorCalendarEntries(entries) {
+  const groups = [];
+  const byCompany = new Map();
+  entries.forEach((entry) => {
+    const key = normalizedCompanyKey(entry.companyName);
+    let group = byCompany.get(key);
+    if (!group) {
+      group = { entry, entries: [], auditors: [], details: [] };
+      byCompany.set(key, group);
+      groups.push(group);
+    }
+    group.entries.push(entry);
+    const auditor = auditorCalendarAuditor(entry.auditorId);
+    if (!group.auditors.some((item) => item.id === auditor.id)) group.auditors.push(auditor);
+    if (entry.details && !group.details.includes(entry.details)) group.details.push(entry.details);
+  });
+  return groups;
+}
+
 function renderAuditorCalendar() {
   const year = auditorCalendarDate.getFullYear();
   const month = auditorCalendarDate.getMonth();
@@ -1894,10 +1913,11 @@ function renderAuditorCalendar() {
     const auditor = auditorCalendarAuditor(entry.auditorId);
     return [entry.companyName, entry.details, auditor.name].join(" ").toLocaleLowerCase("bg-BG").includes(needle);
   });
-  const currentMonthCount = visibleEntries.filter((entry) => {
+  const currentMonthEntries = visibleEntries.filter((entry) => {
     const date = new Date(`${entry.date}T12:00:00`);
     return date.getFullYear() === year && date.getMonth() === month;
-  }).length;
+  });
+  const currentMonthCount = new Set(currentMonthEntries.map((entry) => `${entry.date}|${normalizedCompanyKey(entry.companyName)}`)).size;
   const first = new Date(year, month, 1);
   const startOffset = (first.getDay() + 6) % 7;
   const start = new Date(year, month, 1 - startOffset);
@@ -1913,6 +1933,7 @@ function renderAuditorCalendar() {
         const auditorOrder = auditorCalendarAuditor(a.auditorId).sortOrder - auditorCalendarAuditor(b.auditorId).sortOrder;
         return auditorOrder || a.sortOrder - b.sortOrder;
       });
+    const dayGroups = groupAuditorCalendarEntries(dayEntries);
     return `
       <div class="auditor-calendar-cell ${date.getMonth() !== month ? "outside" : ""}">
         <div class="auditor-day-head">
@@ -1920,9 +1941,13 @@ function renderAuditorCalendar() {
           <button class="auditor-day-add" title="Добави фирма за ${formatDate(iso)}" data-action="open-modal" data-modal="auditorCalendarEntry" data-date="${iso}">${icon("plus")}</button>
         </div>
         <div class="auditor-day-entries">
-          ${dayEntries.map((entry) => {
-            const auditor = auditorCalendarAuditor(entry.auditorId);
-            return `<button class="auditor-calendar-entry" style="--auditor-color:${safeHexColor(auditor.color)}" data-action="open-modal" data-modal="auditorCalendarEntry" data-id="${entry.id}" title="${escapeAttr(`${entry.companyName} · ${auditor.name}${entry.details ? ` · ${entry.details}` : ""}`)}"><strong>${escapeHtml(entry.companyName)}</strong>${entry.details ? `<small>${escapeHtml(entry.details)}</small>` : ""}</button>`;
+          ${dayGroups.map((group) => {
+            const colors = group.auditors.map((auditor) => safeHexColor(auditor.color));
+            const colorStops = colors.map((color, index) => `${color} ${(index * 100) / colors.length}%, ${color} ${((index + 1) * 100) / colors.length}%`).join(", ");
+            const background = colors.length > 1 ? `linear-gradient(90deg, ${colorStops})` : colors[0];
+            const auditorNames = group.auditors.map((auditor) => auditor.name).join(", ");
+            const details = group.details.join(" · ");
+            return `<button class="auditor-calendar-entry" style="--auditor-color:${background}" data-action="open-modal" data-modal="auditorCalendarEntry" data-id="${group.entry.id}" title="${escapeAttr(`${group.entry.companyName} · ${auditorNames}${details ? ` · ${details}` : ""}`)}"><strong>${escapeHtml(group.entry.companyName)}</strong>${details ? `<small>${escapeHtml(details)}</small>` : ""}</button>`;
           }).join("")}
         </div>
       </div>`;
@@ -1943,7 +1968,7 @@ function renderAuditorCalendar() {
     <section class="panel auditor-calendar-panel">
       <div class="auditor-calendar-toolbar">
         <button class="btn ghost" data-action="auditor-month-prev">Назад</button>
-        <div><h3>${escapeHtml(monthLabel)}</h3><span>${currentMonthCount} записа</span></div>
+        <div><h3>${escapeHtml(monthLabel)}</h3><span>${currentMonthCount} фирми</span></div>
         <button class="btn ghost" data-action="auditor-month-next">Напред</button>
       </div>
       <div class="auditor-legend">
