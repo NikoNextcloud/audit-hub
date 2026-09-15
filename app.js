@@ -3053,6 +3053,9 @@ function openModal(type, companyId = "", itemId = "", defaultDate = "") {
   document.querySelector("[data-action='delete-auditor-calendar-entry']")?.addEventListener("click", (event) => {
     deleteAuditorCalendarEntry(event.currentTarget.dataset.id);
   });
+  document.querySelector("[data-action='delete-auditor-calendar-auditor']")?.addEventListener("click", (event) => {
+    deleteAuditorCalendarAuditor(event.currentTarget.dataset.id);
+  });
 }
 
 function closeModal() {
@@ -3262,7 +3265,11 @@ function auditorCalendarAuditorForm(companyId, item) {
           <input id="color" name="color" type="color" value="${safeHexColor(item?.color || "#2563EB")}" required />
         </div>
       </div>
-      ${formActions(item ? "Запази одитор" : "Добави одитор")}
+      <div class="form-actions">
+        <button class="btn primary" type="submit">${item ? "Запази одитор" : "Добави одитор"}</button>
+        <button class="btn ghost" type="button" data-action="close-modal-button">Отказ</button>
+        ${item && canDelete() ? `<button class="btn danger" type="button" data-action="delete-auditor-calendar-auditor" data-id="${item.id}">${icon("trash")} Изтрий одитор</button>` : ""}
+      </div>
     </form>
   `;
 }
@@ -3762,6 +3769,30 @@ async function deleteAuditorCalendarEntry(itemId) {
     render();
   } catch (error) {
     alert(`Записът не беше изтрит: ${error.message}`);
+  }
+}
+
+async function deleteAuditorCalendarAuditor(itemId) {
+  if (!canDelete()) {
+    alert("Само Админ може да трие одитори.");
+    return;
+  }
+  const item = findItem("auditorCalendarAuditor", itemId);
+  if (!item) return;
+  const linkedEntries = state.auditorCalendarEntries.filter((entry) => entry.auditorId === itemId);
+  if (linkedEntries.length) {
+    alert(`Одиторът не може да бъде изтрит, защото има ${linkedEntries.length} свързани записа. Първо прехвърлете или изтрийте тези фирми.`);
+    return;
+  }
+  if (!confirm(`Сигурни ли сте, че искате да изтриете одитор ${item.name}?`)) return;
+  try {
+    if (supabaseClient && supabaseAuthUser) await remoteDelete("auditor_calendar_auditors", itemId);
+    state.auditorCalendarAuditors = state.auditorCalendarAuditors.filter((auditor) => auditor.id !== itemId);
+    saveState();
+    closeModal();
+    render();
+  } catch (error) {
+    alert(`Одиторът не беше изтрит: ${error.message}`);
   }
 }
 
