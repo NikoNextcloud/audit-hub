@@ -525,46 +525,6 @@ window.AUDIT_HUB_AUDITOR_CALENDAR = {
       "sortOrder": 2502
     },
     {
-      "id": "audcal-20260202-2-b9",
-      "date": "2026-02-02",
-      "companyName": "ТЕХКОНСТРУКТ ЕООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Февруари",
-      "sourceCell": "B9",
-      "sortOrder": 801
-    },
-    {
-      "id": "audcal-20260202-2-b10",
-      "date": "2026-02-02",
-      "companyName": "ТЕХКОНСТРУКТ ЕООД",
-      "details": "",
-      "auditorId": "auditor-ekaterina-georgieva",
-      "sourceSheet": "Февруари",
-      "sourceCell": "B10",
-      "sortOrder": 901
-    },
-    {
-      "id": "audcal-20260203-2-c9",
-      "date": "2026-02-03",
-      "companyName": "ТЕХКОНСТРУКТ ЕООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Февруари",
-      "sourceCell": "C9",
-      "sortOrder": 802
-    },
-    {
-      "id": "audcal-20260203-2-c10",
-      "date": "2026-02-03",
-      "companyName": "ТЕХКОНСТРУКТ ЕООД",
-      "details": "",
-      "auditorId": "auditor-ekaterina-georgieva",
-      "sourceSheet": "Февруари",
-      "sourceCell": "C10",
-      "sortOrder": 902
-    },
-    {
       "id": "audcal-20260204-2-d9",
       "date": "2026-02-04",
       "companyName": "УЛТРА ФЛЕКС ООД",
@@ -1705,36 +1665,6 @@ window.AUDIT_HUB_AUDITOR_CALENDAR = {
       "sortOrder": 2006
     },
     {
-      "id": "audcal-20260501-5-f5",
-      "date": "2026-05-01",
-      "companyName": "Нов - А строй ЕООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Май",
-      "sourceCell": "F5",
-      "sortOrder": 405
-    },
-    {
-      "id": "audcal-20260501-5-f6",
-      "date": "2026-05-01",
-      "companyName": "Нов - А строй ЕООД",
-      "details": "",
-      "auditorId": "auditor-ekaterina-georgieva",
-      "sourceSheet": "Май",
-      "sourceCell": "F6",
-      "sortOrder": 505
-    },
-    {
-      "id": "audcal-20260502-5-g5",
-      "date": "2026-05-02",
-      "companyName": "БиЕкспертс ООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Май",
-      "sourceCell": "G5",
-      "sortOrder": 406
-    },
-    {
       "id": "audcal-20260505-5-c9",
       "date": "2026-05-05",
       "companyName": "ДИ ДЖИ ПИ ИНЖЕНЕРИНГ ЕООД",
@@ -2585,26 +2515,6 @@ window.AUDIT_HUB_AUDITOR_CALENDAR = {
       "sortOrder": 2103
     },
     {
-      "id": "audcal-20260701-7-d5",
-      "date": "2026-07-01",
-      "companyName": "ИВТ КОНСУЛТ ЕООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Юли",
-      "sourceCell": "D5",
-      "sortOrder": 403
-    },
-    {
-      "id": "audcal-20260701-7-d6",
-      "date": "2026-07-01",
-      "companyName": "ИВТ КОНСУЛТ ЕООД",
-      "details": "",
-      "auditorId": "auditor-ekaterina-georgieva",
-      "sourceSheet": "Юли",
-      "sourceCell": "D6",
-      "sortOrder": 503
-    },
-    {
       "id": "audcal-20260702-7-e5",
       "date": "2026-07-02",
       "companyName": "ДЖЕНЕРАЛ КОНСТРУКШЪН ЕООД",
@@ -3135,46 +3045,6 @@ window.AUDIT_HUB_AUDITOR_CALENDAR = {
       "sortOrder": 2402
     },
     {
-      "id": "audcal-20260727-8-b5",
-      "date": "2026-07-27",
-      "companyName": "АЛФА КОММЕРС ЕООД 50",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Август",
-      "sourceCell": "B5",
-      "sortOrder": 401
-    },
-    {
-      "id": "audcal-20260728-8-c5",
-      "date": "2026-07-28",
-      "companyName": "МЕАЦА ЕООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Август",
-      "sourceCell": "C5",
-      "sortOrder": 402
-    },
-    {
-      "id": "audcal-20260728-8-c6",
-      "date": "2026-07-28",
-      "companyName": "МЕАЦА ЕООД",
-      "details": "",
-      "auditorId": "auditor-ekaterina-georgieva",
-      "sourceSheet": "Август",
-      "sourceCell": "C6",
-      "sortOrder": 502
-    },
-    {
-      "id": "audcal-20260729-8-d5",
-      "date": "2026-07-29",
-      "companyName": "ЕЛЕГАНТ СИСТЕМС ЕООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Август",
-      "sourceCell": "D5",
-      "sortOrder": 403
-    },
-    {
       "id": "audcal-20260729-8-d6",
       "date": "2026-07-29",
       "companyName": "АРДАСТРОЙ ЕООД",
@@ -3185,76 +3055,6 @@ window.AUDIT_HUB_AUDITOR_CALENDAR = {
       "sortOrder": 503
     },
     {
-      "id": "audcal-20260730-8-e5",
-      "date": "2026-07-30",
-      "companyName": "СКАЙ ПРАЙМ ЕООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Август",
-      "sourceCell": "E5",
-      "sortOrder": 404
-    },
-    {
-      "id": "audcal-20260730-8-e6",
-      "date": "2026-07-30",
-      "companyName": "АРДАСТРОЙ ЕООД",
-      "details": "",
-      "auditorId": "auditor-ekaterina-georgieva",
-      "sourceSheet": "Август",
-      "sourceCell": "E6",
-      "sortOrder": 504
-    },
-    {
-      "id": "audcal-20260731-8-f5",
-      "date": "2026-07-31",
-      "companyName": "ВНВ ТРАНС 1 ООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Август",
-      "sourceCell": "F5",
-      "sortOrder": 405
-    },
-    {
-      "id": "audcal-20260731-8-f6",
-      "date": "2026-07-31",
-      "companyName": "ВНВ ТРАНС 1 ООД",
-      "details": "",
-      "auditorId": "auditor-ekaterina-georgieva",
-      "sourceSheet": "Август",
-      "sourceCell": "F6",
-      "sortOrder": 505
-    },
-    {
-      "id": "audcal-20260801-8-g5",
-      "date": "2026-08-01",
-      "companyName": "ИГА - СТРОЙ ЕООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Август",
-      "sourceCell": "G5",
-      "sortOrder": 406
-    },
-    {
-      "id": "audcal-20260801-8-g6",
-      "date": "2026-08-01",
-      "companyName": "ИГА - СТРОЙ ЕООД",
-      "details": "",
-      "auditorId": "auditor-ekaterina-georgieva",
-      "sourceSheet": "Август",
-      "sourceCell": "G6",
-      "sortOrder": 506
-    },
-    {
-      "id": "audcal-20260803-8-b9",
-      "date": "2026-08-03",
-      "companyName": "АЛФА КОММЕРС ЕООД 50",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Август",
-      "sourceCell": "B9",
-      "sortOrder": 801
-    },
-    {
       "id": "audcal-20260803-8-b10",
       "date": "2026-08-03",
       "companyName": "ЧЕРНЕВ 2024 ООД",
@@ -3263,16 +3063,6 @@ window.AUDIT_HUB_AUDITOR_CALENDAR = {
       "sourceSheet": "Август",
       "sourceCell": "B10",
       "sortOrder": 901
-    },
-    {
-      "id": "audcal-20260804-8-c9",
-      "date": "2026-08-04",
-      "companyName": "СКАЙ ПРАЙМ ЕООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Август",
-      "sourceCell": "C9",
-      "sortOrder": 802
     },
     {
       "id": "audcal-20260804-8-c10",
@@ -3713,26 +3503,6 @@ window.AUDIT_HUB_AUDITOR_CALENDAR = {
       "sourceSheet": "Август",
       "sourceCell": "C26",
       "sortOrder": 2502
-    },
-    {
-      "id": "audcal-20260901-9-c5",
-      "date": "2026-09-01",
-      "companyName": "БАЛКАНИДА ГРУП ООД",
-      "details": "",
-      "auditorId": "auditor-georgi-georgiev",
-      "sourceSheet": "Септември",
-      "sourceCell": "C5",
-      "sortOrder": 402
-    },
-    {
-      "id": "audcal-20260901-9-c6",
-      "date": "2026-09-01",
-      "companyName": "БАЛКАНИДА ГРУП ООД",
-      "details": "",
-      "auditorId": "auditor-ekaterina-georgieva",
-      "sourceSheet": "Септември",
-      "sourceCell": "C6",
-      "sortOrder": 502
     },
     {
       "id": "audcal-20260902-9-d5",
