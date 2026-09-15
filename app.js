@@ -285,6 +285,7 @@ function normalizeState(data) {
   data.companies.forEach((company) => {
     company.activities = Array.isArray(company.activities) ? company.activities : [];
     company.standards = Array.isArray(company.standards) ? company.standards : [];
+    company.certificateIssueDate ||= "";
     if (company.status === "watch" || company.status === "archived") company.status = "inactive";
   });
   for (const list of [data.companies, data.audits, data.payments, data.documents, data.calendarEvents, data.auditorCalendarEntries]) {
@@ -333,6 +334,8 @@ function normalizeState(data) {
     event.completed = Boolean(event.completed);
     event.completedAt ||= "";
     event.renewalSourceId ||= "";
+    event.certificateIssueDate ||= "";
+    event.certificationStage ||= "";
   });
   applyAutomaticOverdue(data);
   return data;
@@ -355,6 +358,7 @@ function megaCompanyToAppCompany(item) {
     email: "",
     activities: [],
     standards: [],
+    certificateIssueDate: "",
     megaUrl: item.megaUrl || "",
     status: "active",
     notes: `Импорт от ${item.source || "Mega"}. Път: ${item.path || item.originalName || "Mega папка"}`,
@@ -587,6 +591,7 @@ function mapCompany(row) {
     email: row.email || "",
     activities: Array.isArray(row.activities) ? row.activities : [],
     standards: Array.isArray(row.standards) ? row.standards : [],
+    certificateIssueDate: row.certificate_issue_date || "",
     megaUrl: row.mega_url || "",
     status: row.status || "active",
     notes: row.notes || "",
@@ -605,6 +610,7 @@ function companyPayload(item) {
     email: item.email || null,
     activities: item.activities || [],
     standards: item.standards || [],
+    certificate_issue_date: item.certificateIssueDate || null,
     mega_url: item.megaUrl || null,
     status: item.status || "active",
     notes: item.notes || null,
@@ -880,6 +886,8 @@ function mapCalendarEvent(row) {
     completed: Boolean(row.completed),
     completedAt: row.completed_at || "",
     renewalSourceId: row.renewal_source_id || "",
+    certificateIssueDate: row.certificate_issue_date || "",
+    certificationStage: row.certification_stage || "",
     createdBy: nameFromProfile(row.created_by, "Система"),
     updatedBy: nameFromProfile(row.updated_by, "Система"),
     updatedAt: row.updated_at || row.created_at || nowIso()
@@ -912,6 +920,8 @@ function calendarEventPayload(item) {
     completed: Boolean(item.completed),
     completed_at: item.completedAt || null,
     renewal_source_id: item.renewalSourceId || null,
+    certificate_issue_date: item.certificateIssueDate || null,
+    certification_stage: item.certificationStage || null,
     updated_by: supabaseAuthUser?.id || null,
     updated_at: nowIso()
   };
@@ -1767,7 +1777,7 @@ function renderDashboardSchedule(events) {
     ${events.slice(0, 10).map((event) => {
       const company = eventCompany(event);
       const mark = (ok) => `<span class="mini-status ${ok ? "ok" : "no"}">${ok ? "OK" : "NO"}</span>`;
-      return `<tr><td><strong>${escapeHtml(company?.name || event.title)}</strong></td><td>${formatDate(event.date)}</td><td><span class="mini-status ${event.planningStatus === "planned" ? "ok" : "no"}">${event.planningStatus === "planned" ? "Планирано" : "Непланирано"}</span></td><td>${mark(event.schedulingOk)}</td><td>${mark(event.paymentOk)}</td><td>${mark(event.auditOk)}</td><td>${mark(event.completed)}</td></tr>`;
+      return `<tr><td><strong>${escapeHtml(company?.name || event.title)}</strong>${event.certificationStage ? `<small class="table-subtitle">${escapeHtml(certificationStageLabel(event.certificationStage))}</small>` : ""}</td><td>${formatDate(event.date)}</td><td><span class="mini-status ${event.planningStatus === "planned" ? "ok" : "no"}">${event.planningStatus === "planned" ? "Планирано" : "Непланирано"}</span></td><td>${mark(event.schedulingOk)}</td><td>${mark(event.paymentOk)}</td><td>${mark(event.auditOk)}</td><td>${mark(event.completed)}</td></tr>`;
     }).join("")}
   </tbody></table></div>${events.length > 10 ? `<button class="btn ghost dashboard-more" data-view="audits">Покажи всички ${events.length}</button>` : ""}`;
 }
@@ -1776,7 +1786,7 @@ function renderDashboardEventList(events, type) {
   if (!events.length) return `<div class="empty">${type === "archive" ? "Няма просрочени неприключени фирми." : "Няма фирми с плащане OK."}</div>`;
   return `<div class="dashboard-event-list">${events.map((event) => {
     const company = eventCompany(event);
-    return `<div class="dashboard-event-row"><div><strong>${escapeHtml(company?.name || event.title)}</strong><span>${formatDate(event.date)}</span></div>${type === "archive" ? `<span class="status danger">${calendarStageProgress(event)}/4 етапа</span>` : `<span class="status ok">OK</span>`}</div>`;
+    return `<div class="dashboard-event-row"><div><strong>${escapeHtml(company?.name || event.title)}</strong><span>${formatDate(event.date)}${event.certificationStage ? ` · ${escapeHtml(certificationStageLabel(event.certificationStage))}` : ""}</span></div>${type === "archive" ? `<span class="status danger">${calendarStageProgress(event)}/4 етапа</span>` : `<span class="status ok">OK</span>`}</div>`;
   }).join("")}</div>`;
 }
 
@@ -1800,6 +1810,7 @@ function renderCompanies() {
               <tr>
                 <td class="company-name-cell">
                   <button class="company-name-link" data-action="company-profile" data-id="${company.id}">${escapeHtml(company.name)}</button>
+                  ${company.certificateIssueDate ? `<small class="company-certificate-date">Сертификат: ${formatDate(company.certificateIssueDate)}</small>` : ""}
                   <div class="company-row-actions">
                     <button class="icon-btn compact" title="Редактирай" data-action="open-modal" data-modal="company" data-id="${company.id}">${icon("edit")}</button>
                     ${company.megaUrl ? `<a class="icon-btn compact" title="Mega папка" href="${escapeAttr(company.megaUrl)}" target="_blank" rel="noreferrer">${icon("link")}</a>` : ""}
@@ -2006,13 +2017,23 @@ function okNoSelect(event, field) {
   </select>`;
 }
 
+const certificationStageLabels = {
+  first_control: "1-ви контролен одит",
+  second_control: "2-ри контролен одит",
+  recertification: "Ресертификационен одит"
+};
+
+function certificationStageLabel(stage) {
+  return certificationStageLabels[stage] || "";
+}
+
 function renderMonthlyScheduleTable(events, archive = false) {
   return `<section class="panel schedule-table-panel"><div class="table-wrap"><table class="schedule-table">
     <thead><tr><th>Фирма</th><th>Дейност</th><th>Планиране</th><th>Насрочване</th><th>Плащане</th><th>Одит</th><th>Приключена</th></tr></thead>
     <tbody>${events.length ? events.map((event) => {
       const company = eventCompany(event);
       return `<tr class="${archive ? "archive-row" : ""}">
-        <td class="schedule-company-cell"><strong>${escapeHtml(company?.name || event.title)}</strong><span>${formatDate(event.date)}</span><button class="icon-btn compact" title="Редактирай" data-action="open-modal" data-modal="calendarEvent" data-id="${event.id}">${icon("edit")}</button></td>
+        <td class="schedule-company-cell"><strong>${escapeHtml(company?.name || event.title)}</strong><span>${formatDate(event.date)}</span>${event.certificationStage ? `<span class="certification-stage">${escapeHtml(certificationStageLabel(event.certificationStage))}</span>` : ""}<button class="icon-btn compact" title="Редактирай" data-action="open-modal" data-modal="calendarEvent" data-id="${event.id}">${icon("edit")}</button></td>
         <td>${company ? renderCompanyActivities(company) : `<span class="activity-tag">${escapeHtml(calendarCategoryLabel(event.category))}</span>`}</td>
         <td><select class="planning-select ${event.planningStatus}" data-action="calendar-field" data-id="${event.id}" data-field="planningStatus">${option("planned", "Планирано", event.planningStatus)}${option("unplanned", "Непланирано", event.planningStatus)}</select></td>
         <td>${okNoSelect(event, "schedulingOk")}</td><td>${okNoSelect(event, "paymentOk")}</td><td>${okNoSelect(event, "auditOk")}</td><td>${okNoSelect(event, "completed")}</td>
@@ -2317,7 +2338,7 @@ function renderPayments() {
             const company = eventCompany(event);
             const payment = paymentForCalendarEvent(event.id);
             return `<tr>
-              <td><strong>${escapeHtml(company?.name || event.title)}</strong></td>
+              <td><strong>${escapeHtml(company?.name || event.title)}</strong>${event.certificationStage ? `<small class="table-subtitle">${escapeHtml(certificationStageLabel(event.certificationStage))}</small>` : ""}</td>
               <td>${company ? renderCompanyActivities(company) : `<span class="cell-empty">—</span>`}</td>
               <td>${formatDate(event.date)}</td>
               <td><span class="status ok">OK</span></td>
@@ -2462,6 +2483,7 @@ function renderCompanyProfile() {
             <span>Контакт: ${escapeHtml(company.contact || "-")}</span>
             <span>Телефон: ${escapeHtml(company.phone || "-")}</span>
             <span>Имейл: ${escapeHtml(company.email || "-")}</span>
+            <span>Сертификат издаден: ${company.certificateIssueDate ? formatDate(company.certificateIssueDate) : "-"}</span>
             <span>Статус: ${statusBadge("company", company.status)}</span>
             <span>Последно: ${escapeHtml(company.updatedBy)} · ${formatTime(company.updatedAt)}</span>
           </div>
@@ -3118,6 +3140,8 @@ function companyForm(companyId, item) {
             ${(item?.standards?.length ? item.standards : [{ name: "", color: "blue" }]).map((standard) => standardFormRow(standard)).join("")}
           </div>
         </div>
+        ${field("certificateIssueDate", "Дата на издаване на сертификата", "date", item?.certificateIssueDate || "")}
+        <div class="form-row"><p class="form-hint">Създава автоматично 1-ви и 2-ри контролен одит и ресертификация в основния Календар.</p></div>
         ${field("megaUrl", "Mega папка", "url", item?.megaUrl || "")}
         <div class="form-row">
           <label for="status">Статус</label>
@@ -3198,6 +3222,7 @@ function calendarEventForm(companyId, item, defaultDate) {
           <select id="companyId" name="companyId" required><option value="">Избери фирма</option>${companyOptions(linkedCompany)}</select>
         </div>
         ${field("date", "Дата на одита", "date", item?.date || defaultDate || "", true)}
+        ${item?.certificationStage ? `<div class="form-row"><label>Вид одит</label><input value="${escapeAttr(certificationStageLabel(item.certificationStage))}" disabled /></div>` : ""}
         ${field("time", "Час", "time", item?.time || "")}
         ${field("auditor", "Одитор/отговорник", "text", item?.auditor || "")}
         <div class="form-row">
@@ -3406,10 +3431,11 @@ async function handleForm(event) {
   try {
     if (kind === "company") {
       const item = isEdit ? findItem("company", data.id) : { id: id("c") };
+      const previousCertificateIssueDate = item.certificateIssueDate || "";
       const standardNames = formData.getAll("standardName");
       const standardColors = formData.getAll("standardColor");
       const standards = standardNames.map((name, index) => ({ name: String(name).trim(), color: standardColors[index] || "blue" })).filter((standard) => standard.name);
-      Object.assign(item, stamp({ ...item, name: data.name, bulstat: data.bulstat, contact: data.contact, phone: data.phone, email: data.email, activities: formData.getAll("activities"), standards, megaUrl: data.megaUrl, status: data.status, notes: data.notes }, !isEdit));
+      Object.assign(item, stamp({ ...item, name: data.name, bulstat: data.bulstat, contact: data.contact, phone: data.phone, email: data.email, activities: formData.getAll("activities"), standards, certificateIssueDate: data.certificateIssueDate, megaUrl: data.megaUrl, status: data.status, notes: data.notes }, !isEdit));
       if (supabaseClient && supabaseAuthUser) {
         const payload = companyPayload(item);
         const saved = isEdit
@@ -3418,6 +3444,7 @@ async function handleForm(event) {
         Object.assign(item, mapCompany(saved));
       }
       if (!isEdit) state.companies.push(item);
+      await syncCompanyCertificationCycle(item, previousCertificateIssueDate);
       addLog(`${isEdit ? "Редактира" : "Добави"} фирма: ${data.name}`, "Фирма", item.id);
     }
 
@@ -3700,7 +3727,89 @@ function nextAnnualAuditDate(date) {
   return `${year + 1}-${String(month).padStart(2, "0")}-${String(Math.min(day, lastDay)).padStart(2, "0")}`;
 }
 
+function certificationAuditDate(issueDate, yearsAhead) {
+  const [year, month, day] = String(issueDate || "").split("-").map(Number);
+  if (!year || !month || !day) return "";
+  const date = new Date(year, month - 1, day + 1, 12);
+  date.setFullYear(date.getFullYear() + yearsAhead);
+  return dateInput(date);
+}
+
+async function syncCompanyCertificationCycle(company, previousIssueDate = "") {
+  const issueDate = company.certificateIssueDate || "";
+  if (!issueDate) return;
+
+  if (previousIssueDate && previousIssueDate !== issueDate) {
+    const obsolete = state.calendarEvents.filter((event) =>
+      event.companyId === company.id
+      && event.certificateIssueDate === previousIssueDate
+      && event.certificationStage
+      && !event.completed
+    );
+    if (obsolete.length && supabaseClient && supabaseAuthUser) {
+      const { error } = await supabaseClient.from("calendar_events").delete().in("id", obsolete.map((event) => event.id));
+      if (error) throw error;
+    }
+    const obsoleteIds = new Set(obsolete.map((event) => event.id));
+    state.calendarEvents = state.calendarEvents.filter((event) => !obsoleteIds.has(event.id));
+    state.payments = state.payments.filter((payment) => !obsoleteIds.has(payment.calendarEventId));
+  }
+
+  const stages = [
+    ["first_control", 1],
+    ["second_control", 2],
+    ["recertification", 3]
+  ];
+  let created = 0;
+  for (const [stage, yearsAhead] of stages) {
+    const exists = state.calendarEvents.some((event) =>
+      event.companyId === company.id
+      && event.certificateIssueDate === issueDate
+      && event.certificationStage === stage
+    );
+    if (exists) continue;
+    const stageLabel = certificationStageLabel(stage);
+    const generated = stamp({
+      id: id("ce"),
+      companyId: company.id,
+      calendarType: "planned",
+      calendarName: "Планирани дейности",
+      date: certificationAuditDate(issueDate, yearsAhead),
+      time: "",
+      title: stageLabel,
+      auditor: "",
+      category: "certification",
+      color: calendarEventColor("planned", "certification", ""),
+      status: "upcoming",
+      priority: "normal",
+      sourceSheet: "Сертификационен цикъл",
+      sourceCell: stage,
+      notes: `Автоматично планиран от сертификат, издаден на ${formatDate(issueDate)}.`,
+      checklist: [],
+      reminderDays: 7,
+      reminderSent: false,
+      planningStatus: "planned",
+      schedulingOk: false,
+      paymentOk: false,
+      auditOk: false,
+      completed: false,
+      completedAt: "",
+      renewalSourceId: "",
+      certificateIssueDate: issueDate,
+      certificationStage: stage
+    }, true);
+    if (supabaseClient && supabaseAuthUser) {
+      const saved = await remoteInsert("calendar_events", { ...calendarEventPayload(generated), created_by: supabaseAuthUser.id });
+      Object.assign(generated, mapCalendarEvent(saved));
+    }
+    state.calendarEvents.push(generated);
+    created += 1;
+  }
+  if (created) addLog(`Автоматично планира ${created} одита от сертификат ${formatDate(issueDate)}`, "Календар", company.id);
+}
+
 async function createNextYearCalendarEvent(source) {
+  if (source.certificationStage) return;
   const nextDate = nextAnnualAuditDate(source.date);
   const sourceCompanyKey = normalizedCompanyKey(eventCompany(source)?.name || source.title);
   const exists = state.calendarEvents.some((event) => {
@@ -3881,13 +3990,13 @@ async function markMegaUploaded(itemId) {
 
 function exportCsv(kind) {
   const rows = {
-    company: filteredCompanies().map((c) => [c.name, (c.activities || []).map(companyActivityLabel).join("; "), (c.standards || []).map((s) => s.name).join("; "), c.bulstat, [c.email, c.phone].filter(Boolean).join("; "), c.status === "active" ? "Активен" : "Неактивен"]),
+    company: filteredCompanies().map((c) => [c.name, (c.activities || []).map(companyActivityLabel).join("; "), (c.standards || []).map((s) => s.name).join("; "), c.bulstat, [c.email, c.phone].filter(Boolean).join("; "), c.certificateIssueDate, c.status === "active" ? "Активен" : "Неактивен"]),
     payment: state.payments.map((p) => [companyName(p.companyId), p.invoice, p.amount, p.dueDate, p.paidDate, p.status]),
     document: state.documents.map((d) => [companyName(d.companyId), d.name, d.kind, d.createdAt, d.megaUrl]),
     audits: filteredAudits().map((a) => [companyName(a.companyId), a.date, a.time, a.type, a.auditor, a.status, a.priority]),
     calendarEvents: filteredCalendarEvents().map((event) => {
       const company = eventCompany(event);
-      return [company?.name || event.title, (company?.activities || []).map(companyActivityLabel).join("; "), event.date, event.planningStatus === "planned" ? "Планирано" : "Непланирано", event.schedulingOk ? "OK" : "NO", event.paymentOk ? "OK" : "NO", event.auditOk ? "OK" : "NO", event.completed ? "OK" : "NO"];
+      return [company?.name || event.title, (company?.activities || []).map(companyActivityLabel).join("; "), event.date, certificationStageLabel(event.certificationStage), event.planningStatus === "planned" ? "Планирано" : "Непланирано", event.schedulingOk ? "OK" : "NO", event.paymentOk ? "OK" : "NO", event.auditOk ? "OK" : "NO", event.completed ? "OK" : "NO"];
     })
   }[kind];
   const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
