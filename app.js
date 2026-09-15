@@ -331,7 +331,7 @@ function normalizeState(data) {
     event.reminderDays ||= 7;
     event.reminderSent ||= false;
     event.companyId ||= "";
-    event.planningStatus ||= "planned";
+    event.planningStatus ||= "unplanned";
     event.schedulingOk = Boolean(event.schedulingOk);
     event.paymentOk = Boolean(event.paymentOk);
     event.auditOk = Boolean(event.auditOk);
@@ -891,7 +891,7 @@ function mapCalendarEvent(row) {
     checklist: row.checklist || [],
     reminderDays: row.reminder_days || 7,
     reminderSent: Boolean(row.reminder_sent),
-    planningStatus: row.planning_status || "planned",
+    planningStatus: row.planning_status || "unplanned",
     schedulingOk: Boolean(row.scheduling_ok),
     paymentOk: Boolean(row.payment_ok),
     auditOk: Boolean(row.audit_ok),
@@ -926,7 +926,7 @@ function calendarEventPayload(item) {
     checklist: item.checklist || [],
     reminder_days: Number(item.reminderDays || 7),
     reminder_sent: Boolean(item.reminderSent),
-    planning_status: item.planningStatus || "planned",
+    planning_status: item.planningStatus || "unplanned",
     scheduling_ok: Boolean(item.schedulingOk),
     payment_ok: Boolean(item.paymentOk),
     audit_ok: Boolean(item.auditOk),
@@ -3306,8 +3306,8 @@ function calendarEventForm(companyId, item, defaultDate) {
         <div class="form-row">
           <label for="planningStatus">Планиране</label>
           <select id="planningStatus" name="planningStatus">
-            ${option("planned", "Планирано", item?.planningStatus || "planned")}
-            ${option("unplanned", "Непланирано", item?.planningStatus)}
+            ${option("planned", "Планирано", item?.planningStatus)}
+            ${option("unplanned", "Непланирано", item?.planningStatus || "unplanned")}
           </select>
         </div>
         ${booleanFormSelect("schedulingOk", "Насрочване", item?.schedulingOk)}
@@ -3870,7 +3870,7 @@ async function syncCompanyCertificationCycles(company) {
         checklist: [],
         reminderDays: 7,
         reminderSent: false,
-        planningStatus: "planned",
+        planningStatus: "unplanned",
         schedulingOk: false,
         paymentOk: false,
         auditOk: false,
@@ -3907,7 +3907,7 @@ async function createNextYearCalendarEvent(source) {
     ...source,
     id: id("ce"),
     date: nextDate,
-    planningStatus: "planned",
+    planningStatus: "unplanned",
     schedulingOk: false,
     paymentOk: false,
     auditOk: false,
