@@ -3248,7 +3248,7 @@ function auditorCalendarEntryForm(companyId, item, defaultDate) {
       <div class="form-actions">
         <button class="btn primary" type="submit">Запази</button>
         <button class="btn ghost" type="button" data-action="close-modal-button">Отказ</button>
-        ${item && canDelete() ? `<button class="btn danger" type="button" data-action="delete-auditor-calendar-entry" data-id="${item.id}">${icon("trash")} Изтрий</button>` : ""}
+        ${item ? `<button class="btn danger" type="button" data-action="delete-auditor-calendar-entry" data-id="${item.id}">${icon("trash")} Изтрий записа</button>` : ""}
       </div>
     </form>
   `;
@@ -3755,10 +3755,6 @@ async function deleteCalendarEvent(itemId) {
 }
 
 async function deleteAuditorCalendarEntry(itemId) {
-  if (!canDelete()) {
-    alert("Само Админ може да трие записи.");
-    return;
-  }
   const item = findItem("auditorCalendarEntry", itemId);
   if (!item || !confirm(`Сигурни ли сте, че искате да изтриете ${item.companyName} от Календар Одити?`)) return;
   try {
