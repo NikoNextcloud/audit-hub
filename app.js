@@ -1963,9 +1963,8 @@ function renderAudits() {
     <div class="page-head">
       <div>
         <h2>Месечен график</h2>
-        <p>Фирмите и етапите по планиране, насрочване, плащане, одит и приключване.</p>
+        <p>Записите се добавят автоматично от стандартите и датите на сертификатите във фирмите.</p>
       </div>
-      <button class="btn primary" data-action="open-modal" data-modal="calendarEvent">${icon("plus")} Нов запис</button>
     </div>
     <div class="calendar-head month-table-head">
       <button class="btn ghost" data-action="month-prev">Назад</button>
@@ -2047,7 +2046,7 @@ function renderMonthlyScheduleTable(events, archive = false) {
     <tbody>${events.length ? events.map((event) => {
       const company = eventCompany(event);
       return `<tr class="${archive ? "archive-row" : ""}">
-        <td class="schedule-company-cell"><strong>${escapeHtml(company?.name || event.title)}</strong><span>${formatDate(event.date)}</span>${event.certificationStage ? `<span class="certification-stage">${escapeHtml(certificationEventLabel(event))}</span>` : ""}<button class="icon-btn compact" title="Редактирай" data-action="open-modal" data-modal="calendarEvent" data-id="${event.id}">${icon("edit")}</button></td>
+        <td class="schedule-company-cell"><strong>${escapeHtml(company?.name || event.title)}</strong><span>${formatDate(event.date)}</span>${event.certificationStage ? `<span class="certification-stage">${escapeHtml(certificationEventLabel(event))}</span>` : ""}</td>
         <td>${company ? renderCompanyActivities(company) : `<span class="activity-tag">${escapeHtml(calendarCategoryLabel(event.category))}</span>`}</td>
         <td><select class="planning-select ${event.planningStatus}" data-action="calendar-field" data-id="${event.id}" data-field="planningStatus">${option("planned", "Планирано", event.planningStatus)}${option("unplanned", "Непланирано", event.planningStatus)}</select></td>
         <td>${okNoSelect(event, "schedulingOk")}</td><td>${okNoSelect(event, "paymentOk")}</td><td>${okNoSelect(event, "auditOk")}</td><td>${okNoSelect(event, "completed")}</td>
