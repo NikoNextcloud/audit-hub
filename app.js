@@ -428,7 +428,8 @@ function calendarCategoryLabel(category) {
   return {
     certification: "Сертификация",
     consulting: "Консултации",
-    occupational_medicine: "Служба Трудова Медицина"
+    occupational_medicine: "Служба Трудова Медицина",
+    system: "Система"
   }[category] || "Без категория";
 }
 
@@ -436,7 +437,8 @@ function plannedCategoryColor(category) {
   return {
     certification: "blue",
     consulting: "green",
-    occupational_medicine: "red"
+    occupational_medicine: "red",
+    system: "yellow"
   }[category] || "yellow";
 }
 
@@ -1708,7 +1710,7 @@ function filteredCompanies() {
 }
 
 function companyActivityLabel(value) {
-  return { certification: "Сертификация", consulting: "Консултация", occupational_medicine: "СТМ" }[value] || value;
+  return { certification: "Сертификация", consulting: "Консултация", occupational_medicine: "СТМ", system: "Система" }[value] || value;
 }
 
 function renderCompanyActivities(company) {
@@ -1848,7 +1850,7 @@ function renderCompanyToolbar() {
       <div class="filters">
         ${companyFilter()}
         <select data-action="company-activity-filter">
-          ${[["all", "Всички дейности"], ["certification", "Сертификация"], ["consulting", "Консултация"], ["occupational_medicine", "СТМ"]].map(([value, label]) => option(value, label, selectedCompanyActivity)).join("")}
+          ${[["all", "Всички дейности"], ["certification", "Сертификация"], ["consulting", "Консултация"], ["occupational_medicine", "СТМ"], ["system", "Система"]].map(([value, label]) => option(value, label, selectedCompanyActivity)).join("")}
         </select>
         <select data-action="company-standard-filter">
           ${option("all", "Всички стандарти", selectedCompanyStandard)}
@@ -3150,6 +3152,7 @@ function companyForm(companyId, item) {
             ${activityCheckbox("certification", "Сертификация", item?.activities)}
             ${activityCheckbox("consulting", "Консултация", item?.activities)}
             ${activityCheckbox("occupational_medicine", "СТМ", item?.activities)}
+            ${activityCheckbox("system", "Система", item?.activities)}
           </div>
         </fieldset>
         <div class="form-row full">
