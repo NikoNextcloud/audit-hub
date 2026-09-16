@@ -1897,13 +1897,13 @@ function auditorCalendarAuditor(auditorId) {
 
 function groupAuditorCalendarEntries(entries) {
   const groups = [];
-  const byCompany = new Map();
+  const byCompanyAndAuditor = new Map();
   entries.forEach((entry) => {
-    const key = normalizedCompanyKey(entry.companyName);
-    let group = byCompany.get(key);
+    const key = `${normalizedCompanyKey(entry.companyName)}|${entry.auditorId}`;
+    let group = byCompanyAndAuditor.get(key);
     if (!group) {
       group = { entry, entries: [], auditors: [], details: [] };
-      byCompany.set(key, group);
+      byCompanyAndAuditor.set(key, group);
       groups.push(group);
     }
     group.entries.push(entry);
@@ -1912,18 +1912,6 @@ function groupAuditorCalendarEntries(entries) {
     if (entry.details && !group.details.includes(entry.details)) group.details.push(entry.details);
   });
   return groups;
-}
-
-function renderAuditorCalendarDetails(details) {
-  let html = escapeHtml(details || "");
-  [...state.auditorCalendarAuditors]
-    .sort((a, b) => b.name.length - a.name.length)
-    .forEach((auditor) => {
-      const safeName = escapeHtml(auditor.name);
-      const coloredName = `<span style="color:${safeHexColor(auditor.color)};font-weight:800">${safeName}</span>`;
-      html = html.split(safeName).join(coloredName);
-    });
-  return html;
 }
 
 function renderAuditorCalendar() {
@@ -1969,8 +1957,7 @@ function renderAuditorCalendar() {
             const colorStops = colors.map((color, index) => `${color} ${(index * 100) / colors.length}%, ${color} ${((index + 1) * 100) / colors.length}%`).join(", ");
             const background = colors.length > 1 ? `linear-gradient(90deg, ${colorStops})` : colors[0];
             const auditorNames = group.auditors.map((auditor) => auditor.name).join(", ");
-            const details = group.details.join(" · ");
-            return `<button class="auditor-calendar-entry" style="--auditor-color:${background}" data-action="open-modal" data-modal="auditorCalendarEntry" data-id="${group.entry.id}" title="${escapeAttr(`${group.entry.companyName} · ${auditorNames}${details ? ` · ${details}` : ""}`)}"><strong>${escapeHtml(group.entry.companyName)}</strong>${details ? `<small>${renderAuditorCalendarDetails(details)}</small>` : ""}</button>`;
+            return `<button class="auditor-calendar-entry" style="--auditor-color:${background}" data-action="open-modal" data-modal="auditorCalendarEntry" data-id="${group.entry.id}" title="${escapeAttr(`${group.entry.companyName} · ${auditorNames}`)}"><strong>${escapeHtml(group.entry.companyName)}</strong></button>`;
           }).join("")}
         </div>
       </div>`;
@@ -3637,10 +3624,11 @@ async function handleForm(event) {
       const duplicate = state.auditorCalendarEntries.find((entry) =>
         entry.id !== data.id
         && entry.date === data.date
+        && entry.auditorId === data.auditorId
         && normalizedCompanyKey(entry.companyName) === normalizedCompanyKey(data.companyName)
       );
       if (duplicate) {
-        alert("Тази фирма вече е добавена на избраната дата в Календар Одити.");
+        alert("Тази фирма вече е добавена за избрания одитор на тази дата.");
         return;
       }
       const item = isEdit ? findItem("auditorCalendarEntry", data.id) : { id: id("audcal") };
