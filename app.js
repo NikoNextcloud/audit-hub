@@ -1914,6 +1914,18 @@ function groupAuditorCalendarEntries(entries) {
   return groups;
 }
 
+function renderAuditorCalendarDetails(details) {
+  let html = escapeHtml(details || "");
+  [...state.auditorCalendarAuditors]
+    .sort((a, b) => b.name.length - a.name.length)
+    .forEach((auditor) => {
+      const safeName = escapeHtml(auditor.name);
+      const coloredName = `<span style="color:${safeHexColor(auditor.color)};font-weight:800">${safeName}</span>`;
+      html = html.split(safeName).join(coloredName);
+    });
+  return html;
+}
+
 function renderAuditorCalendar() {
   const year = auditorCalendarDate.getFullYear();
   const month = auditorCalendarDate.getMonth();
@@ -1958,7 +1970,7 @@ function renderAuditorCalendar() {
             const background = colors.length > 1 ? `linear-gradient(90deg, ${colorStops})` : colors[0];
             const auditorNames = group.auditors.map((auditor) => auditor.name).join(", ");
             const details = group.details.join(" · ");
-            return `<button class="auditor-calendar-entry" style="--auditor-color:${background}" data-action="open-modal" data-modal="auditorCalendarEntry" data-id="${group.entry.id}" title="${escapeAttr(`${group.entry.companyName} · ${auditorNames}${details ? ` · ${details}` : ""}`)}"><strong>${escapeHtml(group.entry.companyName)}</strong>${details ? `<small>${escapeHtml(details)}</small>` : ""}</button>`;
+            return `<button class="auditor-calendar-entry" style="--auditor-color:${background}" data-action="open-modal" data-modal="auditorCalendarEntry" data-id="${group.entry.id}" title="${escapeAttr(`${group.entry.companyName} · ${auditorNames}${details ? ` · ${details}` : ""}`)}"><strong>${escapeHtml(group.entry.companyName)}</strong>${details ? `<small>${renderAuditorCalendarDetails(details)}</small>` : ""}</button>`;
           }).join("")}
         </div>
       </div>`;
