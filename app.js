@@ -3234,7 +3234,8 @@ function activityCheckbox(value, label, selected = []) {
 const standardChoices = [
   "9001", "14001", "45001", "27001", "50001", "37001", "20000-1", "39000",
   "13485", "3234", "2200", "IFS", "BSCI", "SMETA", "3834", "HACCP",
-  "10002", "17100", "22241-3", "27701", "4063"
+  "10002", "17100", "22241-3", "27701", "4063",
+  "1090-1", "1090-2", "13008", "13611", "22241-1", "22241-2", "22301", "22716"
 ].sort((a, b) => a.localeCompare(b, "bg-BG", { numeric: true, sensitivity: "base" }));
 
 function standardNameOptions(selected = "") {
