@@ -1467,19 +1467,30 @@ async function ensureRemoteProfile(appUser) {
   }
 }
 
+async function fetchAllRows(buildQuery, pageSize = 1000) {
+  const rows = [];
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await buildQuery().range(from, from + pageSize - 1);
+    if (error) return { data: rows, error };
+    const page = data || [];
+    rows.push(...page);
+    if (page.length < pageSize) return { data: rows, error: null };
+  }
+}
+
 async function loadRemoteData() {
   if (!supabaseClient) return;
   const [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes, calendarEventsRes, auditorCalendarAuditorsRes, auditorCalendarEntriesRes] = await Promise.all([
-    supabaseClient.from("profiles").select("*"),
-    supabaseClient.from("companies").select("*").order("created_at", { ascending: false }),
-    supabaseClient.from("audits").select("*").order("audit_date", { ascending: true }),
-    supabaseClient.from("payments").select("*").order("due_date", { ascending: false }),
-    supabaseClient.from("documents").select("*").order("created_at", { ascending: false }),
+    fetchAllRows(() => supabaseClient.from("profiles").select("*").order("id", { ascending: true })),
+    fetchAllRows(() => supabaseClient.from("companies").select("*").order("created_at", { ascending: false }).order("id", { ascending: true })),
+    fetchAllRows(() => supabaseClient.from("audits").select("*").order("audit_date", { ascending: true }).order("id", { ascending: true })),
+    fetchAllRows(() => supabaseClient.from("payments").select("*").order("due_date", { ascending: false }).order("id", { ascending: true })),
+    fetchAllRows(() => supabaseClient.from("documents").select("*").order("created_at", { ascending: false }).order("id", { ascending: true })),
     supabaseClient.from("activity_log").select("*").order("created_at", { ascending: false }).limit(200),
-    supabaseClient.from("audit_tasks").select("*"),
-    supabaseClient.from("calendar_events").select("*").order("event_date", { ascending: true }),
-    supabaseClient.from("auditor_calendar_auditors").select("*").order("sort_order", { ascending: true }),
-    supabaseClient.from("auditor_calendar_entries").select("*").order("event_date", { ascending: true }).order("sort_order", { ascending: true })
+    fetchAllRows(() => supabaseClient.from("audit_tasks").select("*").order("id", { ascending: true })),
+    fetchAllRows(() => supabaseClient.from("calendar_events").select("*").order("event_date", { ascending: true }).order("id", { ascending: true })),
+    fetchAllRows(() => supabaseClient.from("auditor_calendar_auditors").select("*").order("sort_order", { ascending: true }).order("id", { ascending: true })),
+    fetchAllRows(() => supabaseClient.from("auditor_calendar_entries").select("*").order("event_date", { ascending: true }).order("sort_order", { ascending: true }).order("id", { ascending: true }))
   ]);
 
   const firstError = [profilesRes, companiesRes, auditsRes, paymentsRes, docsRes, logsRes, tasksRes, calendarEventsRes, auditorCalendarAuditorsRes, auditorCalendarEntriesRes].find((result) => result.error)?.error;
@@ -3611,6 +3622,15 @@ async function handleForm(event) {
     }
 
     if (kind === "auditorCalendarEntry") {
+      const duplicate = state.auditorCalendarEntries.find((entry) =>
+        entry.id !== data.id
+        && entry.date === data.date
+        && normalizedCompanyKey(entry.companyName) === normalizedCompanyKey(data.companyName)
+      );
+      if (duplicate) {
+        alert("Тази фирма вече е добавена на избраната дата в Календар Одити.");
+        return;
+      }
       const item = isEdit ? findItem("auditorCalendarEntry", data.id) : { id: id("audcal") };
       const nextSortOrder = state.auditorCalendarEntries.reduce((max, entry) => Math.max(max, Number(entry.sortOrder || 0)), 0) + 1;
       Object.assign(item, stamp({
@@ -3809,9 +3829,11 @@ function nextAnnualAuditDate(date) {
 function certificationAuditDate(issueDate, yearsAhead) {
   const [year, month, day] = String(issueDate || "").split("-").map(Number);
   if (!year || !month || !day) return "";
-  const date = new Date(year + yearsAhead, month - 1, day, 12);
-  date.setDate(date.getDate() - 1);
-  return dateInput(date);
+  const targetYear = year + yearsAhead;
+  const lastDay = new Date(targetYear, month, 0).getDate();
+  const anniversary = new Date(targetYear, month - 1, Math.min(day, lastDay), 12);
+  anniversary.setDate(anniversary.getDate() - 1);
+  return dateInput(anniversary);
 }
 
 function certificationStandardKey(name) {
